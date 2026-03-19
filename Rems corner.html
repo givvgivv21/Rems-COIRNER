@@ -2,421 +2,250 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Orange OS | V70.0 Silicon Edition</title>
+    <title>Orange OS | V71.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Inter:wght@300;400;700;900&display=swap');
-
-        :root {
-            --p: #fb923c;
-            --p-hover: #f97316;
-            --p-shadow: #7c2d12;
-            --bg: #050505;
-            --sidebar: #0a0a0a;
-            --card: #111111;
-            --txt: #ffffff;
-            --border: rgba(255,255,255,0.08);
-            --glass: rgba(20, 20, 20, 0.7);
-        }
-
-        .light-mode {
-            --bg: #f8fafc;
-            --sidebar: #ffffff;
-            --card: #f1f5f9;
-            --txt: #0f172a;
-            --border: rgba(0,0,0,0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-        body { background: var(--bg); color: var(--txt); overflow: hidden; height: 100vh; width: 100vw; }
-
-        /* --- HARDWARE ABSTRACTION: THE CALCULATOR --- */
-        #hal-boot {
-            position: fixed; inset: 0; z-index: 99999; background: #000;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .ti-chassis {
-            background: #2a2a2a; width: 360px; height: 620px;
-            border-radius: 40px 40px 120px 120px; border: 8px solid #1a1a1a;
-            padding: 24px; display: flex; flex-direction: column;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.7);
-        }
-        .ti-lcd {
-            background: #a3ad91; height: 120px; border: 10px solid #111;
-            border-radius: 6px; position: relative; padding: 12px;
-            font-family: 'JetBrains Mono', monospace; color: #1e261e;
-        }
-        .ti-lcd::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,0.05) 50%, transparent 50%); background-size: 100% 4px; pointer-events: none; }
+        :root { --p: #fb923c; --bg: #050505; --card: #111; --txt: #fff; }
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--txt); overflow: hidden; height: 100vh; }
         
-        .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 30px; }
-        .k {
-            height: 36px; background: #3d3d3d; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 900; color: #fff; cursor: pointer;
-            box-shadow: 0 4px 0 #111; transition: all 0.05s;
-        }
-        .k:active { transform: translateY(3px); box-shadow: 0 1px 0 #111; filter: brightness(1.3); }
-        .k-2nd { background: #3b82f6 !important; box-shadow: 0 4px 0 #1d4ed8 !important; }
-        .k-num { background: #d1d5db !important; color: #000 !important; font-size: 14px; box-shadow: 0 4px 0 #9ca3af !important; }
-        .k-ent { background: #fb923c !important; color: #fff !important; box-shadow: 0 4px 0 #9a3412 !important; }
-
-        /* --- SYSTEM CORE UI --- */
-        #orange-desktop {
-            display: none; height: 100vh; width: 100vw;
-            grid-template-columns: 260px 1fr; opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .sidebar { background: var(--sidebar); border-right: 1px solid var(--border); padding: 32px 20px; display: flex; flex-direction: column; gap: 6px; }
+        /* SIDEBAR & LAYOUT */
+        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; }
+        .sidebar { background: #0a0a0a; border-right: 1px solid rgba(255,255,255,0.1); padding: 30px 20px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-link { padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; color: #666; transition: 0.2s; }
+        .nav-active { background: var(--p); color: #fff !important; box-shadow: 0 4px 15px rgba(251, 146, 60, 0.3); }
         
-        .nav-link {
-            padding: 14px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
-            cursor: pointer; color: #64748b; display: flex; align-items: center; gap: 12px;
-            transition: all 0.2s; border: 1px solid transparent;
-        }
-        .nav-link:hover { background: rgba(251, 146, 60, 0.05); color: var(--p); }
-        .nav-active { background: var(--p); color: #fff !important; box-shadow: 0 10px 20px -5px rgba(251, 146, 60, 0.4); }
-
-        /* --- COMPONENT: THE PUSH BUTTON --- */
-        .btn-push {
-            position: relative; background: var(--p); color: #fff;
-            padding: 14px 28px; border-radius: 10px; font-weight: 900;
-            border-bottom: 5px solid var(--p-shadow); text-transform: uppercase;
-            letter-spacing: 1px; transition: 0.1s; display: inline-flex; align-items: center; justify-content: center;
-        }
-        .btn-push:active { transform: translateY(3px); border-bottom-width: 2px; }
-
-        /* --- COMPONENT: INJECTION PROGRESS --- */
-        .v-shell { height: 14px; background: #1a1a1a; border-radius: 50px; overflow: hidden; border: 1px solid #333; position: relative; }
-        #v-fill {
-            height: 100%; width: 0%; background: linear-gradient(90deg, #fb923c, #f97316, #fbbf24);
-            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-            position: relative;
-        }
-        #v-fill::after {
-            content: ""; position: absolute; inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: flow 2s infinite;
-        }
-        @keyframes flow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
-        /* --- FRUIT PHYSICS CANVAS --- */
-        #fruit-engine { position: fixed; inset: 0; pointer-events: none; z-index: 50; display: none; }
-
-        /* --- VIEWPORT ENGINE --- */
-        .workspace { position: relative; overflow: hidden; background: var(--bg); }
-        .viewport { position: absolute; inset: 0; display: none; padding: 40px; flex-direction: column; }
+        /* PANES */
+        .view-pane { width: 100%; height: 100%; display: none; position: relative; padding: 40px; }
         #os-stage { width: 100%; height: 100%; border: none; display: none; background: #000; }
+        
+        /* CALC BOOT */
+        #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
+        .ti-chassis { background: #333; width: 340px; height: 580px; border-radius: 40px 40px 100px 100px; padding: 25px; border: 5px solid #111; }
+        .ti-lcd { background: #94a392; height: 100px; border: 8px solid #111; border-radius: 4px; padding: 15px; font-family: monospace; color: #1a241a; }
+        .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 30px; }
+        .k { height: 35px; background: #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #111; cursor: pointer; }
+        .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #111; }
+        
+        /* UI COMPONENTS */
+        .btn-push { background: var(--p); color: #fff; padding: 15px 30px; border-radius: 10px; font-weight: 900; border-bottom: 5px solid #7c2d12; transition: 0.1s; }
+        .btn-push:active { transform: translateY(3px); border-bottom-width: 1px; }
+        .prog-shell { height: 12px; background: #222; border-radius: 6px; overflow: hidden; margin: 20px 0; }
+        #prog-fill { height: 100%; background: var(--p); width: 0%; transition: width 0.4s; }
 
-        /* --- MC LAUNCHER PANEL --- */
-        .launcher-card {
-            background: #111; border: 1px solid var(--border); border-radius: 20px;
-            overflow: hidden; display: flex; flex-direction: column; height: 100%;
-        }
-        .launcher-hero { height: 60%; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
-        .launcher-controls { height: 40%; background: #0a0a0a; border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; gap: 20px; }
-
-        /* --- MODALS --- */
-        #sys-modal {
-            position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.95);
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);
-        }
-        .modal-box {
-            background: #0f0f0f; width: 500px; padding: 40px; border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
+        /* FRUIT RAIN */
+        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5000; display: none; }
     </style>
 </head>
-<body onkeydown="HAL.panic(event)">
+<body onkeydown="if(event.key==='Escape') panic()">
 
-    <canvas id="fruit-engine"></canvas>
+    <canvas id="fruit-canvas"></canvas>
 
-    <div id="hal-boot">
+    <div id="boot-gate">
         <div class="ti-chassis">
-            <div class="ti-lcd">
-                <div id="hal-sys-msg" style="font-size: 8px; opacity: 0.6;">I/O READY</div>
-                <div id="hal-out" class="text-4xl text-right mt-4 font-bold">0</div>
-            </div>
+            <div class="ti-lcd"><div id="ti-out" class="text-3xl text-right mt-4">0</div></div>
             <div class="key-grid">
-                <div class="k k-2nd" onclick="HAL.press('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="HAL.press('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
-                <div class="k k-num" onclick="HAL.num('7')">7</div><div class="k k-num" onclick="HAL.num('8')">8</div><div class="k k-num" onclick="HAL.num('9')">9</div><div class="k">÷</div><div class="k">sin</div>
-                <div class="k k-num" onclick="HAL.num('4')">4</div><div class="k k-num" onclick="HAL.num('5')">5</div><div class="k k-num" onclick="HAL.num('6')">6</div><div class="k">×</div><div class="k">cos</div>
-                <div class="k k-num" onclick="HAL.num('1')">1</div><div class="k k-num" onclick="HAL.num('2')">2</div><div class="k k-num" onclick="HAL.num('3')">3</div><div class="k">-</div><div class="k">tan</div>
-                <div class="k k-num" onclick="HAL.num('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k">+</div><div class="k k-ent" onclick="HAL.press('ent')">ENTER</div>
+                <div class="k bg-blue-600" onclick="cAct('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="cAct('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
+                <div class="k" onclick="cNum('7')">7</div><div class="k" onclick="cNum('8')">8</div><div class="k" onclick="cNum('9')">9</div><div class="k">/</div><div class="k">sin</div>
+                <div class="k" onclick="cNum('4')">4</div><div class="k" onclick="cNum('5')">5</div><div class="k" onclick="cNum('6')">6</div><div class="k">*</div><div class="k">cos</div>
+                <div class="k" onclick="cNum('1')">1</div><div class="k" onclick="cNum('2')">2</div><div class="k" onclick="cNum('3')">3</div><div class="k">-</div><div class="k">tan</div>
+                <div class="k" onclick="cNum('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k">+</div><div class="k bg-orange-500" onclick="cAct('ent')">ENT</div>
             </div>
         </div>
     </div>
 
     <div id="orange-desktop">
         <aside class="sidebar">
-            <div class="mb-10 px-4">
-                <h1 class="text-2xl font-black italic text-orange-500 tracking-tighter">ORANGE <span class="text-white font-light">OS</span></h1>
-                <p class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Enterprise V70.0</p>
-            </div>
-            
-            <nav class="flex-grow space-y-1">
-                <div class="nav-link nav-active" onclick="Router.go('launcher')"><span>🎮</span> Launcher</div>
-                <div class="nav-link" onclick="Router.go('youtube')"><span>🎬</span> YouTube</div>
-                <div class="nav-link" onclick="Kernel.exec('browser')"><span>🌐</span> Browser</div>
-                <div class="nav-link" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')"><span>🔥</span> Find More</div>
-                <div class="nav-link" onclick="Router.go('settings')"><span>⚙️</span> Settings</div>
-            </nav>
-
-            <div class="p-4 bg-zinc-900/50 rounded-xl border border-white/5 mt-auto">
-                <div id="k-status-led" class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                    <span class="text-[10px] font-black uppercase text-zinc-400">Kernel Offline</span>
-                </div>
-            </div>
+            <h1 class="text-2xl font-black text-orange-500 italic mb-10">ORANGE V71</h1>
+            <div class="nav-link nav-active" onclick="nav('launcher')">🎮 LAUNCHER</div>
+            <div class="nav-link" onclick="nav('youtube')">🎬 YOUTUBE</div>
+            <div class="nav-link" onclick="bootApp('browser')">🌐 BROWSER</div>
+            <div class="nav-link" onclick="nav('findmore')">🔥 FIND MORE</div>
+            <div class="nav-link" onclick="nav('settings')">⚙️ SETTINGS</div>
+            <button onclick="panic()" class="mt-auto bg-red-600 p-4 rounded-xl font-black text-xs btn-push">PANIC BUTTON</button>
         </aside>
 
-        <main class="workspace">
-            <iframe id="os-stage"></iframe>
+        <main class="relative bg-black overflow-hidden">
+            <iframe id="os-stage" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
 
-            <section id="view-launcher" class="viewport" style="display: flex;">
-                <div class="launcher-card">
-                    <div class="launcher-hero">
-                        <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30">
-                        <div class="text-center z-10">
-                            <h2 class="text-7xl font-black italic tracking-tighter">MINECRAFT</h2>
-                            <p class="text-orange-500 font-bold tracking-widest text-xs mt-2 uppercase">Local Instance Engine</p>
+            <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
+                <div class="w-full max-w-4xl bg-zinc-900 rounded-3xl overflow-hidden border border-white/5">
+                    <div class="h-64 relative">
+                        <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg" class="w-full h-full object-cover opacity-40">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <h2 class="text-5xl font-black italic">MINECRAFT</h2>
+                            <p id="k-status" class="text-red-500 font-bold text-[10px] mt-2">KERNEL DISCONNECTED</p>
                         </div>
                     </div>
-                    <div class="launcher-controls">
-                        <select id="mc-version" class="bg-zinc-800 text-white font-bold p-4 rounded-xl border border-white/10 outline-none hover:border-orange-500 transition-colors">
+                    <div class="p-8 flex gap-4 items-center bg-zinc-950">
+                        <select id="mc-ver" class="bg-zinc-800 p-4 rounded-xl font-bold text-orange-500 outline-none">
                             <option value="18">Eaglercraft 1.8.8</option>
                             <option value="112">Eaglercraft 1.12.2</option>
                         </select>
-                        <button onclick="Kernel.exec('mc')" class="btn-push flex-grow text-2xl">Initialize Game</button>
-                        <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="bg-zinc-800 p-4 px-8 rounded-xl font-black text-xs border border-white/10 hover:bg-zinc-700 transition-all">T-PACKS</button>
+                        <button onclick="bootApp('mc')" class="flex-grow btn-push text-xl">BOOT GAME</button>
+                        <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main','_blank')" class="bg-zinc-800 p-4 rounded-xl font-black text-xs">T-PACKS</button>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section id="view-youtube" class="viewport">
-                <div class="flex gap-4 mb-8">
-                    <div class="relative flex-grow">
-                        <input type="text" id="yt-input" class="w-full bg-zinc-900 p-5 rounded-2xl border border-white/10 outline-none font-bold focus:border-orange-500 transition-all" placeholder="Paste Video ID or Link">
-                        <button onclick="document.getElementById('yt-input').value=''" class="absolute right-4 top-4 text-xs font-black text-zinc-500 hover:text-white">CLEAR</button>
-                    </div>
-                    <button onclick="Kernel.exec('yt')" class="btn-push px-12">Stream</button>
-                </div>
-                <div id="yt-player" class="flex-grow bg-black rounded-3xl border-2 border-white/5 overflow-hidden shadow-2xl"></div>
-            </section>
+            <div id="v-findmore" class="view-pane flex flex-col items-center justify-center text-center">
+                <h2 class="text-4xl font-black mb-4">Stay Up to date with the latest content in bypassing school</h2>
+                <p class="text-zinc-500 font-bold mb-10 text-xl italic underline decoration-orange-500">fuh school blockers</p>
+                <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')" class="btn-push px-20 text-2xl">GO TO WEBSITE</button>
+            </div>
 
-            <section id="view-settings" class="viewport">
-                <h2 class="text-4xl font-black mb-10">System Preferences</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-zinc-900 p-8 rounded-3xl border border-white/5 flex flex-col gap-4">
-                        <h3 class="font-bold text-orange-500 uppercase text-xs">Environment</h3>
-                        <div class="flex justify-between items-center">
-                            <span>iFrame Virtualization</span>
-                            <input type="checkbox" id="iframe-mode" checked class="w-6 h-6 accent-orange-500">
-                        </div>
-                        <p class="text-[10px] text-zinc-500">Enable this to keep applications trapped within the OS workspace. Disable to breakout into native browser tabs.</p>
-                    </div>
-                    <div class="bg-zinc-900 p-8 rounded-3xl border border-white/5 flex flex-col gap-4">
-                        <h3 class="font-bold text-orange-500 uppercase text-xs">Visuals</h3>
-                        <button onclick="UI.toggleFruits()" class="bg-zinc-800 p-3 rounded-lg font-bold text-xs">Toggle Fruit Rain Engine</button>
-                        <button onclick="document.body.classList.toggle('light-mode')" class="bg-zinc-800 p-3 rounded-lg font-bold text-xs">Toggle Light Theme</button>
-                    </div>
-                    <div class="bg-zinc-900 p-8 rounded-3xl border border-white/5 flex flex-col gap-4 col-span-2">
-                        <h3 class="font-bold text-red-500 uppercase text-xs">Data Management</h3>
-                        <button onclick="Kernel.wipe()" class="bg-red-600/20 text-red-500 border border-red-600 p-4 rounded-xl font-black text-xs hover:bg-red-600 hover:text-white transition-all">FACTORY RESET / CLEAR BLOBS</button>
-                    </div>
+            <div id="v-youtube" class="view-pane">
+                <div class="flex gap-4 mb-6">
+                    <input type="text" id="yt-url" class="flex-grow bg-zinc-900 p-5 rounded-2xl border border-white/5 outline-none font-bold" placeholder="Paste Video Link">
+                    <button onclick="bootApp('yt')" class="btn-push px-10">LOAD</button>
                 </div>
-            </section>
+                <div id="yt-area" class="w-full aspect-video bg-black rounded-3xl border-2 border-white/5 overflow-hidden"></div>
+            </div>
+
+            <div id="v-settings" class="view-pane">
+                <h2 class="text-3xl font-black mb-10">SYSTEM_SETTINGS</h2>
+                <div class="space-y-4 max-w-2xl">
+                    <div class="bg-zinc-900 p-6 rounded-2xl flex justify-between items-center">
+                        <span>Iframe Execution Mode</span>
+                        <input type="checkbox" id="iframe-mode" checked class="w-6 h-6 accent-orange-500">
+                    </div>
+                    <button onclick="toggleFruit()" class="w-full bg-zinc-800 p-4 rounded-xl font-bold">TOGGLE FRUIT RAIN</button>
+                    <button onclick="UI_modal(true)" class="w-full bg-orange-600 p-4 rounded-xl font-black">OPEN BLOB INJECTOR</button>
+                    <button onclick="wipeDB()" class="w-full bg-red-600/20 text-red-500 p-4 rounded-xl font-black border border-red-600">FACTORY RESET</button>
+                </div>
+            </div>
         </main>
     </div>
 
-    <div id="sys-modal">
-        <div class="modal-box">
-            <h2 class="text-2xl font-black text-orange-500 italic mb-2">IO_INJECTOR.EXE</h2>
-            <p class="text-[10px] text-zinc-500 mb-8 font-mono">MAP LOCAL BINARIES TO VIRTUAL_FS</p>
-            
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-zinc-400 uppercase">Legacy Path (1.8.8)</label>
-                    <input type="file" id="blob-18" class="w-full bg-black p-3 rounded-lg border border-zinc-800 text-xs text-zinc-400">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-zinc-400 uppercase">Current Path (1.12.2)</label>
-                    <input type="file" id="blob-112" class="w-full bg-black p-3 rounded-lg border border-zinc-800 text-xs text-zinc-400">
-                </div>
+    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/95 hidden items-center justify-center backdrop-blur-lg">
+        <div class="bg-zinc-900 p-10 rounded-3xl border border-orange-500 w-[500px]">
+            <h2 class="text-2xl font-black text-orange-500 mb-6">BLOB_INJECTOR</h2>
+            <div class="space-y-4">
+                <input type="file" id="f18" class="w-full bg-black p-3 rounded-lg border border-white/10 text-xs">
+                <input type="file" id="f112" class="w-full bg-black p-3 rounded-lg border border-white/10 text-xs">
             </div>
-
-            <div class="mt-10">
-                <div class="flex justify-between text-[10px] font-black mb-2 uppercase">
-                    <span>Write Status</span>
-                    <span id="v-percent">0%</span>
-                </div>
-                <div class="v-shell"><div id="v-fill"></div></div>
-            </div>
-
-            <div class="flex gap-3 mt-8">
-                <button onclick="Kernel.inject()" class="btn-push flex-grow">Start Write</button>
-                <button onclick="UI.modal(false)" class="bg-zinc-800 px-6 rounded-xl font-bold text-xs uppercase">Abort</button>
+            <div class="prog-shell"><div id="prog-fill"></div></div>
+            <div class="flex gap-2">
+                <button onclick="runInjection()" class="flex-grow btn-push">START BLOB WRITE</button>
+                <button onclick="UI_modal(false)" class="bg-zinc-800 px-6 rounded-xl font-bold text-xs uppercase">EXIT</button>
             </div>
         </div>
     </div>
 
     <script>
-        /**
-         * ORANGE OS | CORE KERNEL 
-         * Complex Infrastructure for 2026 Environment
-         */
+        let db, expr = "", is2nd = false;
 
-        const HAL = {
-            expr: "",
-            is2nd: false,
-            num: (n) => { HAL.expr += n; document.getElementById('hal-out').innerText = HAL.expr; },
-            press: (key) => {
-                if(key === '2nd') { 
-                    HAL.is2nd = !HAL.is2nd; 
-                    document.getElementById('hal-sys-msg').innerText = HAL.is2nd ? "PRIVILEGED MODE" : "I/O READY";
-                    return;
-                }
-                if(HAL.is2nd && key === 'ent') {
-                    document.getElementById('hal-boot').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('hal-boot').style.display = 'none';
-                        document.getElementById('orange-desktop').style.display = 'grid';
-                        setTimeout(() => document.getElementById('orange-desktop').style.opacity = '1', 100);
-                    }, 800);
-                    return;
-                }
-                if(HAL.is2nd && key === 'del') { UI.modal(true); return; }
-                if(key === 'ent') {
-                    try { let r = eval(HAL.expr); document.getElementById('hal-out').innerText = r; HAL.expr = r.toString(); } 
-                    catch { HAL.expr = ""; document.getElementById('hal-out').innerText = "ERR"; }
-                }
-            },
-            panic: (e) => { if(e.key === 'Escape') location.reload(); }
-        };
+        // INDEXED_DB KERNEL
+        const request = indexedDB.open("ORANGE_V71", 1);
+        request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
+        request.onsuccess = e => { db = e.target.result; sync(); };
 
-        const Router = {
-            views: ['launcher', 'youtube', 'settings'],
-            go: (target) => {
-                Router.views.forEach(v => {
-                    document.getElementById('view-'+v).style.display = 'none';
-                    document.getElementById('os-stage').style.display = 'none';
-                    document.getElementById('os-stage').src = "";
-                });
-                document.getElementById('view-'+target).style.display = (target==='launcher' ? 'flex' : 'block');
-                document.querySelectorAll('.nav-link').forEach(l => {
-                    l.classList.remove('nav-active');
-                    if(l.innerText.toLowerCase().includes(target)) l.classList.add('nav-active');
-                });
+        function sync() {
+            db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
+                const s = document.getElementById('k-status');
+                if(e.target.result > 0) {
+                    s.innerText = "KERNEL_ACTIVE (" + e.target.result + " BLOBS)";
+                    s.className = "text-green-500 font-bold text-[10px] mt-2";
+                }
             }
-        };
+        }
 
-        const Kernel = {
-            db: null,
-            init: () => {
-                const req = indexedDB.open("ORANGE_VFS", 70);
-                req.onupgradeneeded = e => e.target.result.createObjectStore("binaries");
-                req.onsuccess = e => { Kernel.db = e.target.result; Kernel.scan(); };
-            },
-            scan: () => {
-                Kernel.db.transaction("binaries").objectStore("binaries").count().onsuccess = e => {
-                    const led = document.querySelector('#k-status-led div');
-                    const txt = document.querySelector('#k-status-led span');
-                    const mcS = document.getElementById('k-status');
-                    if(e.target.result > 0) {
-                        led.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]";
-                        txt.innerText = `Kernel v70.0 (Blobs: ${e.target.result})`;
-                        mcS.innerText = "READY FOR INITIALIZATION"; mcS.className = "text-green-500 font-bold text-xs mt-2";
-                    }
-                };
-            },
-            inject: async () => {
-                const files = [document.getElementById('blob-18').files[0], document.getElementById('blob-112').files[0]];
-                const fill = document.getElementById('v-fill');
-                const perc = document.getElementById('v-percent');
-                
-                for(let i=0; i<files.length; i++) {
-                    if(files[i]) {
-                        const buffer = await files[i].arrayBuffer();
-                        const blob = new Blob([buffer], {type: 'text/html'});
-                        const tx = Kernel.db.transaction("binaries", "readwrite");
-                        tx.objectStore("binaries").put(blob, i === 0 ? "18" : "112");
-                        
-                        tx.oncomplete = () => {
-                            let p = ((i+1) / files.length) * 100;
-                            fill.style.width = p + "%";
-                            perc.innerText = Math.round(p) + "%";
-                            if(p === 100) {
-                                setTimeout(() => { alert("VFS WRITE SUCCESS"); UI.modal(false); Kernel.scan(); }, 500);
-                            }
-                        };
-                    }
-                }
-            },
-            exec: (app) => {
-                const mode = document.getElementById('iframe-mode').checked;
-                const stage = document.getElementById('os-stage');
+        // CALC LOGIC
+        function cNum(n) { expr += n; document.getElementById('ti-out').innerText = expr; }
+        function cAct(a) {
+            if(a==='2nd') { is2nd = !is2nd; return; }
+            if(is2nd && a==='ent') { document.getElementById('boot-gate').style.display='none'; document.getElementById('orange-desktop').style.display='grid'; return; }
+            if(a==='ent') { try { expr = eval(expr).toString(); document.getElementById('ti-out').innerText = expr; } catch { expr = ""; } }
+            if(a==='del') { expr = ""; document.getElementById('ti-out').innerText = "0"; }
+        }
 
-                if(app === 'mc') {
-                    const v = document.getElementById('mc-version').value;
-                    Kernel.db.transaction("binaries").objectStore("binaries").get(v).onsuccess = e => {
-                        if(e.target.result) {
-                            const url = URL.createObjectURL(e.target.result);
-                            if(mode) {
-                                Router.go('none'); // Hide all views
-                                stage.src = url; stage.style.display = 'block';
-                            } else window.open(url, '_blank');
-                        } else alert("Binary not found in VFS.");
+        // INJECTION LOGIC (WORKING BLOB METHOD)
+        async function runInjection() {
+            const f1 = document.getElementById('f18').files[0];
+            const f2 = document.getElementById('f112').files[0];
+            const fill = document.getElementById('prog-fill');
+            
+            const write = async (file, key, p) => {
+                return new Promise(res => {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const blob = new Blob([e.target.result], {type: 'text/html'});
+                        const tx = db.transaction("blobs", "readwrite");
+                        tx.objectStore("blobs").put(blob, key);
+                        tx.oncomplete = () => { fill.style.width = p + "%"; res(); };
                     };
-                } else if(app === 'yt') {
-                    let val = document.getElementById('yt-input').value;
-                    let id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val.split('/').pop();
-                    let url = `https://www.youtube-nocookie.com/embed/${id}?origin=${location.origin}`;
-                    if(mode) {
-                        document.getElementById('yt-player').innerHTML = `<iframe width="100%" height="100%" src="${url}" frameborder="0" allowfullscreen></iframe>`;
-                    } else window.open(url, '_blank');
-                } else if(app === 'browser') {
-                    let url = "https://storage.googleapis.com/fernisbest/index.html";
-                    if(mode) {
-                        Router.go('none');
-                        stage.src = url; stage.style.display = 'block';
-                    } else window.open(url, '_blank');
-                }
-            },
-            wipe: () => { if(confirm("Destroy VFS binaries?")) { Kernel.db.transaction("binaries","readwrite").objectStore("binaries").clear(); location.reload(); }}
-        };
-
-        const UI = {
-            modal: (show) => document.getElementById('sys-modal').style.display = show ? 'flex' : 'none',
-            fruitActive: false,
-            toggleFruits: () => {
-                UI.fruitActive = !UI.fruitActive;
-                const c = document.getElementById('fruit-engine');
-                c.style.display = UI.fruitActive ? 'block' : 'none';
-                if(UI.fruitActive) {
-                    c.width = window.innerWidth; c.height = window.innerHeight;
-                    UI.fruitLoop();
-                }
-            },
-            fruits: [],
-            fruitLoop: () => {
-                if(!UI.fruitActive) return;
-                const c = document.getElementById('fruit-engine');
-                const ctx = c.getContext('2d');
-                ctx.clearRect(0,0,c.width,c.height);
-                if(Math.random() < 0.1) UI.fruits.push({x: Math.random()*c.width, y: -50, vy: 2+Math.random()*5, char: ['🍊','🍎','🍇','🍒'][Math.floor(Math.random()*4)]});
-                UI.fruits.forEach((f,i) => {
-                    f.y += f.vy;
-                    ctx.font = "40px serif";
-                    ctx.fillText(f.char, f.x, f.y);
-                    if(f.y > c.height) UI.fruits.splice(i,1);
+                    reader.readAsArrayBuffer(file);
                 });
-                requestAnimationFrame(UI.fruitLoop);
-            }
-        };
+            };
 
-        // KERNEL BOOT
-        window.onload = Kernel.init;
+            if(f1) await write(f1, "18", 50);
+            if(f2) await write(f2, "112", 100);
+            setTimeout(() => { alert("BLOB STORAGE SUCCESSFUL"); UI_modal(false); sync(); }, 500);
+        }
+
+        // APP BOOTER (FIXED BROWSER & IFRAME)
+        function bootApp(type) {
+            const mode = document.getElementById('iframe-mode').checked;
+            const stage = document.getElementById('os-stage');
+
+            if(type === 'browser') {
+                const url = "https://storage.googleapis.com/fernisbest/index.html";
+                if(mode) {
+                    nav('none');
+                    stage.src = url;
+                    stage.style.display = 'block';
+                } else {
+                    window.open(url, '_blank');
+                }
+            } else if(type === 'mc') {
+                const ver = document.getElementById('mc-ver').value;
+                db.transaction("blobs").objectStore("blobs").get(ver).onsuccess = e => {
+                    if(e.target.result) {
+                        const url = URL.createObjectURL(e.target.result);
+                        if(mode) {
+                            nav('none');
+                            stage.src = url;
+                            stage.style.display = 'block';
+                        } else { window.open(url, '_blank'); }
+                    } else alert("Version not injected.");
+                };
+            } else if(type === 'yt') {
+                let val = document.getElementById('yt-url').value;
+                let id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val.split('/').pop();
+                let url = `https://www.youtube-nocookie.com/embed/${id}`;
+                if(mode) {
+                    document.getElementById('yt-area').innerHTML = `<iframe width="100%" height="100%" src="${url}" frameborder="0" allowfullscreen></iframe>`;
+                } else { window.open(url, '_blank'); }
+            }
+        }
+
+        function nav(t) {
+            ['v-launcher','v-youtube','v-settings','v-findmore','os-stage'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.style.display = 'none';
+            });
+            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='launcher' || t==='findmore' ? 'flex' : 'block');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('nav-active'));
+        }
+
+        function UI_modal(s) { document.getElementById('inj-modal').style.display = s ? 'flex' : 'none'; }
+        function panic() { location.reload(); }
+        function wipeDB() { if(confirm("WIPE SYSTEM?")) { db.transaction("blobs","readwrite").objectStore("blobs").clear(); location.reload(); }}
+
+        // FRUIT RAIN ENGINE
+        const canvas = document.getElementById('fruit-canvas');
+        const ctx = canvas.getContext('2d');
+        let fruits = [], rain = false;
+        function toggleFruit() { 
+            rain = !rain; canvas.style.display = rain ? 'block' : 'none'; 
+            if(rain) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; loop(); }
+        }
+        function loop() {
+            if(!rain) return; ctx.clearRect(0,0,canvas.width,canvas.height);
+            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 3+Math.random()*4, c: ['🍊','🍎','🍇'][Math.floor(Math.random()*3)]});
+            fruits.forEach((f,i) => { f.y += f.v; ctx.font = "40px Arial"; ctx.fillText(f.c, f.x, f.y); if(f.y > canvas.height) fruits.splice(i,1); });
+            requestAnimationFrame(loop);
+        }
     </script>
 </body>
 </html>
