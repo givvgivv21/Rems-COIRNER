@@ -2,103 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V73.0 Stabilizer</title>
+    <title>Orange OS | V74.0 Fixed HAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --p: #fb923c; --bg: #050505; }
         * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
-        
-        /* THE KINETIC TRANSITIONS */
-        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* PROGRESS BAR FIX */
-        .prog-shell { height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; position: relative; }
-        #prog-fill { 
-            height: 100%; width: 0%; background: var(--p); 
-            box-shadow: 0 0 15px var(--p);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+
+        /* --- THE FIXED CALCULATOR GATE --- */
+        #boot-gate { 
+            position: fixed; inset: 0; z-index: 9999; background: #000; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        .ti-chassis { 
+            background: #2b2b2b; width: 360px; height: 620px; 
+            border-radius: 40px 40px 100px 100px; padding: 25px; 
+            border: 6px solid #1a1a1a; display: flex; flex-direction: column;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        }
+        .ti-lcd { 
+            background: #94a392; height: 110px; border: 8px solid #111; 
+            border-radius: 4px; padding: 12px; font-family: 'JetBrains Mono', monospace; 
+            color: #1a241a; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+        .ti-lcd::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.03) 50%, transparent 50%);
+            background-size: 100% 4px; pointer-events: none;
         }
 
-        /* SIDEBAR & UI */
-        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; }
-        .nav-link { 
-            padding: 14px; border-radius: 12px; cursor: pointer; color: #666; font-weight: 800;
-            transition: 0.3s; margin-bottom: 4px; border: 1px solid transparent;
+        /* KEYBOARD GRID SYSTEM */
+        .key-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            gap: 10px; margin-top: 25px; flex-grow: 1;
         }
-        .nav-link:hover { background: rgba(251, 146, 60, 0.1); color: var(--p); transform: translateX(5px); }
-        .nav-active { background: var(--p); color: #fff !important; box-shadow: 0 10px 20px -5px rgba(251, 146, 60, 0.4); }
+        .k { 
+            height: 34px; background: #444; border-radius: 6px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 9px; font-weight: 900; color: #eee; 
+            box-shadow: 0 4px 0 #1a1a1a; cursor: pointer; transition: 0.05s;
+        }
+        .k:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; filter: brightness(1.2); }
+        
+        /* SPECIAL KEY COLORS */
+        .k-2nd { background: #2563eb !important; box-shadow: 0 4px 0 #1e3a8a !important; }
+        .k-alpha { background: #16a34a !important; box-shadow: 0 4px 0 #14532d !important; }
+        .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 14px; box-shadow: 0 4px 0 #9ca3af !important; }
+        .k-orange { background: var(--p) !important; color: #fff !important; box-shadow: 0 4px 0 #7c2d12 !important; font-size: 11px; }
+
+        /* --- OS UI --- */
+        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .sidebar { background: #0a0a0a; border-right: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; display: flex; flex-direction: column; }
+        .nav-link { padding: 14px; border-radius: 12px; margin-bottom: 4px; cursor: pointer; font-weight: 800; color: #555; transition: 0.2s; }
+        .nav-link:hover { color: var(--p); background: rgba(251, 146, 60, 0.05); }
+        .nav-active { background: var(--p); color: #fff !important; }
+
+        .btn-push { background: var(--p); color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; border-bottom: 4px solid #7c2d12; transition: 0.1s; }
+        .btn-push:active { transform: translateY(3px); border-bottom-width: 1px; }
 
         #os-stage { width: 100%; height: 100%; border: none; display: none; background: #000; }
-        
-        /* CALC BOOTLOADER */
-        #boot-gate { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; }
-        .ti-chassis { background: #1a1a1a; width: 340px; height: 560px; border-radius: 30px 30px 80px 80px; padding: 25px; border: 4px solid #111; }
-        
-        .btn-push { 
-            background: var(--p); color: #fff; padding: 16px; border-radius: 14px; font-weight: 900; 
-            border-bottom: 4px solid #7c2d12; transition: 0.1s;
-        }
-        .btn-push:active { transform: translateY(3px); border-bottom-width: 1px; }
+        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') location.reload()">
 
     <div id="boot-gate">
-        <div class="ti-chassis shadow-2xl">
-            <div class="bg-[#8fa18d] h-20 rounded border-4 border-black p-4 text-right font-mono text-2xl text-black">
-                <div id="ti-out">0</div>
+        <div class="ti-chassis">
+            <div class="ti-lcd">
+                <div id="hal-status" class="text-[8px] opacity-60 font-bold uppercase">RAM CLEARED</div>
+                <div id="hal-out" class="text-3xl text-right mt-4 font-bold overflow-hidden">0</div>
             </div>
-            <div class="grid grid-cols-5 gap-2 mt-8">
-                <div class="col-span-1 h-8 bg-blue-600 rounded text-[9px] flex items-center justify-center font-bold cursor-pointer" onclick="cAct('2nd')">2nd</div>
-                <div class="col-span-3"></div>
-                <div class="col-span-1 h-8 bg-orange-500 rounded text-[9px] flex items-center justify-center font-bold cursor-pointer" onclick="cAct('ent')">ENT</div>
-                <script>
-                    let expr = "", is2nd = false;
-                    function cAct(a) {
-                        if(a==='2nd') is2nd = !is2nd;
-                        if(is2nd && a==='ent') { 
-                            document.getElementById('boot-gate').style.display='none'; 
-                            document.getElementById('orange-desktop').style.display='grid';
-                        }
-                    }
-                </script>
+            
+            <div class="key-grid">
+                <div class="k k-2nd" onclick="hAct('2nd')">2nd</div>
+                <div class="k">mode</div>
+                <div class="k" onclick="hAct('del')">del</div>
+                <div class="k">math</div>
+                <div class="k">apps</div>
+                
+                <div class="k k-alpha">alpha</div>
+                <div class="k">x,t,θ,n</div>
+                <div class="k">stat</div>
+                <div class="k">prgm</div>
+                <div class="k">vars</div>
+
+                <div class="k">x²</div>
+                <div class="k">sin</div>
+                <div class="k">cos</div>
+                <div class="k">tan</div>
+                <div class="k">^</div>
+
+                <div class="k k-num" onclick="hNum('7')">7</div>
+                <div class="k k-num" onclick="hNum('8')">8</div>
+                <div class="k k-num" onclick="hNum('9')">9</div>
+                <div class="k"> ( </div>
+                <div class="k"> ) </div>
+
+                <div class="k k-num" onclick="hNum('4')">4</div>
+                <div class="k k-num" onclick="hNum('5')">5</div>
+                <div class="k k-num" onclick="hNum('6')">6</div>
+                <div class="k" onclick="hNum('*')">×</div>
+                <div class="k" onclick="hNum('/')">÷</div>
+
+                <div class="k k-num" onclick="hNum('1')">1</div>
+                <div class="k k-num" onclick="hNum('2')">2</div>
+                <div class="k k-num" onclick="hNum('3')">3</div>
+                <div class="k" onclick="hNum('+')">+</div>
+                <div class="k" onclick="hNum('-')">-</div>
+
+                <div class="k k-num" onclick="hNum('0')">0</div>
+                <div class="k k-num">.</div>
+                <div class="k k-num">(-)</div>
+                <div class="k k-orange col-span-2" onclick="hAct('ent')">ENTER</div>
             </div>
-            <p class="text-[9px] text-zinc-600 mt-40 text-center font-black uppercase tracking-widest">Orange Hardware Interface</p>
         </div>
     </div>
 
     <div id="orange-desktop">
-        <aside class="sidebar bg-[#080808] p-6 flex flex-col border-right border-white/5">
+        <aside class="sidebar">
             <h1 class="text-2xl font-black italic text-orange-500 mb-10 tracking-tighter">ORANGE <span class="text-white">OS</span></h1>
-            <nav>
+            <nav class="flex-grow">
                 <div class="nav-link nav-active" onclick="nav('launcher')">🎮 LAUNCHER</div>
                 <div class="nav-link" onclick="nav('youtube')">🎬 YOUTUBE</div>
                 <div class="nav-link" onclick="bootApp('browser')">🌐 BROWSER</div>
                 <div class="nav-link" onclick="nav('findmore')">🔥 FIND MORE</div>
                 <div class="nav-link" onclick="nav('settings')">⚙️ SETTINGS</div>
             </nav>
-            <button onclick="location.reload()" class="btn-push mt-auto bg-red-600 border-red-900 text-[10px]">PANIC SHUTDOWN</button>
+            <button onclick="location.reload()" class="btn-push bg-red-600 text-[10px] mt-auto">PANIC EXIT</button>
         </aside>
 
         <main class="relative bg-black overflow-hidden">
             <iframe id="os-stage" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
 
             <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
-                <div class="w-full max-w-3xl bg-zinc-900 rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
-                    <div class="h-48 bg-gradient-to-br from-orange-500/20 to-transparent flex items-center justify-center relative">
-                        <div class="text-center">
-                            <h2 class="text-5xl font-black italic">MINECRAFT</h2>
-                            <p id="k-status" class="text-zinc-500 font-bold text-[10px] mt-2 tracking-widest">KERNEL STANDBY</p>
-                        </div>
+                <div class="w-full max-w-4xl bg-zinc-900 rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+                    <div class="h-48 bg-zinc-800 flex items-center justify-center relative">
+                        <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        <h2 class="text-5xl font-black italic z-10">MINECRAFT</h2>
                     </div>
-                    <div class="p-8 flex gap-4 bg-zinc-950/50">
-                        <select id="mc-ver" class="bg-zinc-800 p-4 rounded-xl font-bold text-orange-500 outline-none border border-white/5">
+                    <div class="p-8 flex gap-4 bg-black/40">
+                        <select id="mc-ver" class="bg-zinc-800 p-4 rounded-xl font-bold text-orange-500 outline-none">
                             <option value="18">Eaglercraft 1.8.8</option>
                             <option value="112">Eaglercraft 1.12.2</option>
                         </select>
-                        <button onclick="bootApp('mc')" class="flex-grow btn-push text-lg">INITIALIZE ENGINE</button>
+                        <button onclick="bootApp('mc')" class="flex-grow btn-push text-lg">BOOT GAME</button>
                     </div>
                 </div>
             </div>
@@ -113,10 +162,10 @@
                 <h2 class="text-3xl font-black mb-10">System Preferences</h2>
                 <div class="max-w-xl space-y-4">
                     <div class="bg-zinc-900 p-6 rounded-2xl flex justify-between items-center border border-white/5">
-                        <span class="font-bold">Iframe Virtualization</span>
+                        <span class="font-bold">Iframe Mode</span>
                         <input type="checkbox" id="iframe-mode" checked class="w-6 h-6 accent-orange-500">
                     </div>
-                    <button onclick="UI_modal(true)" class="w-full bg-zinc-800 p-5 rounded-2xl font-black text-orange-500 border border-orange-500/20">RE-RUN INJECTION KERNEL</button>
+                    <button onclick="UI_modal(true)" class="w-full bg-zinc-800 p-5 rounded-2xl font-black text-orange-500 border border-orange-500/20">RE-RUN INJECTION</button>
                 </div>
             </div>
         </main>
@@ -126,117 +175,91 @@
         <div class="bg-zinc-900 p-10 rounded-[2rem] border border-white/10 w-[450px]">
             <h2 class="text-2xl font-black text-orange-500 mb-6 italic">SYSTEM_INJECTOR</h2>
             <div class="space-y-4">
-                <div class="text-[10px] font-bold text-zinc-500 uppercase">Legacy HTML (1.8.8)</div>
-                <input type="file" id="f18" class="w-full bg-black p-3 rounded-xl border border-white/5 text-xs">
-                <div class="text-[10px] font-bold text-zinc-500 uppercase">Modern HTML (1.12.2)</div>
-                <input type="file" id="f112" class="w-full bg-black p-3 rounded-xl border border-white/5 text-xs">
+                <input type="file" id="f18" class="w-full bg-black p-3 rounded-xl text-xs">
+                <input type="file" id="f112" class="w-full bg-black p-3 rounded-xl text-xs">
             </div>
-            
-            <div class="mt-8">
-                <div class="flex justify-between text-[10px] font-bold mb-2">
-                    <span id="inj-status">READY TO WRITE</span>
-                    <span id="inj-perc">0%</span>
-                </div>
-                <div class="prog-shell"><div id="prog-fill"></div></div>
+            <div class="mt-8 h-2 bg-white/5 rounded-full overflow-hidden">
+                <div id="prog-fill" class="h-full bg-orange-500 w-0 transition-all duration-300"></div>
             </div>
-            
             <div class="flex gap-2 mt-8">
-                <button id="start-btn" onclick="runInjection()" class="flex-grow btn-push">START BLOB WRITE</button>
+                <button onclick="runInjection()" class="flex-grow btn-push">START WRITE</button>
                 <button onclick="UI_modal(false)" class="bg-zinc-800 px-6 rounded-xl text-xs font-bold">CANCEL</button>
             </div>
         </div>
     </div>
 
     <script>
-        let db;
-        const request = indexedDB.open("ORANGE_FINAL", 1);
-        request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
-        request.onsuccess = e => { db = e.target.result; sync(); };
+        let db, expr = "", is2nd = false;
 
-        function sync() {
-            db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
-                const s = document.getElementById('k-status');
-                if(e.target.result > 0) {
-                    s.innerText = "KERNEL_ACTIVE :: " + e.target.result + " BINARIES LOADED";
-                    s.classList.add('text-green-500');
-                }
-            };
+        // CALC CONTROLLER
+        function hNum(n) { expr += n; document.getElementById('hal-out').innerText = expr; }
+        function hAct(a) {
+            if(a==='2nd') { 
+                is2nd = !is2nd; 
+                document.getElementById('hal-status').innerText = is2nd ? "PRIVILEGED MODE" : "RAM CLEARED";
+                return;
+            }
+            if(is2nd && a==='ent') { 
+                document.getElementById('boot-gate').style.display='none'; 
+                document.getElementById('orange-desktop').style.display='grid';
+            }
+            if(is2nd && a==='del') { UI_modal(true); }
+            if(a==='ent') { try { expr = eval(expr).toString(); document.getElementById('hal-out').innerText = expr; } catch { expr = ""; } }
+            if(a==='del') { expr = ""; document.getElementById('hal-out').innerText = "0"; }
         }
 
-        // ASYNC CHUNKED INJECTION (The fix for your bar not moving)
+        // DB & INJECTION
+        const request = indexedDB.open("ORANGE_FINAL_V74", 1);
+        request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
+        request.onsuccess = e => { db = e.target.result; };
+
         async function runInjection() {
             const files = [
                 { f: document.getElementById('f18').files[0], key: "18" },
                 { f: document.getElementById('f112').files[0], key: "112" }
             ].filter(x => x.f);
-
-            if(files.length === 0) { alert("Select files first."); return; }
-
+            
             const fill = document.getElementById('prog-fill');
-            const status = document.getElementById('inj-status');
-            const perc = document.getElementById('inj-perc');
-            const btn = document.getElementById('start-btn');
-
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-
             for(let i=0; i<files.length; i++) {
-                status.innerText = `WRITING BLOB: ${files[i].key}...`;
-                
-                // We use a promise to ensure the browser has a "gap" to update the UI
                 await new Promise(resolve => {
                     const reader = new FileReader();
                     reader.onload = async (e) => {
-                        const blob = new Blob([e.target.result], {type: 'text/html'});
                         const tx = db.transaction("blobs", "readwrite");
-                        tx.objectStore("blobs").put(blob, files[i].key);
-                        
-                        tx.oncomplete = () => {
-                            let p = ((i + 1) / files.length) * 100;
-                            fill.style.width = p + "%";
-                            perc.innerText = Math.round(p) + "%";
-                            // Force a tiny timeout so the UI thread can breathe
-                            setTimeout(resolve, 100);
+                        tx.objectStore("blobs").put(new Blob([e.target.result], {type:'text/html'}), files[i].key);
+                        tx.oncomplete = () => { 
+                            fill.style.width = ((i+1)/files.length * 100) + "%";
+                            setTimeout(resolve, 150); 
                         };
                     };
                     reader.readAsArrayBuffer(files[i].f);
                 });
             }
-
-            status.innerText = "VFS WRITE SUCCESSFUL";
-            setTimeout(() => { UI_modal(false); sync(); btn.disabled = false; btn.style.opacity = "1"; }, 800);
+            setTimeout(() => UI_modal(false), 500);
         }
 
+        // NAV & BOOT
         function bootApp(type) {
             const mode = document.getElementById('iframe-mode').checked;
             const stage = document.getElementById('os-stage');
-
             if(type === 'browser') {
                 const url = "https://storage.googleapis.com/fernisbest/index.html";
-                if(mode) {
-                    nav('none');
-                    stage.src = url;
-                    stage.style.display = 'block';
-                } else { window.open(url, '_blank'); }
+                if(mode) { nav('none'); stage.src = url; stage.style.display = 'block'; }
+                else { window.open(url, '_blank'); }
             } else if(type === 'mc') {
                 const ver = document.getElementById('mc-ver').value;
                 db.transaction("blobs").objectStore("blobs").get(ver).onsuccess = e => {
                     if(e.target.result) {
                         const url = URL.createObjectURL(e.target.result);
-                        if(mode) {
-                            nav('none');
-                            stage.src = url;
-                            stage.style.display = 'block';
-                        } else { window.open(url, '_blank'); }
-                    } else { alert("Binary not found. Run Injector."); }
+                        if(mode) { nav('none'); stage.src = url; stage.style.display = 'block'; }
+                        else { window.open(url, '_blank'); }
+                    }
                 };
             }
         }
 
         function nav(t) {
             ['v-launcher', 'v-settings', 'v-findmore', 'os-stage'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.style.display = 'none';
+                const el = document.getElementById(id); if(el) el.style.display = 'none';
             });
             if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='launcher' || t==='findmore' ? 'flex' : 'block');
             document.querySelectorAll('.nav-link').forEach(l => {
