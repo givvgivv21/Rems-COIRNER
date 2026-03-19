@@ -10,46 +10,53 @@
             --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
             --mojang-green: #3c8527; --win-bg: #212121;
         }
-        .light-mode {
-            --bg: #e4e4e7; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.6);
-            --win-bg: #f4f4f5;
-        }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.4s; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); }
 
-        /* RAIN */
-        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: none; }
-        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; user-select: none; }
+        /* RAIN & BG (LOWEST LAYERS) */
+        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
+        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
         @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
+        .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
+        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.15; }
+        @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        /* CALC CLOAK */
-        #cloak { position: fixed; inset: 0; z-index: 10000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+        /* CALC CLOAK (TOP START) */
+        #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
         .calc { background: #1e1e1e; width: 360px; padding: 30px; border-radius: 20px; border: 4px solid #333; }
         .lcd { background: #99ad99; border: 4px solid #555; height: 80px; margin-bottom: 20px; padding: 15px; color: #111; font-size: 2rem; text-align: right; font-family: monospace; }
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 15px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
-        /* OS CORE */
-        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 5000; }
-        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 25px; display: flex; flex-direction: column; z-index: 5010; }
+        /* OS CORE (MID LAYER) */
+        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 25px; display: flex; flex-direction: column; z-index: 1100; }
         .nav-item { border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
         /* MOJANG WINDOW */
-        .mojang-window { width: 850px; height: 520px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; z-index: 5005; }
-        .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; position: relative; }
-        .mojang-play-bar { height: 90px; background: var(--glass); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 0 30px; border-top: 1px solid #444; gap: 15px; }
+        .mojang-window { width: 850px; height: 520px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8); position: relative; z-index: 1050; }
+        .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
+        .mojang-play-bar { height: 90px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 30px; border-top: 1px solid #444; gap: 15px; }
         .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 180px; height: 45px; color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
-        
-        /* ADMIN PANEL FIX */
-        #admin-panel { display:none; position:fixed; inset:0; z-index:90000; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
-        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 5px solid var(--orange-dark); cursor: pointer; transition: 0.1s; }
-        .commit-btn:active { transform: translateY(3px); border-bottom-width: 1px; }
 
-        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 100000; flex-direction: column; }
+        /* ADMIN PANEL (THE HIGHEST LAYER - FIXES CLICK BUG) */
+        #admin-panel { 
+            display:none; position:fixed; inset:0; 
+            z-index: 200000; /* Over everything including app-overlay */
+            background:rgba(0,0,0,0.95); 
+            align-items:center; justify-content:center;
+            pointer-events: auto;
+        }
+        .admin-box { width: 400px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
+        .commit-btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+
+        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
     </style>
 </head>
 <body onkeydown="handleGlobalKeys(event)">
 
     <div id="orange-rain"></div>
+    <div class="bg-orange-container"><div class="big-orange">🍊</div></div>
 
     <div id="cloak">
         <div class="calc">
@@ -67,42 +74,33 @@
     </div>
 
     <div id="admin-panel">
-        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-500 border-2" style="z-index: 90001;">
-            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
+        <div class="admin-box">
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">System Injector</h2>
             <div class="space-y-4">
-                <div class="text-[10px] text-gray-500 uppercase">Load 1.8.8 HTML</div>
-                <input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-700">
-                <div class="text-[10px] text-gray-500 uppercase">Load 1.12.2 HTML</div>
-                <input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-700">
-                <div class="py-4">
-                    <button id="commit-btn" onclick="saveToIndexedDB()" class="commit-btn">COMMIT TO CORE</button>
-                </div>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-500 uppercase">Close Interface</button>
+                <div><p class="text-[10px] text-zinc-500 mb-1">EAGLERCRAFT 1.8.8 HTML</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1">EAGLERCRAFT 1.12.2 HTML</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800"></div>
+                <button id="commit-btn" onclick="saveToIndexedDB()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-2">Close</button>
             </div>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Rem's Corner</h1>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Orange OS</h1>
             <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
             <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
             <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
             <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
             <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
-            
-            <div class="mt-auto p-4 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center">
-                <span>LIGHT THEME</span>
-                <input type="checkbox" onchange="toggleLight(this.checked)">
-            </div>
-            <div class="mt-4 nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
+            <div class="mt-auto nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
 
-        <div id="content-area">
+        <div id="content-area" class="flex-grow flex items-center justify-center">
             <div id="launcher-view" class="mojang-window hidden">
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-64 outline-none font-bold">
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-64 font-bold outline-none">
                         <option value="mc8">Eaglercraft 1.8.8 Build</option>
                         <option value="mc12">Eaglercraft 1.12.2 Build</option>
                     </select>
@@ -114,32 +112,33 @@
                 </div>
             </div>
 
-            <div id="settings-view" class="hidden p-10 bg-black/60 border border-orange-500 rounded-2xl w-full max-w-md">
+            <div id="settings-view" class="hidden p-10 bg-black/80 border border-orange-500 rounded-2xl w-full max-w-md">
                 <h2 class="text-2xl font-bold text-orange-500 mb-6">SETTINGS</h2>
-                <div class="flex justify-between items-center mb-6"><span>Orange Rain</span><input type="checkbox" onchange="toggleRain(this.checked)"></div>
+                <div class="flex justify-between items-center mb-4"><span>Orange Rain</span><input type="checkbox" onchange="toggleRain(this.checked)"></div>
                 <div class="flex justify-between items-center"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked></div>
             </div>
         </div>
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs text-white">EXIT SESSION</button></div>
+        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT X</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
         let db;
         const request = indexedDB.open("OrangeOS_Storage", 2);
-        request.onupgradeneeded = (e) => { 
-            db = e.target.result; 
-            if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); 
-        };
+        request.onupgradeneeded = (e) => { db = e.target.result; if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); };
         request.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
         async function saveToIndexedDB() {
             const btn = document.getElementById('commit-btn');
+            const f8 = document.getElementById('file8').files[0];
+            const f12 = document.getElementById('file12').files[0];
+            if(!f8 && !f12) return alert("Please select a file.");
+            
             btn.innerText = "INJECTING...";
-            const files = { mc8: document.getElementById('file8').files[0], mc12: document.getElementById('file12').files[0] };
+            const files = { mc8: f8, mc12: f12 };
             for (const [key, file] of Object.entries(files)) {
                 if(!file) continue;
                 const text = await file.text();
@@ -147,9 +146,9 @@
                 tx.objectStore("core").put(text, key);
                 await new Promise(r => tx.oncomplete = r);
             }
-            btn.innerText = "SUCCESS!";
-            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
+            btn.innerText = "CORE UPDATED!";
             updateStatusDots();
+            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
         }
 
         function playSelected() {
@@ -157,7 +156,7 @@
             const tx = db.transaction(["core"], "readonly");
             const req = tx.objectStore("core").get(key);
             req.onsuccess = () => {
-                if(!req.result) return alert("Version missing! Open Admin (2nd + DEL)");
+                if(!req.result) return alert("File not found in core! Use Admin Panel.");
                 const url = URL.createObjectURL(new Blob([req.result], {type: 'text/html'}));
                 if(document.getElementById('iframe-toggle').checked) {
                     document.getElementById('app-frame').src = url;
@@ -189,7 +188,6 @@
         function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
         function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
         function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
-        function toggleLight(on) { document.body.classList.toggle('light-mode', on); }
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
         function toggleRain(on) {
