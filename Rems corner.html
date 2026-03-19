@@ -10,19 +10,19 @@
             --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
             --win-bg: #212121;
         }
-        /* LIGHT MODE OVERRIDES */
-        .light {
-            --bg: #e4e4e7; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.6);
-            --win-bg: #f4f4f5;
+        /* LIGHT MODE */
+        .light-theme {
+            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.8);
+            --win-bg: #e4e4e7;
         }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: background 0.3s, color 0.3s; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.3s; }
 
         /* RAIN & BG */
         #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
         .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
         @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
         .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
-        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.15; }
+        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.1; }
         @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
         /* CLOAK */
@@ -34,18 +34,18 @@
 
         /* OS CORE */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
         .nav-item { border: 2px solid var(--orange-mid); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
-        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; position: relative; z-index: 1050; box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 2px solid #000; display: flex; flex-direction: column; z-index: 1050; }
         .mojang-body { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
-        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 1px solid #444; gap: 10px; color: white; }
-        .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
+        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 2px solid #444; gap: 10px; color: white; }
+        .play-btn { background: #3c8527; border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
 
-        /* ADMIN FIX */
+        /* ADMIN (TOP) */
         #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
-        .admin-box { width: 380px; padding: 25px; background: #111; border: 2px solid var(--orange-mid); color: white; }
-        .commit-btn { background: var(--orange-mid); color: white; padding: 12px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
+        .admin-box { width: 400px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 10px; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; border-radius: 5px; }
 
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
     </style>
@@ -72,12 +72,12 @@
 
     <div id="admin-panel">
         <div class="admin-box">
-            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">System Injector</h2>
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
             <div class="space-y-4">
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">1.8.8 Build</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">1.12.2 Build</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <button id="commit-btn" onclick="saveToIndexedDB()" class="commit-btn mt-4">COMMIT TO CORE</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-2">Close</button>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8 File</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2 File</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <button id="commit-btn" onclick="startInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-2">Exit Interface</button>
             </div>
         </div>
     </div>
@@ -106,7 +106,7 @@
                         <option value="mc8">Eaglercraft 1.8.8</option>
                         <option value="mc12">Eaglercraft 1.12.2</option>
                     </select>
-                    <button onclick="playSelected()" class="play-btn">PLAY</button>
+                    <button onclick="playSelected()" class="play-btn ml-2">PLAY</button>
                     <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold">
                         <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8</div>
                         <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12</div>
@@ -123,47 +123,50 @@
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs text-white">EXIT SESSION</button></div>
+        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs text-white">EXIT SESSION</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
         let db;
-        const request = indexedDB.open("OrangeOS_Storage", 2);
-        request.onupgradeneeded = (e) => { db = e.target.result; if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); };
-        request.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
+        const req = indexedDB.open("OrangeOS_Storage", 3);
+        req.onupgradeneeded = (e) => { db = e.target.result; if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); };
+        req.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-        async function saveToIndexedDB() {
+        // THE "NO-HANG" INJECTION
+        async function startInjection() {
             const btn = document.getElementById('commit-btn');
             const f8 = document.getElementById('file8').files[0];
             const f12 = document.getElementById('file12').files[0];
-            if(!f8 && !f12) return alert("Select a file first!");
-            
-            btn.innerText = "READING...";
-            const data = {};
-            if(f8) data.mc8 = await f8.text();
-            if(f12) data.mc12 = await f12.text();
+
+            if(!f8 && !f12) return alert("Please select an HTML file first.");
+
+            btn.innerText = "READING FILES...";
+            const payload = {};
+            if(f8) payload.mc8 = await f8.text();
+            if(f12) payload.mc12 = await f12.text();
 
             btn.innerText = "INJECTING...";
             const tx = db.transaction(["core"], "readwrite");
             const store = tx.objectStore("core");
-            
-            for (const key in data) { store.put(data[key], key); }
-            
+
+            Object.keys(payload).forEach(key => store.put(payload[key], key));
+
             tx.oncomplete = () => {
-                btn.innerText = "CORE UPDATED!";
+                btn.innerText = "SUCCESS! CORE UPDATED";
                 updateStatusDots();
                 setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
             };
-            tx.onerror = () => { btn.innerText = "ERROR!"; console.error(tx.error); };
+            tx.onerror = () => { btn.innerText = "DATABASE ERROR!"; };
         }
 
         function playSelected() {
             const key = document.getElementById('ver-select').value;
             const tx = db.transaction(["core"], "readonly");
             tx.objectStore("core").get(key).onsuccess = (e) => {
-                if(!e.target.result) return alert("File missing! Use Admin.");
-                const url = URL.createObjectURL(new Blob([e.target.result], {type: 'text/html'}));
+                if(!e.target.result) return alert("Build missing! Open Admin (2nd + DEL)");
+                const blob = new Blob([e.target.result], {type: 'text/html'});
+                const url = URL.createObjectURL(blob);
                 if(document.getElementById('iframe-toggle').checked) {
                     document.getElementById('app-frame').src = url;
                     document.getElementById('app-overlay').style.display = 'flex';
@@ -194,9 +197,9 @@
         function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
         function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
         function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
+        function toggleLight(on) { document.body.classList.toggle('light-theme', on); }
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
-        function toggleLight(on) { document.body.classList.toggle('light', on); }
         function toggleRain(on) {
             document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
             if(on && document.getElementById('orange-rain').innerHTML === "") {
