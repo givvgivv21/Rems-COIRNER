@@ -2,65 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lime OS | V78.0 Curve</title>
+    <title>Lime OS | V79.0 Citrus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { 
-            --p: #bef264; 
-            --p-dark: #65a30d; 
-            --bg: #0a0a0a; 
-            --glass: rgba(255, 255, 255, 0.03);
-        }
+        :root { --p: #bef264; --p-dark: #65a30d; --bg: #080808; }
         
-        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', system-ui, sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
 
-        /* --- THE CALCULATOR (UNCHANGED) --- */
-        #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
-        .ti-chassis { 
-            background: #222; width: 360px; height: 600px; border-radius: 40px 40px 100px 100px; 
-            padding: 25px; border: 6px solid #111; display: flex; flex-direction: column;
-        }
-        .ti-lcd { background: #94a392; height: 100px; border: 4px solid #000; border-radius: 8px; padding: 10px; color: #1a241a; }
-        .k { height: 35px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; cursor: pointer; }
+        /* --- THE CITRUS STARTUP --- */
+        #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .lemon-logo { font-size: 120px; filter: drop-shadow(0 0 30px rgba(254, 240, 138, 0.4)); animation: float 3s ease-in-out infinite; margin-bottom: 20px; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
 
-        /* --- THE NEW CURVED GUI --- */
-        #lime-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; padding: 15px; gap: 15px; }
+        .ti-chassis { 
+            background: #222; width: 340px; height: 520px; border-radius: 40px 40px 80px 80px; 
+            padding: 25px; border: 5px solid #111; display: flex; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .ti-lcd { background: #94a392; height: 80px; border: 4px solid #000; border-radius: 12px; padding: 10px; color: #1a241a; font-family: monospace; font-weight: bold; }
+
+        /* --- BUTTON CLICK ANIMATIONS --- */
+        .btn-pill, .nav-link, .k, .util-card { transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+        .btn-pill:active, .nav-link:active, .k:active, .util-card:active { transform: scale(0.92); }
+
+        /* --- THE CURVED GUI --- */
+        #lime-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; padding: 20px; gap: 20px; }
         
         .sidebar { 
-            background: var(--glass); backdrop-filter: blur(20px); 
+            background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); 
             border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 30px; padding: 30px 20px; 
-            display: flex; flex-direction: column; 
+            border-radius: 35px; padding: 30px 15px; display: flex; flex-direction: column; 
         }
         
-        .nav-link { 
-            padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; 
-            cursor: pointer; font-size: 13px; font-weight: 600; color: #888; 
-            transition: 0.3s; display: flex; align-items: center; gap: 12px;
-        }
-        .nav-link:hover { background: rgba(190, 242, 100, 0.1); color: var(--p); }
+        .nav-link { padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #777; display: flex; align-items: center; gap: 12px; }
         .nav-active { background: var(--p); color: #000 !important; box-shadow: 0 10px 20px rgba(190, 242, 100, 0.2); }
 
-        .main-stage { 
-            background: var(--glass); border-radius: 40px; 
-            border: 1px solid rgba(255,255,255,0.05); overflow: hidden; position: relative;
-        }
-
-        .btn-pill { 
-            background: var(--p); color: #000; padding: 12px 28px; border-radius: 50px; 
-            font-weight: 700; border: none; transition: 0.2s; cursor: pointer;
-        }
-        .btn-pill:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; }
-        #os-stage { width: 100%; height: 100%; border: none; display: none; border-radius: 30px; }
+        .main-stage { background: rgba(255,255,255,0.02); border-radius: 45px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; position: relative; }
+        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; }
         
-        /* STORAGE BAR */
-        .meter-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        #vfs-fill { height: 100%; width: 0%; background: var(--p); border-radius: 10px; transition: 0.5s ease; }
+        .btn-pill { background: var(--p); color: #000; padding: 14px 32px; border-radius: 50px; font-weight: 800; border: none; }
+        
+        /* TEXTURE PACK CARDS */
+        .util-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .util-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
 
-        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0.4; }
+        #os-stage { width: 100%; height: 100%; border: none; display: none; background: #000; border-radius: 35px; }
+        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0.5; }
+        
+        /* CALC BUTTONS */
+        .k { height: 32px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; }
     </style>
 </head>
 <body>
@@ -68,9 +59,13 @@
     <canvas id="fruit-canvas"></canvas>
 
     <div id="boot-gate">
+        <div class="lemon-logo">🍋</div>
         <div class="ti-chassis">
-            <div class="ti-lcd"><div id="hal-out" class="text-3xl text-right mt-4 font-bold">0</div></div>
-            <div class="grid grid-cols-5 gap-2 mt-8">
+            <div class="ti-lcd">
+                <div class="text-[10px] opacity-50">LIME_KERNEL_V79</div>
+                <div id="hal-out" class="text-3xl text-right mt-2">0</div>
+            </div>
+            <div class="grid grid-cols-5 gap-2 mt-6">
                 <div class="k bg-blue-600" onclick="hAct('2nd')">2nd</div>
                 <div class="k" onclick="hAct('del')">del</div><div class="k">mode</div><div class="k">stat</div><div class="k">prgm</div>
                 <div class="k" onclick="hNum('7')">7</div><div class="k" onclick="hNum('8')">8</div><div class="k" onclick="hNum('9')">9</div><div class="k">/</div><div class="k">sin</div>
@@ -79,91 +74,91 @@
                 <div class="k" onclick="hNum('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k bg-lime-400 text-black col-span-2" onclick="hAct('ent')">ENTER</div>
             </div>
         </div>
+        <p class="text-zinc-600 font-bold text-[10px] mt-8 tracking-[10px] uppercase">Verify Hardware</p>
     </div>
 
     <div id="lime-desktop">
         <aside class="sidebar">
             <div class="px-4 mb-10">
-                <h1 class="text-2xl font-black text-lime-400 tracking-tighter">LIME OS</h1>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase">v78.0 Stability Kernel</p>
+                <h1 class="text-2xl font-black text-lime-400">LIME OS</h1>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase">Citrus Edition</p>
             </div>
             
             <nav class="flex-grow">
                 <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎮</span> Play Games</div>
-                <div class="nav-link" onclick="nav('youtube')"><span>📺</span> Watch Video</div>
+                <div class="nav-link" onclick="nav('packs')"><span>🎨</span> Textures</div>
+                <div class="nav-link" onclick="nav('youtube')"><span>📺</span> YouTube Cinema</div>
                 <div class="nav-link" onclick="bootApp('browser')"><span>🌐</span> Web Browser</div>
-                <div class="nav-link" onclick="nav('findmore')"><span>✨</span> More Apps</div>
                 <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> Settings</div>
             </nav>
 
-            <button onclick="location.reload()" class="w-full py-3 rounded-full bg-red-500/10 text-red-500 font-bold text-xs hover:bg-red-500 hover:text-white transition-all">Close OS</button>
+            <button onclick="location.reload()" class="w-full py-4 rounded-full bg-white/5 text-zinc-400 font-bold text-xs hover:bg-red-500 hover:text-white transition-all active:scale-90">Shutdown</button>
         </aside>
 
         <main class="main-stage">
             <iframe id="os-stage"></iframe>
 
             <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
-                <div class="w-full max-w-lg p-10 bg-white/5 rounded-[40px] border border-white/10 text-center">
-                    <h2 class="text-3xl font-bold mb-2">Minecraft Launcher</h2>
-                    <p class="text-zinc-400 mb-8 text-sm">Select your version and boot from local storage.</p>
-                    <div class="flex flex-col gap-4">
-                        <select id="mc-ver" class="bg-zinc-800 p-4 rounded-2xl font-bold text-lime-400 outline-none border border-white/5">
-                            <option value="18">Eaglercraft 1.8.8</option>
-                            <option value="112">Eaglercraft 1.12.2</option>
-                        </select>
-                        <button onclick="bootApp('mc')" class="btn-pill text-lg">Launch Game</button>
-                    </div>
+                <div class="w-full max-w-lg p-10 bg-white/5 rounded-[45px] border border-white/10 text-center">
+                    <h2 class="text-3xl font-bold mb-8">Minecraft Bootloader</h2>
+                    <select id="mc-ver" class="w-full bg-zinc-800 p-4 rounded-2xl font-bold text-lime-400 border border-white/5 mb-4">
+                        <option value="18">Eaglercraft 1.8.8</option>
+                        <option value="112">Eaglercraft 1.12.2</option>
+                    </select>
+                    <button onclick="bootApp('mc')" class="w-full btn-pill text-lg">Launch Binary</button>
                 </div>
-                <p id="k-status" class="mt-6 text-xs text-zinc-500 font-medium">Ready for input...</p>
+                <p id="k-status" class="mt-6 text-xs text-zinc-500 font-medium">No blobs detected...</p>
             </div>
 
-            <div id="v-findmore" class="view-pane flex flex-col items-center justify-center text-center">
-                <h2 class="text-4xl font-bold mb-6">Stay updated with the latest</h2>
-                <p class="text-lime-400 font-medium mb-10 text-xl italic underline underline-offset-8">Support the community</p>
-                <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')" class="btn-pill px-12">Visit Website</button>
+            <div id="v-packs" class="view-pane">
+                <h2 class="text-3xl font-bold mb-2">Useful Packs</h2>
+                <p class="text-zinc-500 mb-8">Click to download external resource packs for Eaglercraft.</p>
+                <div class="util-grid">
+                    <div class="util-card" onclick="window.open('https://github.com/Eaglercraft/resource-packs', '_blank')">
+                        <div class="text-3xl mb-2">💎</div>
+                        <div class="font-bold">PvP Boost Pack</div>
+                    </div>
+                    <div class="util-card" onclick="window.open('https://eaglercraft.com/resourcepacks', '_blank')">
+                        <div class="text-3xl mb-2">🌿</div>
+                        <div class="font-bold">Faithful 32x</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="v-youtube" class="view-pane flex flex-col items-center">
+                <h2 class="text-3xl font-bold mb-6">YouTube Cinema</h2>
+                <div class="w-full max-w-3xl aspect-video bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                    <iframe id="yt-player" class="w-full h-full" src="https://www.youtube.com/embed/jfKfPfyJRdk" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="mt-6 flex gap-4 w-full max-w-3xl">
+                    <input type="text" id="yt-url" placeholder="Paste YouTube Link Here..." class="flex-grow bg-white/5 p-4 rounded-2xl border border-white/10 outline-none focus:border-lime-400 transition-all">
+                    <button onclick="loadYT()" class="btn-pill">Load Movie</button>
+                </div>
             </div>
 
             <div id="v-settings" class="view-pane">
-                <h2 class="text-2xl font-bold mb-10">System Settings</h2>
+                <h2 class="text-2xl font-bold mb-8">System Configuration</h2>
                 <div class="max-w-md space-y-4">
-                    <div class="bg-white/5 p-6 rounded-3xl flex justify-between items-center">
-                        <span class="font-bold">Fullscreen Iframe</span>
-                        <input type="checkbox" id="iframe-mode" checked class="w-6 h-6 accent-lime-400">
-                    </div>
-                    <button onclick="UI_modal(true)" class="w-full bg-lime-400/10 text-lime-400 p-5 rounded-3xl font-bold border border-lime-400/20">Open File Injector</button>
-                    <button onclick="toggleFruits()" class="w-full bg-white/5 text-white p-5 rounded-3xl font-bold">Toggle Fruit Rain</button>
+                    <button onclick="UI_modal(true)" class="w-full bg-lime-400/10 text-lime-400 p-6 rounded-3xl font-bold border border-lime-400/20 text-left">📂 Open Binary Injector</button>
+                    <button onclick="toggleFruits()" class="w-full bg-white/5 text-white p-6 rounded-3xl font-bold text-left">🥝 Toggle Citrus Rain</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/80 backdrop-blur-xl hidden items-center justify-center">
-        <div class="bg-zinc-900 p-10 rounded-[50px] border border-lime-400/30 w-[420px] shadow-2xl">
-            <h2 class="text-xl font-bold text-lime-400 mb-2">File Injector</h2>
-            <p class="text-zinc-500 text-xs mb-8">Files are compressed automatically on upload.</p>
-            
+    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/90 backdrop-blur-xl hidden items-center justify-center">
+        <div class="bg-zinc-900 p-10 rounded-[50px] border border-lime-400/30 w-[400px]">
+            <h2 class="text-xl font-bold text-lime-400 mb-8 uppercase">VFS Injector</h2>
             <div class="space-y-4">
-                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
-                    <p class="text-[10px] text-zinc-500 mb-1 ml-1">1.8.8 BLOB</p>
-                    <input type="file" id="f18" class="w-full text-xs">
-                </div>
-                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
-                    <p class="text-[10px] text-zinc-500 mb-1 ml-1">1.12.2 BLOB</p>
-                    <input type="file" id="f112" class="w-full text-xs">
-                </div>
+                <input type="file" id="f18" class="w-full text-xs text-zinc-500">
+                <input type="file" id="f112" class="w-full text-xs text-zinc-500">
             </div>
-
-            <div class="mt-8">
-                <div class="flex justify-between text-[10px] font-bold text-lime-400 mb-2">
-                    <span id="inj-status">READY</span>
-                    <span>STORAGE SAVER ACTIVE</span>
-                </div>
-                <div class="meter-bg"><div id="vfs-fill"></div></div>
+            <div class="mt-8 bg-white/5 h-2 rounded-full overflow-hidden">
+                <div id="vfs-fill" class="h-full bg-lime-400 w-0 transition-all duration-300"></div>
             </div>
-            
             <div class="flex gap-3 mt-8">
                 <button onclick="runInjection()" class="flex-grow btn-pill">Start Write</button>
-                <button onclick="UI_modal(false)" class="bg-zinc-800 px-8 rounded-full font-bold text-xs">Cancel</button>
+                <button onclick="UI_modal(false)" class="bg-zinc-800 px-8 rounded-full font-bold text-xs">Close</button>
             </div>
         </div>
     </div>
@@ -171,26 +166,44 @@
     <script>
         let db, expr = "", is2nd = false;
 
-        // SHORTCUT FIX: Global Listener
-        window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-                e.preventDefault();
-                UI_modal(true);
-            }
-        });
+        // LOAD YOUTUBE
+        function loadYT() {
+            const val = document.getElementById('yt-url').value;
+            let id = "";
+            if(val.includes('v=')) id = val.split('v=')[1].split('&')[0];
+            else if(val.includes('youtu.be/')) id = val.split('youtu.be/')[1];
+            if(id) document.getElementById('yt-player').src = "https://www.youtube.com/embed/" + id;
+        }
 
-        // DB INIT
-        const request = indexedDB.open("LIME_V78", 1);
+        // DB & INJECTION
+        const request = indexedDB.open("LIME_V79", 1);
         request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
         request.onsuccess = e => { db = e.target.result; sync(); };
 
         function sync() {
             db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
-                if(e.target.result > 0) document.getElementById('k-status').innerText = "System Synced. Found " + e.target.result + " games in storage.";
+                if(e.target.result > 0) document.getElementById('k-status').innerText = e.target.result + " Blobs Cached.";
             };
         }
 
-        // CALC
+        async function runInjection() {
+            const files = [{f:document.getElementById('f18').files[0], k:"18"}, {f:document.getElementById('f112').files[0], k:"112"}].filter(x=>x.f);
+            const fill = document.getElementById('vfs-fill');
+            for(let i=0; i<files.length; i++) {
+                await new Promise(res => {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const tx = db.transaction("blobs", "readwrite");
+                        tx.objectStore("blobs").put(new Blob([new Uint8Array(e.target.result)]), files[i].k);
+                        tx.oncomplete = () => { fill.style.width = ((i+1)/files.length * 100) + "%"; setTimeout(res, 200); };
+                    };
+                    reader.readAsArrayBuffer(files[i].f);
+                });
+            }
+            if(files.length > 0) { setTimeout(() => UI_modal(false), 500); sync(); }
+        }
+
+        // CALC GATING
         function hNum(n) { expr += n; document.getElementById('hal-out').innerText = expr; }
         function hAct(a) {
             if(a==='2nd') { is2nd = !is2nd; return; }
@@ -199,63 +212,33 @@
             if(a==='del') { expr = ""; document.getElementById('hal-out').innerText = "0"; }
         }
 
-        // INJECTION WITH COMPRESSION
-        async function runInjection() {
-            const files = [{f:document.getElementById('f18').files[0], k:"18"}, {f:document.getElementById('f112').files[0], k:"112"}].filter(x=>x.f);
-            const fill = document.getElementById('vfs-fill');
-            const status = document.getElementById('inj-status');
-            
-            for(let i=0; i<files.length; i++) {
-                status.innerText = "COMPRESSING...";
-                await new Promise(res => {
-                    const reader = new FileReader();
-                    reader.onload = async (e) => {
-                        const raw = new Uint8Array(e.target.result);
-                        const tx = db.transaction("blobs", "readwrite");
-                        tx.objectStore("blobs").put(new Blob([raw]), files[i].k);
-                        tx.oncomplete = () => {
-                            fill.style.width = ((i+1)/files.length * 100) + "%";
-                            setTimeout(res, 300);
-                        };
-                    };
-                    reader.readAsArrayBuffer(files[i].f);
-                });
-            }
-            if(files.length > 0) { status.innerText = "DONE"; setTimeout(() => UI_modal(false), 500); sync(); }
-        }
-
         // NAVIGATION
         function bootApp(type) {
-            const mode = document.getElementById('iframe-mode').checked;
             const stage = document.getElementById('os-stage');
             if(type === 'browser') {
-                const url = "https://storage.googleapis.com/fernisbest/index.html";
-                if(mode) { nav('none'); stage.src = url; stage.style.display = 'block'; }
-                else window.open(url, '_blank');
+                nav('none'); stage.src = "https://storage.googleapis.com/fernisbest/index.html"; stage.style.display = 'block';
             } else if(type === 'mc') {
                 const ver = document.getElementById('mc-ver').value;
                 db.transaction("blobs").objectStore("blobs").get(ver).onsuccess = e => {
                     if(e.target.result) {
-                        const url = URL.createObjectURL(e.target.result);
-                        if(mode) { nav('none'); stage.src = url; stage.style.display = 'block'; }
-                        else window.open(url, '_blank');
-                    }
+                        nav('none'); stage.src = URL.createObjectURL(e.target.result); stage.style.display = 'block';
+                    } else { alert("Binary not found. Run Injector."); }
                 };
             }
         }
 
         function nav(t) {
-            ['v-launcher','v-settings','v-findmore','os-stage'].forEach(id => {
+            ['v-launcher','v-settings','v-findmore','v-packs','v-youtube','os-stage'].forEach(id => {
                 const el = document.getElementById(id); if(el) el.style.display = 'none';
             });
-            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block');
+            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='settings'?'block':'flex');
             document.querySelectorAll('.nav-link').forEach(l => {
                 l.classList.remove('nav-active');
-                if(l.innerText.toLowerCase().includes(t)) l.classList.add('nav-active');
+                if(l.innerText.toLowerCase().includes(t.replace('v-',''))) l.classList.add('nav-active');
             });
         }
 
-        // FRUIT ENGINE
+        // FRUIT RAIN (APPLES + LIMES)
         const canvas = document.getElementById('fruit-canvas');
         const ctx = canvas.getContext('2d');
         let fruits = [], rain = false;
@@ -265,7 +248,7 @@
         }
         function fLoop() {
             if(!rain) return; ctx.clearRect(0,0,canvas.width,canvas.height);
-            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 5, c: '🍏'});
+            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 5, c: Math.random() > 0.5 ? '🍏' : '🍋'});
             fruits.forEach((f,i) => { f.y += f.v; ctx.font = "30px Arial"; ctx.fillText(f.c, f.x, f.y); if(f.y > canvas.height) fruits.splice(i,1); });
             requestAnimationFrame(fLoop);
         }
