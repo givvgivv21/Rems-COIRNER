@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Pumpkin OS | V82.5</title>
+    <title>Pumpkin OS | V83.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --p: #f97316; --bg: #0c0a09; --card: rgba(255,255,255,0.03); --text: #fff; }
@@ -12,11 +12,10 @@
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: 0.3s; }
 
         /* BOUNCY PUMPKIN */
-        .bouncy-pumpkin { font-size: 120px; animation: bounce 2s ease-in-out infinite; filter: drop-shadow(0 0 25px rgba(249,115,22,0.5)); margin-bottom: -10px; z-index: 10001; transition: 0.3s; }
-        .bouncy-pumpkin:active { transform: scale(0.9); }
+        .bouncy-pumpkin { font-size: 120px; animation: bounce 2s ease-in-out infinite; filter: drop-shadow(0 0 25px rgba(249,115,22,0.5)); margin-bottom: -10px; z-index: 10001; }
         @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-25px) scale(1.08); } }
 
-        /* SMOOTH CLICK TACTILE BUTTONS */
+        /* TACTILE SMOOTH CLICK */
         .ti-btn { 
             height: 35px; background: #333; border-radius: 10px; display: flex; 
             align-items: center; justify-content: center; font-size: 10px; font-weight: 900; 
@@ -36,7 +35,6 @@
         .view-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; flex-direction: column; }
         
         .nav-link { padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #777; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
-        .nav-link:hover { color: var(--p); background: rgba(249,115,22,0.05); }
         .nav-active { background: var(--p); color: #000 !important; }
 
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; }
@@ -76,18 +74,18 @@
                 <div class="nav-link" onclick="nav('brotato')"><span>🥔</span> Brotato</div>
                 <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> Settings</div>
             </nav>
-            <button onclick="panic()" class="w-full py-4 bg-red-600/10 text-red-500 rounded-full font-black text-[10px] border border-red-500/20 hover:bg-red-600 hover:text-white transition-all">TERMINATE SESSION</button>
+            <button onclick="panic()" class="w-full py-4 bg-red-600/10 text-red-500 rounded-full font-black text-[10px] border border-red-500/20 hover:bg-red-600 hover:text-white transition-all">PANIC</button>
         </aside>
 
         <main class="main-stage">
             <div id="launcher-view" class="view-pane items-center justify-center" style="display:flex;">
                 <div class="w-full max-w-lg p-10 bg-white/5 rounded-[50px] border border-white/10 text-center">
-                    <h2 class="text-2xl font-black mb-8 text-orange-500 italic uppercase">Game Launcher</h2>
-                    <select id="v-sel" class="w-full bg-zinc-800 p-4 rounded-3xl font-bold text-orange-500 mb-6 border border-white/5 outline-none">
+                    <h2 class="text-2xl font-black mb-8 text-orange-500 italic uppercase">Direct Link Launcher</h2>
+                    <select id="v-sel" class="w-full bg-zinc-800 p-4 rounded-3xl font-bold text-orange-500 mb-6 outline-none border border-white/5">
                         <option value="mc12">Eaglercraft 1.12.2 (Takai)</option>
                         <option value="mc8">Eaglercraft 1.8.8 (Sandler)</option>
                     </select>
-                    <button onclick="playGame()" class="w-full py-5 bg-orange-500 text-black rounded-full font-black text-lg mb-8 shadow-2xl hover:brightness-110">BOOT INSTANCE</button>
+                    <button onclick="playGame()" class="w-full py-5 bg-orange-500 text-black rounded-full font-black text-lg mb-8 shadow-2xl">BOOT GAME</button>
                     <div class="grid grid-cols-2 gap-4">
                         <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/blob/main/vanilla%2B2%20(tuff%20client%20compatible)%20(1)%20(1).zip', '_blank')" class="bg-white/10 p-4 rounded-2xl text-[9px] font-bold uppercase hover:bg-orange-500 hover:text-black">📦 PvP Textures</button>
                         <button onclick="window.open('https://modrinth.com/resourcepack/low-fire-txf/version/1.12', '_blank')" class="bg-white/10 p-4 rounded-2xl text-[9px] font-bold uppercase hover:bg-orange-500 hover:text-black">🔥 Low Fire</button>
@@ -96,17 +94,17 @@
             </div>
 
             <div id="yt-view" class="view-pane items-center">
-                <h2 class="text-3xl font-black text-orange-500 mb-6 italic">CINEMA HUB</h2>
+                <h2 class="text-3xl font-black text-orange-500 mb-6 italic">CINEMA</h2>
                 <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk" class="w-full max-w-4xl aspect-video rounded-[30px] border border-white/10" allowfullscreen></iframe>
             </div>
 
             <div id="brotato-view" class="view-pane items-center justify-center">
-                <h2 class="text-3xl font-black text-orange-500 mb-4">POTATO WRAPPER</h2>
-                <button onclick="openApp('https://brotato.io/')" class="px-12 py-5 bg-orange-500 text-black rounded-full font-black uppercase text-xs">Launch Brotato</button>
+                <h2 class="text-3xl font-black text-orange-500 mb-4 uppercase">Brotato</h2>
+                <button onclick="openApp('https://brotato.io/')" class="px-12 py-5 bg-orange-500 text-black rounded-full font-black uppercase text-xs">Launch Container</button>
             </div>
 
             <div id="settings-view" class="view-pane">
-                <h2 class="text-2xl font-black mb-10 uppercase italic">System</h2>
+                <h2 class="text-2xl font-black mb-10 uppercase italic">Settings</h2>
                 <div class="max-w-md space-y-4">
                     <div class="bg-white/5 p-6 rounded-[30px] flex justify-between items-center border border-white/5">
                         <span class="font-bold">Iframe Mode</span>
@@ -129,7 +127,7 @@
     <script>
         let currentInput = "", is2nd = false;
 
-        // Smooth Calc Logic
+        // Calc
         function ins(v) { currentInput += v; updateCalc(); }
         function updateCalc() { document.getElementById('calc-display').innerText = currentInput || "0"; }
         function handleOp(op) {
@@ -140,6 +138,7 @@
             updateCalc();
         }
 
+        // Logic
         function panic() { document.getElementById('orange-core').style.display='none'; document.getElementById('cloak').style.display='flex'; closeApp(); }
         function nav(v) { document.querySelectorAll('.view-pane').forEach(p => p.style.display = 'none'); document.getElementById(v + '-view').style.display = 'flex'; }
         
@@ -151,14 +150,14 @@
         }
 
         function playGame() {
-            const ver = document.getElementById('v-sel').value;
-            if(ver === 'mc12') openApp('https://takaiwebsite.neocities.org/minecraft');
-            if(ver === 'mc8') openApp('https://sandlersite.neocities.org/EaglercraftX_1.8_u29_Offline_Signed');
+            const v = document.getElementById('v-sel').value;
+            if(v === 'mc12') openApp('https://takaiwebsite.neocities.org/minecraft');
+            if(v === 'mc8') openApp('https://sandlersite.neocities.org/EaglercraftX_1.8_u29_Offline_Signed');
         }
 
         function closeApp() { document.getElementById('app-overlay').style.display='none'; document.getElementById('app-frame').src=''; }
 
-        // Rain Effect
+        // Particles
         const canv = document.getElementById('rain-canvas'), ct = canv.getContext('2d');
         let pk = [], active = false;
         function toggleRain(on) { active = on; canv.style.display = on ? 'block' : 'none'; if(on) { canv.width = window.innerWidth; canv.height = window.innerHeight; pk = Array.from({length:30},()=>({x:Math.random()*canv.width,y:Math.random()*-canv.height,s:2+Math.random()*4})); loop(); } }
