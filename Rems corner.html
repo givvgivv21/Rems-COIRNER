@@ -16,18 +16,10 @@
         }
         body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.4s; }
 
-        /* --- THE RAIN SYSTEM --- */
+        /* RAIN */
         #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: none; }
         .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; user-select: none; }
-        @keyframes fall { 
-            from { transform: translateY(-10vh) rotate(0deg); } 
-            to { transform: translateY(110vh) rotate(360deg); } 
-        }
-
-        /* FX */
-        .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 0; pointer-events: none; }
-        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.2; }
-        @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
 
         /* CALC CLOAK */
         #cloak { position: fixed; inset: 0; z-index: 10000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
@@ -38,35 +30,33 @@
 
         /* OS CORE */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 5000; }
-        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 25px; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 25px; display: flex; flex-direction: column; z-index: 5010; }
         .nav-item { border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
-        /* MOJANG UI */
-        .mojang-window { width: 850px; height: 520px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; z-index: 20; }
-        .mojang-nav { height: 45px; background: rgba(0,0,0,0.2); display: flex; align-items: center; padding: 0 20px; gap: 25px; border-bottom: 1px solid #333; }
+        /* MOJANG WINDOW */
+        .mojang-window { width: 850px; height: 520px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; z-index: 5005; }
         .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; position: relative; }
         .mojang-play-bar { height: 90px; background: var(--glass); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 0 30px; border-top: 1px solid #444; gap: 15px; }
         .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 180px; height: 45px; color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
         
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
-        .dot-red { background: #ff4444; border: 1px solid #000; }
-        .dot-green { background: #44ff44; box-shadow: 0 0 8px #44ff44; border: 1px solid #000; }
+        /* ADMIN PANEL FIX */
+        #admin-panel { display:none; position:fixed; inset:0; z-index:90000; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 5px solid var(--orange-dark); cursor: pointer; transition: 0.1s; }
+        .commit-btn:active { transform: translateY(3px); border-bottom-width: 1px; }
 
-        #admin-panel { display:none; position:fixed; inset:0; z-index:30000; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
-        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 40000; flex-direction: column; }
+        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 100000; flex-direction: column; }
     </style>
 </head>
 <body onkeydown="handleGlobalKeys(event)">
 
     <div id="orange-rain"></div>
-    <div class="bg-orange-container"><div class="big-orange">🍊</div></div>
 
     <div id="cloak">
         <div class="calc">
             <div id="lcd" class="lcd">0</div>
             <div class="grid">
-                <div class="btn" style="color:var(--orange-bright)" onclick="op('2nd')">2nd</div>
-                <div class="btn" style="color:#ff4d4d" onclick="op('DEL')">DEL</div>
+                <div class="btn" onclick="op('2nd')">2nd</div>
+                <div class="btn" onclick="op('DEL')">DEL</div>
                 <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
                 <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
                 <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
@@ -77,29 +67,28 @@
     </div>
 
     <div id="admin-panel">
-        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-500 border-2">
+        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-500 border-2" style="z-index: 90001;">
             <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
-            <div class="space-y-6">
-                <div>
-                    <div class="flex justify-between text-[10px] mb-1"><span>1.8.8</span><button onclick="clearGame('mc8')" class="text-red-500">WIPE</button></div>
-                    <input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-700">
+            <div class="space-y-4">
+                <div class="text-[10px] text-gray-500 uppercase">Load 1.8.8 HTML</div>
+                <input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-700">
+                <div class="text-[10px] text-gray-500 uppercase">Load 1.12.2 HTML</div>
+                <input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-700">
+                <div class="py-4">
+                    <button id="commit-btn" onclick="saveToIndexedDB()" class="commit-btn">COMMIT TO CORE</button>
                 </div>
-                <div>
-                    <div class="flex justify-between text-[10px] mb-1"><span>1.12.2</span><button onclick="clearGame('mc12')" class="text-red-500">WIPE</button></div>
-                    <input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-700">
-                </div>
-                <button onclick="saveToIndexedDB()" class="w-full bg-orange-600 py-3 font-black text-white border-b-4 border-orange-900">COMMIT TO CORE</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-500">CLOSE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-500 uppercase">Close Interface</button>
             </div>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-2xl font-black italic text-orange-500 mb-8 uppercase">Rem's Corner</h1>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Rem's Corner</h1>
             <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
-            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
+            <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
             <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
+            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
             <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
             
             <div class="mt-auto p-4 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center">
@@ -111,7 +100,6 @@
 
         <div id="content-area">
             <div id="launcher-view" class="mojang-window hidden">
-                <div class="mojang-nav"><div class="text-white border-b-2 border-orange-500 h-full flex items-center px-4 font-bold text-xs uppercase">Play</div></div>
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
                     <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-64 outline-none font-bold">
@@ -120,30 +108,26 @@
                     </select>
                     <button onclick="playSelected()" class="play-btn">PLAY</button>
                     <div class="flex flex-col gap-1 ml-4">
-                        <div class="flex items-center gap-2"><span id="dot8" class="status-dot dot-red"></span><span class="text-[9px]">1.8</span></div>
-                        <div class="flex items-center gap-2"><span id="dot12" class="status-dot dot-red"></span><span class="text-[9px]">1.12</span></div>
+                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-[9px]">1.8</span></div>
+                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-[9px]">1.12</span></div>
                     </div>
                 </div>
             </div>
 
-            <div id="settings-view" class="hidden p-10 bg-black/60 backdrop-blur-xl border border-orange-500 rounded-2xl w-full max-w-md">
+            <div id="settings-view" class="hidden p-10 bg-black/60 border border-orange-500 rounded-2xl w-full max-w-md">
                 <h2 class="text-2xl font-bold text-orange-500 mb-6">SETTINGS</h2>
-                <div class="flex justify-between items-center mb-6">
-                    <span class="font-bold">Orange Rain FX</span>
-                    <input type="checkbox" onchange="toggleRain(this.checked)" class="w-5 h-5">
-                </div>
+                <div class="flex justify-between items-center mb-6"><span>Orange Rain</span><input type="checkbox" onchange="toggleRain(this.checked)"></div>
                 <div class="flex justify-between items-center"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked></div>
             </div>
         </div>
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT SESSION</button></div>
+        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs text-white">EXIT SESSION</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
-        // --- CORE DATABASE ENGINE ---
         let db;
         const request = indexedDB.open("OrangeOS_Storage", 2);
         request.onupgradeneeded = (e) => { 
@@ -153,6 +137,8 @@
         request.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
         async function saveToIndexedDB() {
+            const btn = document.getElementById('commit-btn');
+            btn.innerText = "INJECTING...";
             const files = { mc8: document.getElementById('file8').files[0], mc12: document.getElementById('file12').files[0] };
             for (const [key, file] of Object.entries(files)) {
                 if(!file) continue;
@@ -161,7 +147,8 @@
                 tx.objectStore("core").put(text, key);
                 await new Promise(r => tx.oncomplete = r);
             }
-            alert("CORE REGISTRY UPDATED");
+            btn.innerText = "SUCCESS!";
+            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
             updateStatusDots();
         }
 
@@ -170,7 +157,7 @@
             const tx = db.transaction(["core"], "readonly");
             const req = tx.objectStore("core").get(key);
             req.onsuccess = () => {
-                if(!req.result) return alert("Version missing! Upload in Admin (2nd + DEL)");
+                if(!req.result) return alert("Version missing! Open Admin (2nd + DEL)");
                 const url = URL.createObjectURL(new Blob([req.result], {type: 'text/html'}));
                 if(document.getElementById('iframe-toggle').checked) {
                     document.getElementById('app-frame').src = url;
@@ -183,28 +170,10 @@
             if(!db) return;
             const tx = db.transaction(["core"], "readonly");
             const store = tx.objectStore("core");
-            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
-            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
+            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').style.background = e.target.result ? '#44ff44' : '#ff4444';
+            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').style.background = e.target.result ? '#44ff44' : '#ff4444';
         }
 
-        // --- RAIN LOGIC ---
-        function toggleRain(on) {
-            const container = document.getElementById('orange-rain');
-            container.style.display = on ? 'block' : 'none';
-            if(on && container.innerHTML === "") {
-                for(let i=0; i<35; i++) {
-                    let o = document.createElement('div');
-                    o.className = 'falling-orange';
-                    o.innerText = '🍊';
-                    o.style.left = Math.random() * 100 + 'vw';
-                    o.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    o.style.animationDelay = (Math.random() * 5) + 's';
-                    container.appendChild(o);
-                }
-            }
-        }
-
-        // --- UI & CALC ---
         let inputStr = "0", is2nd = false;
         function op(k) {
             if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
@@ -223,6 +192,16 @@
         function toggleLight(on) { document.body.classList.toggle('light-mode', on); }
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        function toggleRain(on) {
+            document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
+            if(on && document.getElementById('orange-rain').innerHTML === "") {
+                for(let i=0; i<30; i++) {
+                    let o = document.createElement('div'); o.className='falling-orange'; o.innerText='🍊';
+                    o.style.left=Math.random()*100+'vw'; o.style.animationDuration=(Math.random()*3+2)+'s';
+                    document.getElementById('orange-rain').appendChild(o);
+                }
+            }
+        }
     </script>
 </body>
 </html>
