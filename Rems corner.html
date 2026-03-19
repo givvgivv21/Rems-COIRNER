@@ -3,18 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORANGE OS | V42 REMONE-CORE</title>
+    <title>ORANGE OS | V44 BY REMONE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --orange-main: #ea580c;
-            --orange-glow: #ff6600;
-            --ti-plastic: #fb923c;
-            --lcd-bg: #cbd5e1;
-            --dark-bg: #020202;
-            --sidebar-width: 340px;
-        }
-
         /* ++++++++++++++++++++++++++++++++++++++++++++++
         +                                            +
         +         ORANGE OS MADE BY REMONE           +
@@ -22,314 +13,235 @@
         ++++++++++++++++++++++++++++++++++++++++++++++
         */
 
-        * { user-select: none; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; height: 100vh; margin: 0; }
+        :root { --p: #ea580c; --ti: #fb923c; --bg: #000; }
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* --- HYPER-MOTION FRUIT ENGINE --- */
-        #rain-zone { position: fixed; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
-        .fruit { 
-            position: absolute; font-size: 2.8rem; pointer-events: auto; cursor: crosshair;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .fruit:hover { transform: scale(1.5) rotate(15deg); filter: brightness(1.5); }
-        @keyframes fall {
-            0% { transform: translateY(-15vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(115vh) rotate(720deg); opacity: 0; }
-        }
+        /* FRUIT ANIMATION */
+        .fruit { position: fixed; font-size: 2.5rem; z-index: 500; cursor: crosshair; animation: fall linear forwards; }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
 
-        /* --- CIRCULAR TI-ARCHITECTURE --- */
+        /* CALCULATOR CLOAK - FIXED LAYER */
         #cloak { 
-            position: fixed; inset: 0; z-index: 10000; background: #000;
+            position: fixed; inset: 0; z-index: 9999; background: #000;
             display: flex; align-items: center; justify-content: center;
-            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s;
         }
         .ti-chassis {
-            background: var(--ti-plastic); width: 460px; height: 840px;
-            border-radius: 70px 70px 200px 200px; border: 12px solid #92400e;
-            padding: 45px; box-shadow: 0 0 120px rgba(0,0,0,1), inset 0 -30px 60px rgba(0,0,0,0.3);
-            position: relative;
+            background: var(--ti); width: 440px; height: 820px;
+            border-radius: 60px 60px 220px 220px; border: 12px solid #92400e;
+            padding: 40px; box-shadow: 0 0 150px rgba(0,0,0,1); position: relative;
         }
         .lcd { 
-            background: var(--lcd-bg); height: 200px; border-radius: 18px; border: 8px solid #0f172a;
-            padding: 25px; display: flex; flex-direction: column; justify-content: space-between;
-            font-family: 'Courier New', monospace; box-shadow: inset 0 8px 20px rgba(0,0,0,0.5);
+            background: #cbd5e1; height: 180px; border-radius: 15px; border: 6px solid #1e293b;
+            padding: 20px; display: flex; flex-direction: column; justify-content: flex-end;
+            text-align: right; font-family: monospace; color: #1e293b; font-size: 2rem; font-weight: 900;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
         }
-        #lcd-main { font-size: 2.4rem; color: #1e293b; font-weight: 900; text-align: right; }
-        #lcd-meta { font-size: 0.7rem; color: #475569; font-weight: bold; text-transform: uppercase; }
 
-        /* --- BUTTONS & GRID --- */
-        .btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 45px; }
+        /* BUTTONS */
+        .grid-btn { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
         .k { 
-            height: 48px; background: #334155; border-radius: 14px 6px; 
+            height: 46px; background: #334155; border-radius: 10px; 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 0.7rem; font-weight: 900; cursor: pointer; 
-            box-shadow: 0 5px 0 #000; transition: 0.05s;
+            font-size: 0.65rem; font-weight: 900; cursor: pointer; 
+            box-shadow: 0 4px 0 #000; color: #fff;
         }
-        .k:active { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
-        .k-blue { background: #2563eb; }
-        .k-num { background: #f8fafc; color: #0f172a; font-size: 1.4rem; border-radius: 10px; }
-        .k-ent { background: #000; color: white; grid-column: span 2; }
+        .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+        .k-2nd { background: #2563eb !important; }
+        .k-num { background: #f8fafc !important; color: #000 !important; font-size: 1.2rem; }
 
-        /* --- OS INTERFACE --- */
-        #os-root { 
-            display: none; height: 100vh; width: 100vw; 
-            grid-template-columns: var(--sidebar-width) 1fr;
-            animation: bootIn 0.5s ease-out forwards;
-        }
-        @keyframes bootIn { from { filter: blur(20px); opacity: 0; } to { filter: blur(0); opacity: 1; } }
+        /* OS CORE - HIDDEN BY DEFAULT */
+        #os-root { display: none; height: 100vh; width: 100vw; grid-template-columns: 320px 1fr; }
+        .sidebar { background: #080808; border-right: 4px solid var(--p); padding: 50px 25px; display: flex; flex-direction: column; gap: 15px; }
+        .nav-link { border: 2px solid var(--p); padding: 18px; border-radius: 20px; font-weight: 900; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; }
+        .nav-link:hover { background: var(--p); color: #000; box-shadow: 0 0 25px var(--p); }
 
-        .sidebar { 
-            background: #0a0a0c; border-right: 5px solid var(--orange-main); 
-            padding: 60px 35px; display: flex; flex-direction: column; gap: 20px;
-        }
-        .nav-link { 
-            border: 2px solid var(--orange-main); padding: 20px; border-radius: 24px; 
-            font-weight: 900; cursor: pointer; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .nav-link:hover { 
-            background: var(--orange-main); color: #000; 
-            box-shadow: 0 0 40px var(--orange-glow); transform: translateX(15px);
-        }
+        /* VIEWPORT */
+        .viewport { flex-grow: 1; position: relative; background: #020202; display: flex; align-items: center; justify-content: center; }
+        #app-frame { width: 96%; height: 92%; border: 3px solid var(--p); display: none; background: #000; border-radius: 12px; }
 
-        /* --- CONTENT CONTAINERS --- */
-        .viewport { flex-grow: 1; position: relative; background: #050505; display: flex; align-items: center; justify-content: center; }
-        #if-frame { width: 97%; height: 94%; border: 3px solid var(--orange-main); border-radius: 20px; display: none; background: #000; z-index: 10; }
-        
-        /* MC LAUNCHER STYLING */
-        .mc-box { width: 900px; height: 560px; background: #313233; display: none; border-radius: 12px; overflow: hidden; border: 1px solid #555; box-shadow: 0 0 50px #000; }
-        .mc-nav { width: 220px; background: #212223; padding: 20px; font-weight: bold; color: #999; }
-        .mc-hero { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; position: relative; }
-        .mc-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: rgba(0,0,0,0.9); display: flex; align-items: center; padding: 0 40px; gap: 20px; }
+        /* DISCOVERY HUB */
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 40px; width: 100%; }
+        .hub-card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid #222; cursor: pointer; transition: 0.3s; }
+        .hub-card:hover { border-color: var(--p); transform: translateY(-5px); }
 
-        /* STANDALONE WINDOW */
-        #win-box { position: fixed; inset: 0; background: #000; z-index: 50000; display: none; flex-direction: column; }
-        .win-header { background: var(--orange-main); color: #000; padding: 10px 25px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
-
-        /* MODALS */
-        .modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.96); display: none; align-items: center; justify-content: center; }
-        .modal-card { background: #111; padding: 50px; border-radius: 40px; border: 4px solid var(--orange-main); width: 550px; text-align: center; }
+        /* WINDOW LAYER */
+        #win-overlay { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; flex-direction: column; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body onkeydown="if(event.key==='Escape') location.reload()">
 
     <div id="rain-zone"></div>
 
     <div id="cloak">
         <div class="ti-chassis">
             <div class="lcd">
-                <div id="lcd-meta">REMON_OS_KERNEL_v42</div>
-                <div id="lcd-main">READY</div>
+                <div style="font-size: 0.6rem; text-align: left; opacity: 0.5;">REMON_KERNEL_44</div>
+                <div id="lcd-val">0</div>
             </div>
-            <div class="btn-grid">
+            <div class="grid-btn">
                 <div class="k">y=</div><div class="k">win</div><div class="k">zoom</div><div class="k">trace</div><div class="k">graph</div>
-                <div class="k k-blue" onclick="handleOp('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="handleOp('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
-                <div class="k">alpha</div><div class="k">math</div><div class="k">apps</div><div class="k">prgm</div><div class="k">vars</div>
+                <div class="k k-2nd" id="key-2nd" onclick="op('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="op('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
                 <div class="k k-num" onclick="num('7')">7</div><div class="k k-num" onclick="num('8')">8</div><div class="k k-num" onclick="num('9')">9</div><div class="k">/</div><div class="k">^</div>
                 <div class="k k-num" onclick="num('4')">4</div><div class="k k-num" onclick="num('5')">5</div><div class="k k-num" onclick="num('6')">6</div><div class="k">*</div><div class="k">(</div>
                 <div class="k k-num" onclick="num('1')">1</div><div class="k k-num" onclick="num('2')">2</div><div class="k k-num" onclick="num('3')">3</div><div class="k">-</div><div class="k">)</div>
-                <div class="k k-num" onclick="num('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k k-ent" onclick="handleOp('ent')">ENTER</div>
+                <div class="k k-num" onclick="num('0')">0</div><div class="k">.</div><div class="k" onclick="location.reload()">CLR</div><div class="k col-span-2" style="background:#000" onclick="op('ent')">ENTER</div>
             </div>
         </div>
     </div>
 
-    <div id="inj-modal" class="modal">
-        <div class="modal-card">
-            <h2 class="text-orange-500 font-black text-4xl italic mb-8">CORE INJECTION</h2>
-            <div class="space-y-6 text-left">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-700">
-                    <span class="text-[10px] block mb-2 text-zinc-500 font-bold uppercase">Minecraft Binary 1.12.2</span>
-                    <input type="file" id="f12" class="text-xs text-orange-400">
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-700">
-                    <span class="text-[10px] block mb-2 text-zinc-500 font-bold uppercase">Minecraft Binary 1.8.8</span>
-                    <input type="file" id="f8" class="text-xs text-orange-400">
-                </div>
-            </div>
-            <button onclick="saveCores()" class="w-full bg-orange-600 p-5 mt-10 font-black text-black rounded-2xl hover:scale-105 transition-transform">INITIALIZE COMMIT</button>
-            <button onclick="document.getElementById('inj-modal').style.display='none'" class="w-full mt-4 text-zinc-700 text-xs font-bold uppercase">Cancel Process</button>
+    <div id="inj-modal" class="fixed inset-0 bg-black/95 z-[10000] hidden items-center justify-center">
+        <div class="bg-zinc-900 p-12 w-[500px] border-4 border-orange-600 rounded-[50px]">
+            <h2 class="text-orange-600 font-black text-3xl mb-8 italic">REMON_CORE_INJECT</h2>
+            <input type="file" id="f12" class="w-full mb-4 bg-black p-4 text-xs border border-zinc-800">
+            <input type="file" id="f8" class="w-full mb-8 bg-black p-4 text-xs border border-zinc-800">
+            <button onclick="commitBinaries()" class="w-full bg-orange-600 p-5 font-black text-black rounded-2xl hover:bg-white transition-all">SAVE TO INDEXED_DB</button>
+            <button onclick="document.getElementById('inj-modal').style.display='none'" class="w-full mt-6 text-zinc-600 text-[10px] uppercase">Close Injector</button>
         </div>
     </div>
 
     <div id="os-root">
         <aside class="sidebar">
-            <div class="mb-12">
-                <h1 class="text-4xl font-black italic text-orange-600 tracking-tighter">ORANGE OS</h1>
-                <p class="text-[9px] text-zinc-600 mt-1 uppercase font-bold">Made by Remone</p>
+            <div class="mb-10">
+                <h1 class="text-4xl font-black italic text-orange-600">ORANGE OS</h1>
+                <p class="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">System by Remone</p>
             </div>
-            
-            <nav class="flex flex-col gap-4">
-                <div class="nav-link" onclick="view('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
-                <div class="nav-link" onclick="view('hub')"><span>FIND MORE</span><span>🔥</span></div>
-                <div class="nav-link" onclick="sysExec('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
-                <div class="nav-link" onclick="view('settings')"><span>SETTINGS</span><span>⚙️</span></div>
-            </nav>
-
-            <div class="mt-auto nav-link border-zinc-800" onclick="location.reload()"><span>PURGE</span><span>❌</span></div>
+            <div class="nav-link" onclick="tab('launcher')">LAUNCHER ⛏️</div>
+            <div class="nav-link" onclick="tab('hub')">FIND MORE 🔥</div>
+            <div class="nav-link" onclick="run('https://storage.googleapis.com/fernisbest/index.html')">BROWSER 🌐</div>
+            <div class="nav-link" onclick="tab('settings')">SETTINGS ⚙️</div>
+            <div class="mt-auto nav-link border-zinc-800" onclick="location.reload()">REBOOT ❌</div>
         </aside>
 
         <main class="viewport">
-            <iframe id="if-frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            <iframe id="app-frame"></iframe>
 
-            <div id="v-launcher" class="mc-box flex">
-                <div class="mc-nav">Java Edition</div>
-                <div class="mc-hero">
-                    <div class="mc-bottom">
-                        <select id="v-sel" class="bg-zinc-800 text-white p-4 font-black rounded border border-zinc-600 outline-none">
-                            <option value="mc12">Release 1.12.2</option>
-                            <option value="mc8">Release 1.8.8</option>
-                        </select>
-                        <button onclick="launchMC()" class="bg-[#3c8527] px-14 py-4 text-2xl font-black rounded hover:bg-[#47a02e]">PLAY</button>
+            <div id="v-launcher" class="hidden">
+                <div class="w-[850px] h-[520px] bg-zinc-800 rounded-3xl flex border border-zinc-700 overflow-hidden">
+                    <div class="w-48 bg-zinc-900 p-6 font-bold text-zinc-500">Java Edition</div>
+                    <div class="flex-grow flex flex-col bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover">
+                        <div class="mt-auto bg-black/90 p-10 flex gap-6">
+                            <select id="v-sel" class="bg-zinc-700 text-white p-4 font-black outline-none"><option value="mc12">1.12.2</option><option value="mc8">1.8.8</option></select>
+                            <button onclick="play()" class="bg-green-600 px-12 py-4 text-2xl font-black rounded hover:bg-green-500">PLAY</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="v-hub" class="hidden w-full h-full p-16 overflow-y-auto">
-                <h2 class="text-4xl font-black italic text-orange-500 mb-10">DISCOVERY HUB</h2>
-                <div class="grid grid-cols-3 gap-8" id="hub-list"></div>
+            <div id="v-hub" class="hidden w-full h-full p-12 overflow-y-auto">
+                <div class="hub-grid" id="hub-target"></div>
             </div>
 
-            <div id="v-settings" class="hidden w-[600px] bg-zinc-900 p-12 rounded-[50px] border-2 border-orange-600">
-                <h2 class="text-3xl font-black text-orange-500 mb-10 uppercase">Kernel Settings</h2>
-                <div class="space-y-6">
-                    <div class="flex justify-between items-center bg-black p-6 rounded-3xl">
-                        <span class="font-bold text-lg">IFRAME INTEGRATION</span>
-                        <input type="checkbox" id="set-if" class="w-8 h-8 accent-orange-600 cursor-pointer">
-                    </div>
-                    <div class="flex justify-between items-center bg-black p-6 rounded-3xl">
-                        <span class="font-bold text-lg">FRUIT RAIN PHYSICS</span>
-                        <input type="checkbox" id="set-rain" onchange="ctrlRain(this.checked)" class="w-8 h-8 accent-orange-600 cursor-pointer">
-                    </div>
+            <div id="v-settings" class="hidden bg-zinc-900 p-12 rounded-[40px] border-2 border-orange-600 w-[500px]">
+                <h3 class="text-2xl font-black mb-8 text-orange-500">SYSTEM CONFIG</h3>
+                <div class="flex justify-between items-center bg-black p-6 rounded-2xl mb-4">
+                    <span class="font-bold">IFRAME MODE</span> <input type="checkbox" id="if-toggle" class="w-8 h-8 accent-orange-600">
+                </div>
+                <div class="flex justify-between items-center bg-black p-6 rounded-2xl">
+                    <span class="font-bold">FRUIT RAIN</span> <input type="checkbox" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-600">
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="win-box">
-        <div class="win-header">
-            <span class="text-xs">ORANGE_OS_PROCESS_V42</span>
-            <button onclick="closeWin()" class="bg-black text-white px-10 h-full font-black py-2">X</button>
+    <div id="win-overlay">
+        <div class="bg-orange-600 p-2 flex justify-between px-6 font-black text-black text-xs">
+            <span>REMON_EXEC_ENGINE</span><button onclick="stopWin()" class="bg-black text-white px-8">X</button>
         </div>
-        <iframe id="win-frame" class="flex-grow border-none bg-black"></iframe>
+        <iframe id="win-frame" class="flex-grow bg-black border-none"></iframe>
     </div>
 
     <script>
         /* ++++++++++++++++++++++++++++++++++++++++++++++
-        +                                            +
         +         ORANGE OS MADE BY REMONE           +
-        +                                            +
-        ++++++++++++++++++++++++++++++++++++++++++++++
-        */
-        (function() {
-            let db, isShift = false, input = "";
-            
-            // INITIALIZE DATA STORE
-            const req = indexedDB.open("REMONE_STORAGE", 6);
-            req.onupgradeneeded = e => e.target.result.createObjectStore("core");
-            req.onsuccess = e => { db = e.target.result; initHub(); };
+        ++++++++++++++++++++++++++++++++++++++++++++++ */
+        
+        let db, isShift = false, buffer = "";
 
-            // CALCULATOR LOGIC
-            window.num = (v) => { input += v; document.getElementById('lcd-main').innerText = input; };
-            window.handleOp = (op) => {
-                const main = document.getElementById('lcd-main');
-                if(op === '2nd') { 
-                    isShift = !isShift; 
-                    main.style.color = isShift ? '#2563eb' : '#1e293b';
-                    main.innerText = isShift ? "SHIFTED" : (input || "0");
-                    return;
-                }
-                if(isShift && op === 'del') { document.getElementById('inj-modal').style.display='flex'; isShift = false; return; }
-                if(isShift && op === 'ent') { 
-                    const cloak = document.getElementById('cloak');
-                    cloak.style.transform = "scale(1.5) translateY(200px)";
-                    cloak.style.opacity = "0";
-                    setTimeout(() => {
-                        cloak.style.display = 'none';
-                        document.getElementById('os-root').style.display = 'grid';
-                    }, 1000);
-                    return;
-                }
-                if(op === 'ent') { input = ""; main.innerText = "0"; }
-            };
+        // DATABASE INIT
+        const dbreq = indexedDB.open("REMONE_FINAL", 1);
+        dbreq.onupgradeneeded = e => e.target.result.createObjectStore("bin");
+        dbreq.onsuccess = e => { db = e.target.result; setupHub(); };
 
-            // INJECTOR LOGIC
-            window.saveCores = async () => {
-                const f12 = document.getElementById('f12').files[0];
-                const f8 = document.getElementById('f8').files[0];
-                const tx = db.transaction("core", "readwrite");
-                if(f12) tx.objectStore("core").put(new Blob([await f12.arrayBuffer()], {type:'text/html'}), "mc12");
-                if(f8) tx.objectStore("core").put(new Blob([await f8.arrayBuffer()], {type:'text/html'}), "mc8");
-                alert("CORE BINARIES COMMITTED TO REMONE_VAULT");
-                document.getElementById('inj-modal').style.display = 'none';
-            };
-
-            // APP EXECUTION ENGINE
-            window.sysExec = (url) => {
-                const useIf = document.getElementById('set-if').checked;
-                if(useIf) {
-                    hideAll();
-                    const frame = document.getElementById('if-frame');
-                    frame.src = url;
-                    frame.style.display = 'block';
-                } else {
-                    document.getElementById('win-frame').src = url;
-                    document.getElementById('win-box').style.display = 'flex';
-                }
-            };
-
-            window.launchMC = () => {
-                const ver = document.getElementById('v-sel').value;
-                db.transaction("core").objectStore("core").get(ver).onsuccess = e => {
-                    if(!e.target.result) return alert("BINARY NOT FOUND IN VAULT");
-                    sysExec(URL.createObjectURL(e.target.result));
-                };
-            };
-
-            // DISCOVERY HUB CONTENT
-            function initHub() {
-                const list = [
-                    {t: 'Eaglercraft 1.8.8', d: 'High performance web-based Minecraft version.', u: 'https://eaglercraft.com/mc/1.8.8/'},
-                    {t: 'Flash Game Archive', d: 'Access to thousands of legacy flash titles.', u: 'https://ruffle.rs/demo/'},
-                    {t: 'Shadow Navigator', u: 'https://storage.googleapis.com/fernisbest/index.html', d: 'Anonymous web browsing engine.'},
-                    {t: 'Discord Client', u: 'https://discord.com/app', d: 'Web-based communication module.'}
-                ];
-                list.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = "bg-zinc-800 p-8 rounded-3xl border-2 border-transparent hover:border-orange-500 cursor-pointer transition-all";
-                    card.innerHTML = `<h4 class="text-orange-500 font-black mb-2">${item.t}</h4><p class="text-xs text-zinc-500">${item.d}</p>`;
-                    card.onclick = () => sysExec(item.u);
-                    document.getElementById('hub-list').appendChild(card);
-                });
+        // CALC INTERFACE
+        function num(v) { buffer += v; document.getElementById('lcd-val').innerText = buffer; }
+        function op(k) {
+            const lcd = document.getElementById('lcd-val');
+            if(k === '2nd') { 
+                isShift = !isShift; 
+                lcd.style.color = isShift ? '#2563eb' : '#1e293b';
+                lcd.innerText = isShift ? "SHIFTED" : (buffer || "0");
+                return;
             }
+            if(isShift && k === 'del') { document.getElementById('inj-modal').style.display='flex'; isShift=false; return; }
+            if(isShift && k === 'ent') { 
+                document.getElementById('cloak').style.display = 'none'; 
+                document.getElementById('os-root').style.display = 'grid'; 
+                return;
+            }
+            if(k === 'ent') { buffer = ""; lcd.innerText = "0"; }
+        }
 
-            // FRUIT RAIN ENGINE
-            let rainInterval;
-            window.ctrlRain = (on) => {
-                const zone = document.getElementById('rain-zone');
-                zone.innerHTML = '';
-                clearInterval(rainInterval);
-                if(!on) return;
-                rainInterval = setInterval(() => {
-                    const f = document.createElement('div');
-                    f.className = 'fruit';
-                    f.innerText = ['🍊','🍋','🍇','🍎','🍐'][Math.floor(Math.random()*5)];
-                    f.style.left = Math.random() * 100 + 'vw';
-                    f.style.animation = `fall ${Math.random()*3 + 2}s linear forwards`;
-                    f.onmousedown = () => { f.innerText = '💥'; setTimeout(() => f.remove(), 200); };
-                    zone.appendChild(f);
-                    setTimeout(() => f.remove(), 5000);
-                }, 300);
+        // KERNEL FUNCTIONS
+        async function commitBinaries() {
+            const f1 = document.getElementById('f12').files[0];
+            const f2 = document.getElementById('f8').files[0];
+            const tx = db.transaction("bin", "readwrite");
+            if(f1) tx.objectStore("bin").put(new Blob([await f1.arrayBuffer()], {type:'text/html'}), "mc12");
+            if(f2) tx.objectStore("bin").put(new Blob([await f2.arrayBuffer()], {type:'text/html'}), "mc8");
+            alert("REMON_DB: UPDATED");
+        }
+
+        function run(url) {
+            if(document.getElementById('if-toggle').checked) {
+                hide();
+                const f = document.getElementById('app-frame');
+                f.src = url; f.style.display = 'block';
+            } else {
+                document.getElementById('win-frame').src = url;
+                document.getElementById('win-overlay').style.display = 'flex';
+            }
+        }
+
+        function play() {
+            const v = document.getElementById('v-sel').value;
+            db.transaction("bin").objectStore("bin").get(v).onsuccess = e => {
+                if(!e.target.result) return alert("CORE BINARY NOT FOUND");
+                run(URL.createObjectURL(e.target.result));
             };
+        }
 
-            window.hideAll = () => { ['v-launcher', 'v-hub', 'v-settings', 'if-frame'].forEach(id => document.getElementById(id).style.display = 'none'); };
-            window.view = (v) => { hideAll(); document.getElementById('v-'+v).style.display = (v==='launcher'?'flex':'block'); };
-            window.closeWin = () => { document.getElementById('win-box').style.display='none'; document.getElementById('win-frame').src=''; };
-            
-            // SYSTEM KEYBINDS
-            window.onkeydown = e => { if(e.key === 'Escape') location.reload(); };
-        })();
+        function setupHub() {
+            const items = [
+                {t:'Eagler 1.8.8', u:'https://eaglercraft.com'},
+                {t:'Shadow Browser', u:'https://storage.googleapis.com/fernisbest/index.html'},
+                {t:'Retro Games', u:'https://emulatorjs.org'}
+            ];
+            items.forEach(i => {
+                const c = document.createElement('div'); c.className = 'hub-card';
+                c.innerHTML = `<h4 class="text-orange-500 font-black">${i.t}</h4><p class="text-[10px] text-zinc-500 mt-2">Remone Hub Module</p>`;
+                c.onclick = () => run(i.u);
+                document.getElementById('hub-target').appendChild(c);
+            });
+        }
+
+        function doRain(on) {
+            const z = document.getElementById('rain-zone'); z.innerHTML = '';
+            if(!on) return;
+            setInterval(() => {
+                const f = document.createElement('div'); f.className = 'fruit';
+                f.innerText = ['🍊','🍋','🍎','🍇'][Math.floor(Math.random()*4)];
+                f.style.left = Math.random()*95+'vw';
+                f.style.animationDuration = Math.random()*3+2+'s';
+                f.onclick = () => { f.innerText = '💥'; setTimeout(()=>f.remove(), 100); };
+                z.appendChild(f);
+                setTimeout(()=>f.remove(), 5000);
+            }, 600);
+        }
+
+        function hide() { ['v-launcher','v-hub','v-settings','app-frame'].forEach(id=>document.getElementById(id).style.display='none'); }
+        function tab(t) { hide(); document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block'); }
+        function stopWin() { document.getElementById('win-overlay').style.display='none'; document.getElementById('win-frame').src=''; }
     </script>
 </body>
 </html>
