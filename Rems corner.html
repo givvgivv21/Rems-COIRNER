@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V50.0</title>
+    <title>Orange OS | Official Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ++++++++++++++++++++++++++++++++++++++++++++++
@@ -12,169 +12,172 @@
         ++++++++++++++++++++++++++++++++++++++++++++++
         */
 
-        :root { --p: #f97316; --bg: #000; --fruit: '🍊'; --ti-body: #374151; }
+        :root { --p: #f97316; --bg: #000; --ti-zinc: #374151; }
         * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* --- TI-84 PLUS REPLICA --- */
-        #calc-cloak { 
+        /* --- COMPACT TI-84 REPLICA --- */
+        #cloak { 
             position: fixed; inset: 0; z-index: 10000; background: #000;
             display: flex; align-items: center; justify-content: center;
         }
-        .ti-84-body {
-            background: var(--ti-body); width: 440px; height: 860px;
-            border-radius: 40px 40px 160px 160px; border: 4px solid #111;
-            padding: 30px; position: relative; box-shadow: 0 50px 100px rgba(0,0,0,0.9);
-            display: flex; flex-direction: column;
+        .ti-84 {
+            background: var(--ti-zinc); width: 380px; height: 720px; /* Scaled down for better fit */
+            border-radius: 30px 30px 120px 120px; border: 4px solid #111;
+            padding: 25px; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; transform: scale(0.9);
         }
-        .bezel { background: #111; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .lcd { background: #94a392; height: 180px; position: relative; color: #2d3e2d; padding: 10px; font-family: monospace; }
-        
-        /* KEYPAD */
-        .keypad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        .k { height: 42px; background: #4b5563; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
+        .lcd { 
+            background: #94a392; height: 140px; border-radius: 4px; border: 12px solid #111;
+            font-family: monospace; color: #2d3e2d; padding: 10px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        /* BUTTONS */
+        .keypad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 15px; }
+        .k { height: 36px; background: #4b5563; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
         .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
-        .k-2nd { background: #2563eb !important; } 
-        .k-alpha { background: #16a34a !important; }
-        .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 1.1rem; }
-        .k::before { content: attr(data-lbl); position: absolute; top: -14px; font-size: 0.55rem; font-weight: 900; width: 100%; text-align: center; }
-        .lbl-blue::before { color: #3b82f6; }
+        .k-2nd { background: #2563eb !important; } .k-alpha { background: #16a34a !important; }
+        .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 1rem; }
+        .k::before { content: attr(data-lbl); position: absolute; top: -14px; font-size: 0.5rem; font-weight: 900; width: 100%; text-align: center; }
 
-        /* --- ORANGE OS --- */
-        #os-root { display: none; height: 100vh; width: 100vw; grid-template-columns: 320px 1fr; }
-        .sidebar { background: #070707; border-right: 3px solid var(--p); padding: 60px 30px; display: flex; flex-direction: column; gap: 12px; }
-        .nav-item { border: 2px solid var(--p); padding: 18px; border-radius: 20px; font-weight: 900; cursor: pointer; display: flex; justify-content: space-between; }
-        .nav-item:hover { background: var(--p); color: #000; }
+        /* --- ORANGE OS DESKTOP --- */
+        #os-root { display: none; height: 100vh; width: 100vw; grid-template-columns: 280px 1fr; background: #1a1a1a; }
+        .sidebar { background: #000; border-right: 1px solid #333; padding: 40px 20px; display: flex; flex-direction: column; gap: 10px; }
+        .nav-item { padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #aaa; transition: 0.2s; }
+        .nav-item:hover { background: #222; color: #fff; }
+        .nav-active { background: #333; color: var(--p) !important; border-left: 4px solid var(--p); }
 
-        /* FRUIT PHYSICS */
-        #rain-layer { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
-        .fruit-part { position: absolute; font-size: 2.5rem; pointer-events: auto; animation: drop linear forwards; cursor: pointer; }
-        @keyframes drop { 0% { transform: translateY(-100px); } 100% { transform: translateY(110vh); } }
+        /* --- MOJANG LAUNCHER UI --- */
+        .launcher-container { width: 100%; height: 100%; display: flex; flex-direction: column; background: #222; }
+        .launcher-nav { height: 50px; background: #1e1e1e; display: flex; align-items: center; padding: 0 30px; gap: 30px; border-bottom: 2px solid #111; }
+        .launcher-nav span { font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; }
+        .launcher-nav .active { color: #fff; border-bottom: 2px solid #fff; padding-bottom: 2px; }
+        
+        .launcher-hero { 
+            flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover;
+            position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .launcher-footer { height: 100px; background: #313233; display: flex; align-items: center; padding: 0 40px; gap: 20px; }
+        .play-btn { background: #3c8527; color: #fff; padding: 12px 60px; font-size: 1.5rem; font-weight: 900; border-radius: 4px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3); }
+        .play-btn:hover { background: #4caf34; }
+        .ver-tag { background: #1e1e1e; padding: 10px 20px; border-radius: 4px; border: 1px solid #444; }
 
-        /* VIEWER */
-        #os-view { width: 98%; height: 95%; border: 3px solid var(--p); border-radius: 16px; display: none; background: #000; }
+        /* TEXTURE PACK MODULE */
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 20px; }
+        .pack-card { background: #111; border: 1px solid #333; padding: 10px; border-radius: 8px; text-align: center; }
 
-        /* INJECTOR MODAL */
-        .modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; }
+        /* VIEWPORT */
+        #viewport { width: 100%; height: 100%; border: none; display: none; background: #000; }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') location.reload()">
 
-    <div id="rain-layer"></div>
-
-    <div id="calc-cloak">
-        <div class="ti-84-body">
-            <div class="bezel"><div class="lcd"><div id="l1">RAM CLEARED</div><div id="lm" class="text-4xl text-right mt-10">0</div></div></div>
+    <div id="cloak">
+        <div class="ti-84">
+            <div class="lcd">
+                <div style="font-size: 0.6rem">RAM CLEARED</div>
+                <div id="lm" class="text-3xl text-right">0</div>
+            </div>
             <div class="keypad">
-                <div class="k k-2nd lbl-blue" data-lbl="QUIT" onclick="act('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="act('del')">del</div><div class="k"></div><div class="k"></div>
-                <div class="k k-alpha" data-lbl="LOCK">alpha</div><div class="k">XTθn</div><div class="k">stat</div><div class="k">^</div><div class="k">clear</div>
+                <div class="k k-2nd" data-lbl="QUIT" onclick="ti('2nd')">2nd</div><div class="k">mode</div><div class="k" data-lbl="INS" onclick="ti('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
+                <div class="k k-alpha" data-lbl="LOCK">alpha</div><div class="k">Xθn</div><div class="k">math</div><div class="k">^</div><div class="k">clear</div>
                 <div class="k k-num" onclick="num('7')">7</div><div class="k k-num" onclick="num('8')">8</div><div class="k k-num" onclick="num('9')">9</div><div class="k">÷</div><div class="k"></div>
                 <div class="k k-num" onclick="num('4')">4</div><div class="k k-num" onclick="num('5')">5</div><div class="k k-num" onclick="num('6')">6</div><div class="k">×</div><div class="k"></div>
                 <div class="k k-num" onclick="num('1')">1</div><div class="k k-num" onclick="num('2')">2</div><div class="k k-num" onclick="num('3')">3</div><div class="k">-</div><div class="k"></div>
-                <div class="k k-num" onclick="num('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k">+</div><div class="k bg-black text-white" onclick="act('ent')">enter</div>
+                <div class="k k-num" onclick="num('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k">+</div><div class="k bg-black text-white" onclick="ti('ent')">enter</div>
             </div>
-        </div>
-    </div>
-
-    <div id="injector" class="modal">
-        <div class="bg-zinc-900 p-10 rounded-[40px] border-4 border-orange-500 w-[500px]">
-            <h2 class="text-orange-500 font-black text-2xl mb-6">BLOB INJECTOR</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] block mb-1">EAGLERCRAFT 1.8.8 BLOB</label>
-                    <input type="file" id="blob-18" class="text-xs bg-black p-2 w-full">
-                </div>
-                <div>
-                    <label class="text-[10px] block mb-1">EAGLERCRAFT 1.12.2 BLOB</label>
-                    <input type="file" id="blob-112" class="text-xs bg-black p-2 w-full">
-                </div>
-                <button onclick="saveBlobs()" class="w-full bg-orange-600 p-4 font-black rounded-xl">INJECT INTO KERNEL</button>
-            </div>
-            <button onclick="closeInj()" class="mt-4 text-[10px] w-full text-zinc-600">CLOSE</button>
         </div>
     </div>
 
     <div id="os-root">
         <aside class="sidebar">
-            <h1 class="text-4xl font-black italic text-orange-600">ORANGE OS</h1>
-            <div class="nav-item mt-10" onclick="page('launcher')">LAUNCHER ⛏️</div>
-            <div class="nav-item" onclick="run('https://github.com/givvgivv21/Rems-COIRNER')">FIND MORE 🔥</div>
-            <div class="nav-item" onclick="run('https://storage.googleapis.com/fernisbest/index.html')">BROWSER 🌐</div>
-            <div class="nav-item" onclick="page('settings')">SETTINGS ⚙️</div>
-            <div class="mt-auto nav-item border-zinc-900" onclick="location.reload()">REBOOT ❌</div>
+            <h1 class="text-2xl font-black theme-text italic mb-10">ORANGE OS</h1>
+            <div class="nav-item nav-active" onclick="tab('launcher')">MINECRAFT</div>
+            <div class="nav-item" onclick="tab('packs')">TEXTURE PACKS</div>
+            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')">FIND MORE 🔥</div>
+            <div class="nav-item" onclick="tab('settings')">SETTINGS</div>
+            <div class="mt-auto nav-item text-red-500" onclick="location.reload()">SHUTDOWN</div>
         </aside>
 
-        <main class="flex-grow flex items-center justify-center relative">
-            <iframe id="os-view"></iframe>
+        <main class="flex-grow relative">
+            <iframe id="viewport"></iframe>
 
-            <div id="v-launcher" class="hidden w-[800px] h-[500px] bg-zinc-800 rounded-3xl overflow-hidden flex border border-zinc-700">
-                <div class="w-40 bg-zinc-900 p-6 font-bold text-zinc-500">Blobs</div>
-                <div class="flex-grow flex flex-col items-center justify-center bg-black/50">
-                    <select id="ver" class="bg-zinc-700 p-4 font-black mb-4"><option value="18">Eagler 1.8.8</option><option value="112">Eagler 1.12.2</option></select>
-                    <button onclick="launchBlob()" class="bg-orange-600 px-10 py-4 font-black rounded-xl">START INJECTED SESSION</button>
+            <div id="v-launcher" class="launcher-container">
+                <div class="launcher-nav">
+                    <span class="active">PLAY</span><span>INSTALLATIONS</span><span>SKINS</span><span>PATCH NOTES</span>
+                </div>
+                <div class="launcher-hero">
+                    <div class="p-10 bg-gradient-to-t from-black/80 to-transparent">
+                        <h2 class="text-4xl font-black">MINECRAFT: Java Edition</h2>
+                    </div>
+                </div>
+                <div class="launcher-footer">
+                    <div class="ver-tag">
+                        <select id="ver-sel" class="bg-transparent font-bold outline-none cursor-pointer">
+                            <option value="1.8.8">Latest Release (1.8.8)</option>
+                            <option value="1.12.2">Release 1.12.2</option>
+                        </select>
+                    </div>
+                    <button onclick="playMC()" class="play-btn">PLAY</button>
+                    <div class="text-xs text-gray-400">Status: Ready to Launch</div>
                 </div>
             </div>
 
-            <div id="v-settings" class="hidden bg-zinc-900 p-12 rounded-[50px] border-4 border-orange-500 w-[500px]">
-                <div class="grid grid-cols-4 gap-4 mb-8" id="colors"></div>
-                <div class="flex justify-between items-center bg-black p-4 rounded-2xl">
-                    <span>FRUIT RAIN</span>
-                    <input type="checkbox" id="rain-chk" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-500">
+            <div id="v-packs" class="hidden p-10">
+                <h3 class="text-2xl font-bold mb-6">Texture Pack Modules</h3>
+                <div class="pack-grid">
+                    <div class="pack-card"><div class="h-20 bg-zinc-800 mb-2"></div><p class="text-xs">Bare Bones</p></div>
+                    <div class="pack-card"><div class="h-20 bg-zinc-800 mb-2"></div><p class="text-xs">Faithful 32x</p></div>
+                    <div class="pack-card"><div class="h-20 bg-zinc-800 mb-2"></div><p class="text-xs">PvP Essentials</p></div>
+                </div>
+                <p class="text-gray-500 text-xs mt-10 italic">*Drop zip files here to inject (Coming Soon)</p>
+            </div>
+
+            <div id="v-settings" class="hidden p-20">
+                <div class="bg-zinc-900 p-10 rounded-2xl max-w-md">
+                    <h3 class="text-xl font-bold mb-4">Kernel Injector</h3>
+                    <input type="file" id="inj-file" class="text-xs mb-4">
+                    <button class="w-full bg-orange-600 p-3 rounded font-bold">Infect Blob</button>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        let db, is2nd = false, buffer = "";
+        let is2nd = false, buffer = "", db;
 
-        // DB INIT
-        const req = indexedDB.open("ORANGE_BLOBS", 1);
-        req.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
-        req.onsuccess = e => { db = e.target.result; };
-
-        // CALC
+        // TI LOGIC
         function num(n) { buffer += n; document.getElementById('lm').innerText = buffer; }
-        function act(k) {
-            if(k==='2nd') { is2nd=!is2nd; document.getElementById('l1').innerText = is2nd?"2nd ACTIVE":"RAM CLEARED"; return; }
-            if(is2nd && k==='del') { document.getElementById('injector').style.display='flex'; is2nd=false; return; }
-            if(is2nd && k==='ent') { document.getElementById('calc-cloak').style.display='none'; document.getElementById('os-root').style.display='grid'; return; }
-            if(k==='ent') { buffer=""; document.getElementById('lm').innerText="0"; }
+        function ti(k) {
+            if(k==='2nd') { is2nd = !is2nd; return; }
+            if(is2nd && k==='ent') { 
+                document.getElementById('cloak').style.display = 'none';
+                document.getElementById('os-root').style.display = 'grid';
+                return;
+            }
+            if(k==='ent') { buffer = ""; document.getElementById('lm').innerText = "0"; }
         }
 
-        // BLOB LOGIC
-        async function saveBlobs() {
-            const f18 = document.getElementById('blob-18').files[0];
-            const f112 = document.getElementById('blob-112').files[0];
-            const tx = db.transaction("blobs", "readwrite");
-            if(f18) tx.objectStore("blobs").put(new Blob([await f18.arrayBuffer()], {type:'text/html'}), "18");
-            if(f112) tx.objectStore("blobs").put(new Blob([await f112.arrayBuffer()], {type:'text/html'}), "112");
-            alert("KERNAL INJECTED");
+        // TAB NAVIGATION
+        function tab(t) {
+            ['v-launcher','v-packs','v-settings','viewport'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('v-'+t).style.display = (t==='launcher' ? 'flex' : 'block');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active'));
+            event.target.classList.add('nav-active');
         }
 
-        function launchBlob() {
-            const v = document.getElementById('ver').value;
-            db.transaction("blobs").objectStore("blobs").get(v).onsuccess = e => {
-                if(!e.target.result) return alert("NO BLOB FOUND. INJECT FIRST.");
-                run(URL.createObjectURL(e.target.result));
-            };
-        }
-
-        function run(url) { hide(); const v=document.getElementById('os-view'); v.src=url; v.style.display='block'; }
-        function page(p) { hide(); document.getElementById('v-'+p).style.display=(p==='launcher'?'flex':'block'); }
-        function hide() { ['v-launcher','v-settings','os-view'].forEach(i=>document.getElementById(i).style.display='none'); }
-        function closeInj() { document.getElementById('injector').style.display='none'; }
-        
-        function doRain(on) {
-            const z = document.getElementById('rain-layer'); z.innerHTML = '';
-            if(!on) return;
-            setInterval(() => {
-                if(!document.getElementById('rain-chk').checked) return;
-                const f = document.createElement('div'); f.className='fruit-part'; f.innerText='🍊';
-                f.style.left = Math.random()*95+'vw'; f.style.animationDuration = '3s';
-                z.appendChild(f);
-                setTimeout(()=>f.remove(), 3000);
-            }, 500);
+        function playMC() {
+            const v = document.getElementById('ver-sel').value;
+            // Eaglercraft hardlinks for testing - typically handled by Blob Injector
+            const link = v === '1.8.8' ? 'https://eaglercraft.com/mc/1.8.8/' : 'https://raw.githack.com/Eaglercraft/Eaglercraft-1.12.2/main/index.html';
+            document.getElementById('v-launcher').style.display = 'none';
+            const f = document.getElementById('viewport');
+            f.src = link;
+            f.style.display = 'block';
         }
     </script>
 </body>
