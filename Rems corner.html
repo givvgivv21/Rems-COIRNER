@@ -2,246 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORANGE OS | V44 BY REMONE</title>
+    <title>Orange OS | Official Build</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ++++++++++++++++++++++++++++++++++++++++++++++
-        +                                            +
         +         ORANGE OS MADE BY REMONE           +
-        +                                            +
-        ++++++++++++++++++++++++++++++++++++++++++++++
-        */
-
-        :root { --p: #ea580c; --ti: #fb923c; --bg: #000; }
-        * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+        ++++++++++++++++++++++++++++++++++++++++++++++ */
+        
+        :root { 
+            --primary: #f97316; 
+            --bg: #030303; 
+            --fruit: '🍊';
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* FRUIT ANIMATION */
-        .fruit { position: fixed; font-size: 2.5rem; z-index: 500; cursor: crosshair; animation: fall linear forwards; }
-        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
+        /* THEME UTILITIES */
+        .theme-border { border-color: var(--primary) !important; }
+        .theme-text { color: var(--primary) !important; }
+        .theme-bg { background-color: var(--primary) !important; }
+        .theme-glow { filter: drop-shadow(0 0 8px var(--primary)); }
 
-        /* CALCULATOR CLOAK - FIXED LAYER */
-        #cloak { 
-            position: fixed; inset: 0; z-index: 9999; background: #000;
+        /* FRUIT RAIN */
+        #rain-layer { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+        .fruit-drop { 
+            position: absolute; font-size: 2.5rem; pointer-events: auto; cursor: crosshair;
+            animation: fall linear forwards; 
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.1; }
+        }
+
+        /* HARDWARE GATEWAY (CALC) */
+        #boot-screen { 
+            position: fixed; inset: 0; z-index: 10000; background: #000;
             display: flex; align-items: center; justify-content: center;
         }
-        .ti-chassis {
-            background: var(--ti); width: 440px; height: 820px;
-            border-radius: 60px 60px 220px 220px; border: 12px solid #92400e;
-            padding: 40px; box-shadow: 0 0 150px rgba(0,0,0,1); position: relative;
+        .chassis {
+            background: var(--primary); width: 420px; height: 800px;
+            border-radius: 60px 60px 200px 200px; border: 12px solid #7c2d12;
+            padding: 40px; box-shadow: 0 0 100px rgba(0,0,0,1);
         }
         .lcd { 
-            background: #cbd5e1; height: 180px; border-radius: 15px; border: 6px solid #1e293b;
+            background: #cbd5e1; height: 180px; border-radius: 12px; border: 6px solid #1e293b;
             padding: 20px; display: flex; flex-direction: column; justify-content: flex-end;
-            text-align: right; font-family: monospace; color: #1e293b; font-size: 2rem; font-weight: 900;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
+            text-align: right; font-family: monospace; color: #1e293b; font-size: 2.2rem; font-weight: 900;
         }
 
         /* BUTTONS */
-        .grid-btn { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
-        .k { 
-            height: 46px; background: #334155; border-radius: 10px; 
+        .grid-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 35px; }
+        .key { 
+            height: 45px; background: #334155; border-radius: 10px; 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 0.65rem; font-weight: 900; cursor: pointer; 
+            font-size: 0.6rem; font-weight: 900; cursor: pointer; 
             box-shadow: 0 4px 0 #000; color: #fff;
         }
-        .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
-        .k-2nd { background: #2563eb !important; }
-        .k-num { background: #f8fafc !important; color: #000 !important; font-size: 1.2rem; }
+        .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+        .k-blue { background: #2563eb !important; }
+        .k-white { background: #f8fafc !important; color: #000 !important; font-size: 1.2rem; }
 
-        /* OS CORE - HIDDEN BY DEFAULT */
+        /* OS ENVIRONMENT */
         #os-root { display: none; height: 100vh; width: 100vw; grid-template-columns: 320px 1fr; }
-        .sidebar { background: #080808; border-right: 4px solid var(--p); padding: 50px 25px; display: flex; flex-direction: column; gap: 15px; }
-        .nav-link { border: 2px solid var(--p); padding: 18px; border-radius: 20px; font-weight: 900; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; }
-        .nav-link:hover { background: var(--p); color: #000; box-shadow: 0 0 25px var(--p); }
+        .sidebar { background: #080808; border-right: 4px solid var(--primary); padding: 50px 30px; display: flex; flex-direction: column; gap: 15px; }
+        .nav-link { 
+            border: 2px solid var(--primary); padding: 18px; border-radius: 20px; 
+            font-weight: 900; cursor: pointer; display: flex; justify-content: space-between; 
+        }
+        .nav-link:hover { background: var(--primary); color: #000; transform: scale(1.05); }
 
-        /* VIEWPORT */
-        .viewport { flex-grow: 1; position: relative; background: #020202; display: flex; align-items: center; justify-content: center; }
-        #app-frame { width: 96%; height: 92%; border: 3px solid var(--p); display: none; background: #000; border-radius: 12px; }
+        /* SETTINGS: FRUIT SELECTOR */
+        .swatch { width: 45px; height: 45px; border-radius: 15px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .swatch:hover { transform: scale(1.15); border-color: white; }
 
-        /* DISCOVERY HUB */
-        .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 40px; width: 100%; }
-        .hub-card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid #222; cursor: pointer; transition: 0.3s; }
-        .hub-card:hover { border-color: var(--p); transform: translateY(-5px); }
-
-        /* WINDOW LAYER */
-        #win-overlay { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; flex-direction: column; }
+        /* VIEWS */
+        .view-pane { flex-grow: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 30px; }
+        #os-frame { width: 100%; height: 100%; border: 4px solid var(--primary); border-radius: 20px; display: none; background: #000; }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') location.reload()">
 
-    <div id="rain-zone"></div>
+    <div id="rain-layer"></div>
 
-    <div id="cloak">
-        <div class="ti-chassis">
-            <div class="lcd">
-                <div style="font-size: 0.6rem; text-align: left; opacity: 0.5;">REMON_KERNEL_44</div>
-                <div id="lcd-val">0</div>
+    <div id="boot-screen">
+        <div class="chassis">
+            <div class="lcd"><div id="disp-val">0</div></div>
+            <div class="grid-pad">
+                <div class="key">y=</div><div class="key">win</div><div class="key">zoom</div><div class="key">trace</div><div class="key">graph</div>
+                <div class="key k-blue" onclick="op('2nd')">2nd</div><div class="key">mode</div><div class="key" onclick="op('del')">del</div><div class="key">stat</div><div class="key">prgm</div>
+                <div class="key k-white" onclick="press('7')">7</div><div class="key k-white" onclick="press('8')">8</div><div class="key k-white" onclick="press('9')">9</div><div class="key">/</div><div class="key">^</div>
+                <div class="key k-white" onclick="press('4')">4</div><div class="key k-white" onclick="press('5')">5</div><div class="key k-white" onclick="press('6')">6</div><div class="key">*</div><div class="key">(</div>
+                <div class="key k-white" onclick="press('1')">1</div><div class="key k-white" onclick="press('2')">2</div><div class="key k-white" onclick="press('3')">3</div><div class="key">-</div><div class="key">)</div>
+                <div class="key k-white" onclick="press('0')">0</div><div class="key" onclick="location.reload()">CLR</div><div class="key" onclick="op('del')">INS</div><div class="key col-span-2 theme-bg" style="color:black" onclick="op('ent')">ENTER</div>
             </div>
-            <div class="grid-btn">
-                <div class="k">y=</div><div class="k">win</div><div class="k">zoom</div><div class="k">trace</div><div class="k">graph</div>
-                <div class="k k-2nd" id="key-2nd" onclick="op('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="op('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
-                <div class="k k-num" onclick="num('7')">7</div><div class="k k-num" onclick="num('8')">8</div><div class="k k-num" onclick="num('9')">9</div><div class="k">/</div><div class="k">^</div>
-                <div class="k k-num" onclick="num('4')">4</div><div class="k k-num" onclick="num('5')">5</div><div class="k k-num" onclick="num('6')">6</div><div class="k">*</div><div class="k">(</div>
-                <div class="k k-num" onclick="num('1')">1</div><div class="k k-num" onclick="num('2')">2</div><div class="k k-num" onclick="num('3')">3</div><div class="k">-</div><div class="k">)</div>
-                <div class="k k-num" onclick="num('0')">0</div><div class="k">.</div><div class="k" onclick="location.reload()">CLR</div><div class="k col-span-2" style="background:#000" onclick="op('ent')">ENTER</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="inj-modal" class="fixed inset-0 bg-black/95 z-[10000] hidden items-center justify-center">
-        <div class="bg-zinc-900 p-12 w-[500px] border-4 border-orange-600 rounded-[50px]">
-            <h2 class="text-orange-600 font-black text-3xl mb-8 italic">REMON_CORE_INJECT</h2>
-            <input type="file" id="f12" class="w-full mb-4 bg-black p-4 text-xs border border-zinc-800">
-            <input type="file" id="f8" class="w-full mb-8 bg-black p-4 text-xs border border-zinc-800">
-            <button onclick="commitBinaries()" class="w-full bg-orange-600 p-5 font-black text-black rounded-2xl hover:bg-white transition-all">SAVE TO INDEXED_DB</button>
-            <button onclick="document.getElementById('inj-modal').style.display='none'" class="w-full mt-6 text-zinc-600 text-[10px] uppercase">Close Injector</button>
         </div>
     </div>
 
     <div id="os-root">
         <aside class="sidebar">
             <div class="mb-10">
-                <h1 class="text-4xl font-black italic text-orange-600">ORANGE OS</h1>
-                <p class="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">System by Remone</p>
+                <h1 class="text-4xl font-black italic theme-text">ORANGE OS</h1>
+                <p class="text-[10px] opacity-40 font-bold uppercase tracking-widest mt-1">Kernel v47.0</p>
             </div>
-            <div class="nav-link" onclick="tab('launcher')">LAUNCHER ⛏️</div>
-            <div class="nav-link" onclick="tab('hub')">FIND MORE 🔥</div>
-            <div class="nav-link" onclick="run('https://storage.googleapis.com/fernisbest/index.html')">BROWSER 🌐</div>
-            <div class="nav-link" onclick="tab('settings')">SETTINGS ⚙️</div>
-            <div class="mt-auto nav-link border-zinc-800" onclick="location.reload()">REBOOT ❌</div>
+            
+            <div class="nav-link" onclick="show('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-link" onclick="execute('https://github.com/givvgivv21/Rems-COIRNER')"><span>FIND MORE</span><span>🔥</span></div>
+            <div class="nav-link" onclick="execute('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
+            <div class="nav-link" onclick="show('settings')"><span>SETTINGS</span><span>⚙️</span></div>
+            
+            <div class="mt-auto nav-link border-zinc-800 opacity-30" onclick="location.reload()"><span>SHUTDOWN</span><span>❌</span></div>
         </aside>
 
-        <main class="viewport">
-            <iframe id="app-frame"></iframe>
+        <main class="view-pane">
+            <iframe id="os-frame"></iframe>
 
-            <div id="v-launcher" class="hidden">
-                <div class="w-[850px] h-[520px] bg-zinc-800 rounded-3xl flex border border-zinc-700 overflow-hidden">
-                    <div class="w-48 bg-zinc-900 p-6 font-bold text-zinc-500">Java Edition</div>
-                    <div class="flex-grow flex flex-col bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover">
-                        <div class="mt-auto bg-black/90 p-10 flex gap-6">
-                            <select id="v-sel" class="bg-zinc-700 text-white p-4 font-black outline-none"><option value="mc12">1.12.2</option><option value="mc8">1.8.8</option></select>
-                            <button onclick="play()" class="bg-green-600 px-12 py-4 text-2xl font-black rounded hover:bg-green-500">PLAY</button>
-                        </div>
+            <div id="v-settings" class="hidden bg-zinc-900/90 backdrop-blur-xl p-12 rounded-[50px] border-4 theme-border w-[600px] shadow-2xl">
+                <h2 class="text-3xl font-black mb-8 theme-text uppercase italic">System Themes</h2>
+                
+                <div class="grid grid-cols-4 gap-6 mb-10">
+                    <div class="swatch bg-orange-500" onclick="setTheme('#f97316', '🍊', 'Orange')"></div>
+                    <div class="swatch bg-yellow-400" onclick="setTheme('#facc15', '🍋', 'Lemon')"></div>
+                    <div class="swatch bg-red-600" onclick="setTheme('#dc2626', '🍎', 'Apple')"></div>
+                    <div class="swatch bg-purple-600" onclick="setTheme('#9333ea', '🍇', 'Grape')"></div>
+                    <div class="swatch bg-green-500" onclick="setTheme('#22c55e', '🍏', 'Granny Smith')"></div>
+                    <div class="swatch bg-blue-500" onclick="setTheme('#3b82f6', '🫐', 'Blueberry')"></div>
+                    <div class="swatch bg-pink-400" onclick="setTheme('#f472b6', '🍑', 'Peach')"></div>
+                    <div class="swatch bg-red-400" onclick="setTheme('#fb7185', '🍓', 'Strawberry')"></div>
+                </div>
+
+                <div class="flex justify-between items-center bg-black p-6 rounded-3xl mb-4">
+                    <span class="font-black text-sm uppercase">Enable Fruit Rain</span>
+                    <input type="checkbox" id="rain-on" onchange="runRain(this.checked)" class="w-8 h-8 accent-orange-500">
+                </div>
+                
+                <p class="text-[10px] text-center font-black opacity-30 uppercase">Active Profile: <span id="cur-theme">Orange</span></p>
+            </div>
+
+            <div id="v-launcher" class="hidden w-[900px] h-[550px] bg-zinc-800 rounded-3xl overflow-hidden flex border-2 border-zinc-700 shadow-2xl">
+                <div class="w-48 bg-zinc-900 p-8 font-black text-zinc-600 uppercase text-xs">Java Edition</div>
+                <div class="flex-grow flex flex-col bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover">
+                    <div class="mt-auto bg-black/95 p-10 flex gap-6">
+                        <select class="bg-zinc-800 text-white p-4 font-black outline-none rounded border border-zinc-700"><option>1.12.2</option><option>1.8.8</option></select>
+                        <button class="theme-bg px-14 py-4 text-2xl font-black text-black rounded hover:scale-105">PLAY</button>
                     </div>
-                </div>
-            </div>
-
-            <div id="v-hub" class="hidden w-full h-full p-12 overflow-y-auto">
-                <div class="hub-grid" id="hub-target"></div>
-            </div>
-
-            <div id="v-settings" class="hidden bg-zinc-900 p-12 rounded-[40px] border-2 border-orange-600 w-[500px]">
-                <h3 class="text-2xl font-black mb-8 text-orange-500">SYSTEM CONFIG</h3>
-                <div class="flex justify-between items-center bg-black p-6 rounded-2xl mb-4">
-                    <span class="font-bold">IFRAME MODE</span> <input type="checkbox" id="if-toggle" class="w-8 h-8 accent-orange-600">
-                </div>
-                <div class="flex justify-between items-center bg-black p-6 rounded-2xl">
-                    <span class="font-bold">FRUIT RAIN</span> <input type="checkbox" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-600">
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="win-overlay">
-        <div class="bg-orange-600 p-2 flex justify-between px-6 font-black text-black text-xs">
-            <span>REMON_EXEC_ENGINE</span><button onclick="stopWin()" class="bg-black text-white px-8">X</button>
-        </div>
-        <iframe id="win-frame" class="flex-grow bg-black border-none"></iframe>
-    </div>
-
     <script>
-        /* ++++++++++++++++++++++++++++++++++++++++++++++
-        +         ORANGE OS MADE BY REMONE           +
-        ++++++++++++++++++++++++++++++++++++++++++++++ */
-        
-        let db, isShift = false, buffer = "";
+        let is2nd = false, buffer = "";
 
-        // DATABASE INIT
-        const dbreq = indexedDB.open("REMONE_FINAL", 1);
-        dbreq.onupgradeneeded = e => e.target.result.createObjectStore("bin");
-        dbreq.onsuccess = e => { db = e.target.result; setupHub(); };
-
-        // CALC INTERFACE
-        function num(v) { buffer += v; document.getElementById('lcd-val').innerText = buffer; }
+        // CALC ENGINE
+        function press(n) { buffer += n; document.getElementById('disp-val').innerText = buffer; }
         function op(k) {
-            const lcd = document.getElementById('lcd-val');
-            if(k === '2nd') { 
-                isShift = !isShift; 
-                lcd.style.color = isShift ? '#2563eb' : '#1e293b';
-                lcd.innerText = isShift ? "SHIFTED" : (buffer || "0");
+            const d = document.getElementById('disp-val');
+            if(k === '2nd') { is2nd = !is2nd; d.style.color = is2nd ? '#2563eb' : '#1e293b'; return; }
+            if(is2nd && k === 'ent') { 
+                document.getElementById('boot-screen').style.display = 'none';
+                document.getElementById('os-root').style.display = 'grid';
                 return;
             }
-            if(isShift && k === 'del') { document.getElementById('inj-modal').style.display='flex'; isShift=false; return; }
-            if(isShift && k === 'ent') { 
-                document.getElementById('cloak').style.display = 'none'; 
-                document.getElementById('os-root').style.display = 'grid'; 
-                return;
-            }
-            if(k === 'ent') { buffer = ""; lcd.innerText = "0"; }
+            if(k === 'ent') { buffer = ""; d.innerText = "0"; }
         }
 
-        // KERNEL FUNCTIONS
-        async function commitBinaries() {
-            const f1 = document.getElementById('f12').files[0];
-            const f2 = document.getElementById('f8').files[0];
-            const tx = db.transaction("bin", "readwrite");
-            if(f1) tx.objectStore("bin").put(new Blob([await f1.arrayBuffer()], {type:'text/html'}), "mc12");
-            if(f2) tx.objectStore("bin").put(new Blob([await f2.arrayBuffer()], {type:'text/html'}), "mc8");
-            alert("REMON_DB: UPDATED");
+        // THEME ENGINE
+        function setTheme(hex, icon, name) {
+            document.documentElement.style.setProperty('--primary', hex);
+            document.documentElement.style.setProperty('--fruit', icon);
+            document.getElementById('cur-theme').innerText = name;
+            // Hot-reload rain if active
+            if(document.getElementById('rain-on').checked) { runRain(false); runRain(true); }
         }
 
-        function run(url) {
-            if(document.getElementById('if-toggle').checked) {
-                hide();
-                const f = document.getElementById('app-frame');
-                f.src = url; f.style.display = 'block';
-            } else {
-                document.getElementById('win-frame').src = url;
-                document.getElementById('win-overlay').style.display = 'flex';
-            }
-        }
-
-        function play() {
-            const v = document.getElementById('v-sel').value;
-            db.transaction("bin").objectStore("bin").get(v).onsuccess = e => {
-                if(!e.target.result) return alert("CORE BINARY NOT FOUND");
-                run(URL.createObjectURL(e.target.result));
-            };
-        }
-
-        function setupHub() {
-            const items = [
-                {t:'Eagler 1.8.8', u:'https://eaglercraft.com'},
-                {t:'Shadow Browser', u:'https://storage.googleapis.com/fernisbest/index.html'},
-                {t:'Retro Games', u:'https://emulatorjs.org'}
-            ];
-            items.forEach(i => {
-                const c = document.createElement('div'); c.className = 'hub-card';
-                c.innerHTML = `<h4 class="text-orange-500 font-black">${i.t}</h4><p class="text-[10px] text-zinc-500 mt-2">Remone Hub Module</p>`;
-                c.onclick = () => run(i.u);
-                document.getElementById('hub-target').appendChild(c);
-            });
-        }
-
-        function doRain(on) {
-            const z = document.getElementById('rain-zone'); z.innerHTML = '';
+        function runRain(on) {
+            const layer = document.getElementById('rain-layer');
+            layer.innerHTML = '';
             if(!on) return;
-            setInterval(() => {
-                const f = document.createElement('div'); f.className = 'fruit';
-                f.innerText = ['🍊','🍋','🍎','🍇'][Math.floor(Math.random()*4)];
-                f.style.left = Math.random()*95+'vw';
-                f.style.animationDuration = Math.random()*3+2+'s';
+            const currentFruit = getComputedStyle(document.documentElement).getPropertyValue('--fruit').trim();
+            
+            window.rainInterval = setInterval(() => {
+                if(!document.getElementById('rain-on').checked) return clearInterval(window.rainInterval);
+                const f = document.createElement('div');
+                f.className = 'fruit-drop';
+                f.innerText = currentFruit;
+                f.style.left = Math.random() * 98 + 'vw';
+                f.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 f.onclick = () => { f.innerText = '💥'; setTimeout(()=>f.remove(), 100); };
-                z.appendChild(f);
+                layer.appendChild(f);
                 setTimeout(()=>f.remove(), 5000);
-            }, 600);
+            }, 450);
         }
 
-        function hide() { ['v-launcher','v-hub','v-settings','app-frame'].forEach(id=>document.getElementById(id).style.display='none'); }
-        function tab(t) { hide(); document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block'); }
-        function stopWin() { document.getElementById('win-overlay').style.display='none'; document.getElementById('win-frame').src=''; }
+        // NAVIGATION
+        function hide() { ['v-settings','v-launcher','os-frame'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function show(p) { hide(); document.getElementById('v-'+p).style.display = (p==='launcher'?'flex':'block'); }
+        function execute(url) {
+            hide();
+            const f = document.getElementById('os-frame');
+            f.src = url;
+            f.style.display = 'block';
+        }
     </script>
 </body>
 </html>
