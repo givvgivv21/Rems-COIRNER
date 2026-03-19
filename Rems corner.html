@@ -2,63 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V65.0</title>
+    <title>Orange OS | V68.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --p: #fb923c; --bg: #050505; --txt: #ffffff; --card: #111; }
-        .light-mode { --bg: #e5e7eb; --txt: #000000; --card: #ffffff; }
+        .light-mode { --bg: #f3f4f6; --txt: #111827; --card: #ffffff; }
         
-        /* FRUIT ACCENTS */
-        .orange-theme { --p: #fb923c; }
-        .apple-theme { --p: #ef4444; }
-        .grape-theme { --p: #a855f7; }
-        .lime-theme { --p: #84cc16; }
-
-        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; transition: transform 0.1s; }
         body { background: var(--bg); color: var(--txt); overflow: hidden; height: 100vh; }
         
-        /* --- TI-84 HARDWARE --- */
+        /* --- CALC UI --- */
         #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
-        .ti-chassis { 
-            background: #333; width: 340px; height: 580px;
-            border-radius: 35px 35px 110px 110px; border: 6px solid #111; 
-            padding: 20px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
-            display: flex; flex-direction: column; 
-        }
-        .ti-lcd { background: #94a392; height: 100px; border: 8px solid #111; border-radius: 4px; font-family: monospace; color: #1a241a; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+        .ti-chassis { background: #333; width: 340px; height: 580px; border-radius: 35px 35px 110px 110px; border: 6px solid #111; padding: 20px; display: flex; flex-direction: column; }
+        .ti-lcd { background: #94a392; height: 100px; border: 8px solid #111; border-radius: 4px; color: #1a241a; padding: 10px; }
         .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
         .k { height: 32px; background: #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; cursor: pointer; color: #fff; box-shadow: 0 4px 0 #1a1a1a; }
         .k:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
         .k-2nd { background: #2563eb !important; box-shadow: 0 4px 0 #1e3a8a !important; }
         .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 0.9rem; box-shadow: 0 4px 0 #9ca3af !important; }
 
-        /* --- SQUARED GUI --- */
-        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 280px 1fr; background: var(--bg); }
-        .sidebar { background: var(--card); border-right: 2px solid var(--p); padding: 30px 15px; display: flex; flex-direction: column; gap: 8px; }
-        .nav-link { padding: 12px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 800; cursor: pointer; color: #888; display: flex; align-items: center; gap: 12px; }
-        .nav-active { background: var(--p); color: #fff !important; box-shadow: 0 4px 15px var(--p); }
+        /* --- SQUARE DESKTOP --- */
+        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; background: var(--bg); }
+        .sidebar { background: var(--card); border-right: 2px solid var(--p); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .nav-link { padding: 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 900; cursor: pointer; color: #666; border: 1px solid transparent; }
+        .nav-link:hover { color: var(--p); }
+        .nav-active { border-color: var(--p); color: var(--p) !important; background: rgba(251, 146, 60, 0.05); }
 
         /* --- CONTENT --- */
-        .view-pane { width: 95%; height: 95%; margin: auto; display: none; background: var(--card); border-radius: 12px; border: 1px solid #333; overflow: hidden; position: relative; }
-        #os-frame { width: 100%; height: 100%; border: none; display: none; }
+        .view-pane { width: 100%; height: 100%; display: none; background: var(--bg); position: relative; }
+        #os-frame { width: 100%; height: 100%; border: none; display: none; background: #000; }
         
-        .mc-footer { height: 100px; background: #000; display: flex; align-items: center; padding: 0 30px; gap: 20px; border-top: 3px solid var(--p); }
-        .play-btn { background: #22c55e; color: #fff; padding: 12px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 4px; }
+        /* INJECTION PROGRESS */
+        .prog-shell { height: 12px; background: #222; border-radius: 6px; overflow: hidden; margin: 20px 0; border: 1px solid #333; position: relative; }
+        #prog-fill { height: 100%; background: linear-gradient(90deg, #fb923c, #f97316); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--p); }
+
+        /* ANIMATED BUTTONS */
+        .btn-push { background: var(--p); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 900; border-bottom: 4px solid #7c2d12; }
+        .btn-push:active { transform: translateY(2px); border-bottom-width: 1px; }
+
+        /* MC LAUNCHER FOOTER */
+        .mc-footer { height: 120px; background: #000; border-top: 3px solid var(--p); display: flex; align-items: center; padding: 0 30px; gap: 15px; }
 
         /* INJECTOR */
-        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; }
-        .inj-box { background: #000; padding: 40px; border: 2px solid var(--p); width: 400px; border-radius: 20px; }
-        .prog-bar { height: 10px; background: #111; border-radius: 10px; overflow: hidden; margin: 20px 0; border: 1px solid #333; }
-        #prog-fill { height: 100%; background: var(--p); width: 0%; transition: width 0.1s; }
+        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; }
+        .inj-box { background: #0a0a0a; padding: 40px; border: 2px solid var(--p); width: 450px; border-radius: 12px; }
     </style>
 </head>
-<body class="orange-theme" onkeydown="if(event.key==='Escape') panic()">
+<body onkeydown="if(event.key==='Escape') panic()">
 
     <div id="boot-gate">
         <div class="ti-chassis">
             <div class="ti-lcd">
                 <div id="ti-stat" style="font-size: 0.5rem; opacity: 0.5;">RAM CLEAR</div>
-                <div id="ti-display" class="text-3xl text-right mt-4">0</div>
+                <div id="ti-display" class="text-3xl text-right mt-4 font-mono">0</div>
             </div>
             <div class="key-grid">
                 <div class="k k-2nd" onclick="cAct('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="cAct('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
@@ -72,76 +68,94 @@
 
     <div id="orange-desktop">
         <aside class="sidebar">
-            <h1 class="text-2xl font-black text-orange-500 mb-6">ORANGE OS</h1>
+            <h1 class="text-xl font-black text-orange-500 mb-4 italic">ORANGE OS V68</h1>
             <div class="nav-link nav-active" onclick="nav('launcher')">🎮 LAUNCHER</div>
             <div class="nav-link" onclick="nav('youtube')">🎬 YOUTUBE</div>
             <div class="nav-link" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')">🌐 BROWSER</div>
             <div class="nav-link" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')">🔥 FIND MORE</div>
             <div class="nav-link" onclick="nav('settings')">⚙️ SETTINGS</div>
-            
-            <div class="mt-auto space-y-2">
-                <button onclick="toggleMode()" class="w-full p-2 bg-zinc-800 rounded text-[10px] font-black uppercase">🌓 Light/Dark</button>
-                <button onclick="toggleFruit()" class="w-full p-2 bg-zinc-800 rounded text-[10px] font-black uppercase">🍎 Fruit Theme</button>
-            </div>
-            <button onclick="panic()" class="mt-4 bg-red-900 p-4 rounded-lg font-black text-white text-xs">PANIC</button>
+            <button onclick="panic()" class="mt-auto bg-red-600 p-3 rounded font-black text-[10px] text-white btn-push">PANIC SHUTDOWN</button>
         </aside>
 
-        <main class="flex items-center justify-center p-4">
-            <iframe id="os-frame" class="view-pane"></iframe>
+        <main class="relative overflow-hidden">
+            <iframe id="os-frame"></iframe>
 
-            <div id="v-launcher" class="view-pane flex-col" style="display: flex;">
-                <div class="flex-grow bg-zinc-900 flex flex-col items-center justify-center relative overflow-hidden">
-                    <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
-                    <h2 class="relative text-5xl font-black italic">Minecraft</h2>
-                    <p id="k-status" class="relative text-[10px] font-bold text-red-500 mt-2 uppercase tracking-widest">Kernel Offline</p>
-                </div>
-                <div class="mc-footer">
-                    <select id="v-sel" class="bg-zinc-800 p-3 rounded font-bold text-orange-400 outline-none">
-                        <option value="18">1.8.8</option>
-                        <option value="112">1.12.2</option>
-                    </select>
-                    <button onclick="bootMC()" class="play-btn">PLAY</button>
+            <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
+                <div class="w-full h-full relative flex flex-col">
+                    <div class="flex-grow bg-zinc-900 flex items-center justify-center">
+                        <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
+                        <div class="z-10 text-center">
+                            <h2 class="text-6xl font-black italic">Minecraft</h2>
+                            <p id="k-status" class="text-xs font-bold text-red-500 uppercase tracking-widest mt-2">Kernel Offline</p>
+                        </div>
+                    </div>
+                    <div class="mc-footer">
+                        <select id="v-sel" class="bg-zinc-800 p-4 rounded font-bold text-orange-500 outline-none border border-zinc-700">
+                            <option value="18">Eaglercraft 1.8.8</option>
+                            <option value="112">Eaglercraft 1.12.2</option>
+                        </select>
+                        <button onclick="bootApp('mc')" class="bg-green-600 px-12 py-4 rounded font-black text-xl btn-push">PLAY</button>
+                        <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="bg-zinc-800 px-6 py-4 rounded font-black text-xs btn-push">TPACKS</button>
+                    </div>
                 </div>
             </div>
 
-            <div id="v-youtube" class="view-pane p-8">
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="yt-url" class="bg-zinc-800 flex-grow p-4 rounded-lg outline-none font-bold text-white" placeholder="YT Video ID or Link">
-                    <button onclick="loadYT()" class="bg-orange-600 px-6 rounded-lg font-black">LOAD</button>
+            <div id="v-youtube" class="view-pane p-10">
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="yt-url" class="bg-zinc-800 flex-grow p-4 rounded outline-none font-bold text-white border border-zinc-700" placeholder="Paste Link">
+                    <button onclick="document.getElementById('yt-url').value=''" class="bg-zinc-700 px-4 rounded font-bold text-xs uppercase">Clear</button>
+                    <button onclick="bootApp('yt')" class="bg-orange-600 px-10 rounded font-black btn-push">LOAD</button>
                 </div>
-                <div class="flex gap-2 mb-4">
-                    <button id="yt-mode-btn" onclick="toggleYTMode()" class="text-[10px] font-bold text-zinc-500 uppercase">Mode: Nocookie</button>
-                </div>
-                <div id="yt-area" class="w-full aspect-video bg-black rounded-lg border-2 border-zinc-800 overflow-hidden"></div>
+                <div id="yt-area" class="w-full aspect-video bg-black rounded-lg border-2 border-zinc-800 overflow-hidden shadow-2xl"></div>
             </div>
 
-            <div id="v-settings" class="view-pane p-10">
-                <button onclick="wipe()" class="bg-red-600 p-6 rounded-xl font-black w-full">WIPE ALL DATA</button>
+            <div id="v-settings" class="view-pane p-10 space-y-6">
+                <h2 class="text-2xl font-black text-orange-500 uppercase">Settings</h2>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-zinc-900 p-6 rounded border border-zinc-800 flex justify-between items-center">
+                        <span>iFrame Window Mode</span>
+                        <input type="checkbox" id="iframe-toggle" checked class="w-6 h-6 accent-orange-500">
+                    </div>
+                    <button onclick="wipe()" class="bg-red-600 p-4 rounded font-black uppercase text-xs btn-push">Wipe All Injection Blobs</button>
+                </div>
             </div>
         </main>
     </div>
 
     <div id="inj-modal">
         <div class="inj-box">
-            <h2 class="font-black text-orange-500 mb-4">INJECTOR</h2>
-            <input type="file" id="f1" class="text-xs mb-4 block w-full">
-            <input type="file" id="f2" class="text-xs mb-4 block w-full">
-            <div class="prog-bar"><div id="prog-fill"></div></div>
-            <button onclick="runInject()" class="w-full bg-orange-600 p-4 rounded font-black">INJECT FILES</button>
+            <h2 class="font-black text-orange-500 mb-2 uppercase text-xl">Injection Console</h2>
+            <div class="space-y-4">
+                <div>
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase">v1.8.8 Source</span>
+                    <input type="file" id="f1" class="text-xs w-full bg-zinc-900 p-2 border border-zinc-800 rounded">
+                </div>
+                <div>
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase">v1.12.2 Source</span>
+                    <input type="file" id="f2" class="text-xs w-full bg-zinc-900 p-2 border border-zinc-800 rounded">
+                </div>
+            </div>
+            
+            <div class="prog-shell"><div id="prog-fill"></div></div>
+            
+            <div class="flex gap-2">
+                <button onclick="runInject()" class="flex-grow bg-orange-600 p-4 rounded font-black btn-push">START INJECTION</button>
+                <button onclick="document.getElementById('inj-modal').style.display='none'" class="px-6 bg-zinc-800 rounded font-bold text-xs uppercase">Exit</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let db, expr = "", is2nd = false, fruits = ['orange','apple','grape','lime'], fIdx = 0, ytMode = 'nocookie';
+        let db, expr = "", is2nd = false;
 
-        const req = indexedDB.open("ORANGE_V65", 1);
+        const req = indexedDB.open("ORANGE_V68", 1);
         req.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
         req.onsuccess = e => { db = e.target.result; check(); };
 
         function check() {
             db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
                 const s = document.getElementById('k-status');
-                s.innerText = e.target.result > 0 ? "KERNEL READY ("+e.target.result+")" : "KERNEL OFFLINE";
+                s.innerText = e.target.result > 0 ? "KERNEL ACTIVE ("+e.target.result+")" : "KERNEL OFFLINE";
                 s.style.color = e.target.result > 0 ? "#22c55e" : "#ef4444";
             }
         }
@@ -155,60 +169,57 @@
             if(a==='del') { expr = ""; document.getElementById('ti-display').innerText = "0"; }
         }
 
-        function toggleMode() { document.body.classList.toggle('light-mode'); }
-        function toggleFruit() {
-            document.body.classList.remove(fruits[fIdx]+'-theme');
-            fIdx = (fIdx + 1) % fruits.length;
-            document.body.classList.add(fruits[fIdx]+'-theme');
-        }
-
-        function toggleYTMode() {
-            ytMode = ytMode === 'nocookie' ? 'standard' : 'nocookie';
-            document.getElementById('yt-mode-btn').innerText = "Mode: " + ytMode;
-        }
-
-        function loadYT() {
-            let val = document.getElementById('yt-url').value;
-            let id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val.split('/').pop();
-            let domain = ytMode === 'nocookie' ? 'youtube-nocookie.com' : 'youtube.com';
-            document.getElementById('yt-area').innerHTML = `<iframe width="100%" height="100%" src="https://www.${domain}/embed/${id}" frameborder="0" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
-        }
-
         async function runInject() {
-            const files = [document.getElementById('f1').files[0], document.getElementById('f2').files[0]];
+            const f1 = document.getElementById('f1').files[0];
+            const f2 = document.getElementById('f2').files[0];
             const fill = document.getElementById('prog-fill');
-            const keys = ["18", "112"];
+            fill.style.width = "5%";
             
-            fill.style.width = "20%";
-            const tx = db.transaction("blobs", "readwrite");
-            const store = tx.objectStore("blobs");
-
-            for(let i=0; i<files.length; i++) {
-                if(files[i]) {
-                    const req = store.put(new Blob([await files[i].arrayBuffer()], {type:'text/html'}), keys[i]);
-                    req.onsuccess = () => { 
-                        fill.style.width = (50 * (i+1)) + "%";
-                        if(i === files.length - 1 || !files[i+1]) {
-                            setTimeout(() => {
-                                alert("INJECTION FINISHED");
-                                document.getElementById('inj-modal').style.display = 'none';
-                                check();
-                            }, 200);
-                        }
+            const storeData = async (file, key, progress) => {
+                return new Promise(async (resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const tx = db.transaction("blobs", "readwrite");
+                        tx.objectStore("blobs").put(new Blob([e.target.result], {type:'text/html'}), key);
+                        tx.oncomplete = () => { fill.style.width = progress + "%"; resolve(); };
                     };
-                }
-            }
+                    reader.readAsArrayBuffer(file);
+                });
+            };
+
+            if(f1) await storeData(f1, "18", 50);
+            if(f2) await storeData(f2, "112", 100);
+            
+            if(fill.style.width !== "100%") fill.style.width = "100%";
+            
+            setTimeout(() => {
+                alert("INJECTION COMPLETE");
+                document.getElementById('inj-modal').style.display='none';
+                check();
+            }, 500);
         }
 
-        function bootMC() {
-            const v = document.getElementById('v-sel').value;
-            db.transaction("blobs").objectStore("blobs").get(v).onsuccess = e => {
-                if(e.target.result) {
-                    const f = document.getElementById('os-frame');
-                    f.src = URL.createObjectURL(e.target.result);
-                    f.style.display = 'block';
-                    ['v-launcher','v-youtube','v-settings'].forEach(id => document.getElementById(id).style.display='none');
-                } else alert("Inject " + v + " first.");
+        function bootApp(type) {
+            const useIframe = document.getElementById('iframe-toggle').checked;
+            if (type === 'mc') {
+                const v = document.getElementById('v-sel').value;
+                db.transaction("blobs").objectStore("blobs").get(v).onsuccess = e => {
+                    if (e.target.result) {
+                        const url = URL.createObjectURL(e.target.result);
+                        if (useIframe) {
+                            const f = document.getElementById('os-frame');
+                            f.src = url; f.style.display = 'block';
+                            ['v-launcher','v-youtube','v-settings'].forEach(id => document.getElementById(id).style.display='none');
+                        } else { window.open(url, '_blank'); }
+                    } else alert("Inject version " + v + " first.");
+                };
+            } else if (type === 'yt') {
+                let val = document.getElementById('yt-url').value;
+                let id = val.includes('v=') ? val.split('v=')[1].split('&')[0] : val.split('/').pop();
+                let url = `https://www.youtube-nocookie.com/embed/${id}`;
+                if (useIframe) {
+                    document.getElementById('yt-area').innerHTML = `<iframe width="100%" height="100%" src="${url}" frameborder="0" allowfullscreen></iframe>`;
+                } else { window.open(url, '_blank'); }
             }
         }
 
@@ -219,14 +230,8 @@
             event.currentTarget.classList.add('nav-active');
         }
 
-        function panic() {
-            document.getElementById('orange-desktop').style.display = 'none';
-            document.getElementById('boot-gate').style.display = 'flex';
-            document.getElementById('os-frame').src = "";
-            document.getElementById('yt-area').innerHTML = "";
-        }
-
-        function wipe() { if(confirm("Reset?")) { db.transaction("blobs","readwrite").objectStore("blobs").clear(); location.reload(); }}
+        function panic() { location.reload(); }
+        function wipe() { if(confirm("Clear Kernel?")) { db.transaction("blobs","readwrite").objectStore("blobs").clear(); location.reload(); }}
     </script>
 </body>
 </html>
