@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORANGE OS | ENCRYPTED V40.0</title>
+    <title>ORANGE OS | V41 HYPER-MOTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -12,434 +11,241 @@
             --ti-plastic: #fb923c;
             --lcd-bg: #cbd5e1;
             --dark-bg: #030303;
-            --sidebar-bg: #0f172a;
         }
 
-        /* --- GLOBAL RESET & SECURITY --- */
-        * { user-select: none; -webkit-user-drag: none; }
-        body { 
-            background-color: var(--dark-bg); 
-            color: #fff; 
-            font-family: 'Inter', system-ui, sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-            width: 100vw;
+        /* --- GLOBAL ANIMATIONS --- */
+        @keyframes fruitFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
         }
+        .fruit { position: fixed; font-size: 2.5rem; pointer-events: none; z-index: 50; animation: fruitFall linear infinite; }
 
-        /* --- HYPER-PULSE NEON ANIMATIONS --- */
-        @keyframes pulseBorder {
-            0% { border-color: var(--orange-main); box-shadow: 0 0 10px var(--orange-glow); }
-            50% { border-color: #fff; box-shadow: 0 0 40px var(--orange-glow), inset 0 0 15px var(--orange-glow); }
-            100% { border-color: var(--orange-main); box-shadow: 0 0 10px var(--orange-glow); }
+        @keyframes hyperGlow {
+            0%, 100% { filter: drop-shadow(0 0 5px var(--orange-glow)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px var(--orange-glow)); transform: scale(1.02); }
         }
+        .animate-glow { animation: hyperGlow 3s infinite ease-in-out; }
 
-        @keyframes pulseText {
-            0%, 100% { text-shadow: 0 0 5px var(--orange-glow); opacity: 1; }
-            50% { text-shadow: 0 0 20px var(--orange-glow); opacity: 0.8; }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+        .slide-entry { animation: slideIn 0.5s ease-out forwards; }
 
-        .secure-glow { animation: pulseBorder 4s infinite ease-in-out; }
-        .text-glow { animation: pulseText 3s infinite ease-in-out; }
+        body { background: var(--dark-bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; margin: 0; }
 
-        /* --- INTRICATE CIRCULAR CALCULATOR GUI --- */
-        #cloak-container {
-            position: fixed; inset: 0; z-index: 99999;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
-
+        /* --- CIRCULAR CALC CHASSIS --- */
+        #cloak { position: fixed; inset: 0; z-index: 10000; background: radial-gradient(circle, #1a1a1a, #000); display: flex; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
         .ti-chassis {
-            background: var(--ti-plastic);
-            width: 440px; height: 820px;
-            border-radius: 60px 60px 180px 180px; /* Aggressive Circular Bottom */
-            border: 10px solid #92400e;
-            padding: 40px;
-            position: relative;
-            box-shadow: 0 60px 100px -20px rgba(0,0,0,0.8), inset 0 -20px 40px rgba(0,0,0,0.2);
+            background: var(--ti-plastic); width: 440px; height: 820px;
+            border-radius: 60px 60px 180px 180px; border: 10px solid #92400e;
+            padding: 40px; box-shadow: 0 0 100px rgba(0,0,0,0.8);
+        }
+        .lcd { 
+            background: var(--lcd-bg); height: 180px; border-radius: 15px; border: 6px solid #1e293b;
+            padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end;
+            font-family: monospace; font-size: 2rem; color: #1e293b; font-weight: 900;
         }
 
-        .lcd-screen {
-            background: var(--lcd-bg);
-            height: 200px;
-            border-radius: 15px;
-            border: 6px solid #1e293b;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-end;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
-            overflow: hidden;
-        }
+        /* --- BUTTONS --- */
+        .btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
+        .k { height: 45px; background: #334155; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 0 #0f172a; transition: 0.1s; }
+        .k:active { transform: translateY(3px); box-shadow: 0 1px 0 #0f172a; }
+        .k-2 { background: #2563eb; } .k-n { background: #f1f5f9; color: #0f172a; font-size: 1.2rem; }
 
-        #lcd-output {
-            font-family: 'Courier New', monospace;
-            font-size: 2.2rem;
-            color: #0f172a;
-            font-weight: bold;
-            letter-spacing: -1px;
-        }
+        /* --- OS LAYOUT --- */
+        #os-root { display: none; height: 100vh; width: 100vw; grid-template-columns: 320px 1fr; opacity: 0; transition: 1s; }
+        .sidebar { background: #0f172a; border-right: 4px solid var(--orange-main); padding: 50px 30px; display: flex; flex-direction: column; gap: 15px; }
+        .nav-btn { border: 2px solid var(--orange-main); padding: 18px; border-radius: 20px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; justify-content: space-between; }
+        .nav-btn:hover { background: var(--orange-main); color: #000; box-shadow: 0 0 30px var(--orange-glow); transform: scale(1.05); }
 
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin-top: 40px;
-        }
+        /* --- FIND MORE HUB --- */
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .hub-card { background: #1e293b; border: 2px solid transparent; border-radius: 15px; padding: 15px; cursor: pointer; transition: 0.3s; }
+        .hub-card:hover { border-color: var(--orange-main); transform: translateY(-5px); background: #2d3e50; }
 
-        .key {
-            height: 44px;
-            background: #334155;
-            border-radius: 12px 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.65rem;
-            font-weight: 900;
-            color: #f8fafc;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #0f172a;
-            transition: all 0.05s ease;
-            text-transform: uppercase;
-        }
-
-        .key:active { transform: translateY(3px); box-shadow: 0 2px 0 #0f172a; }
-
-        .key-blue { background: #2563eb; }
-        .key-green { background: #16a34a; }
-        .key-num { background: #f1f5f9; color: #0f172a; font-size: 1.3rem; border-radius: 8px; }
-        .key-black { background: #000; color: #fff; }
-
-        /* --- ORANGE OS MAIN LAYOUT --- */
-        #os-root {
-            display: none;
-            height: 100vh; width: 100vw;
-            grid-template-columns: 320px 1fr;
-            position: absolute; top: 0; left: 0;
-        }
-
-        .sidebar-nav {
-            background: var(--sidebar-bg);
-            border-right: 4px solid var(--orange-main);
-            padding: 50px 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .nav-btn {
-            padding: 18px 25px;
-            border: 2px solid var(--orange-main);
-            border-radius: 20px;
-            font-weight: 800;
-            font-style: italic;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.3s;
-        }
-
-        .nav-btn:hover {
-            background: var(--orange-main);
-            color: #000;
-            transform: translateX(10px);
-            box-shadow: 0 0 25px var(--orange-glow);
-        }
-
-        .content-engine {
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* --- APP EXECUTION ENGINES --- */
-        #integrated-iframe {
-            width: 96%; height: 94%;
-            border: 4px solid var(--orange-main);
-            border-radius: 15px;
-            display: none;
-            background: #000;
-        }
-
-        #overlay-window {
-            position: fixed; inset: 0;
-            z-index: 999999;
-            background: #000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .window-bar {
-            background: var(--orange-main);
-            height: 45px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            color: #000;
-            font-weight: 900;
-        }
-
-        /* --- SECURE MODALS --- */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 100001;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-body {
-            background: #1e293b;
-            padding: 40px;
-            width: 500px;
-            border-radius: 30px;
-            border: 3px solid var(--orange-main);
-        }
+        /* --- EXECUTION LAYERS --- */
+        #iframe-container { width: 95%; height: 90%; border: 4px solid var(--orange-main); border-radius: 20px; display: none; background: #000; overflow: hidden; }
+        #win-overlay { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; flex-direction: column; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div id="cloak-container">
-        <div class="ti-chassis secure-glow">
-            <div class="lcd-screen">
-                <div id="lcd-status" style="font-size: 0.6rem; color: #475569; width: 100%; text-align: left;">RAM CLEAR: 2026_SECURE</div>
-                <div id="lcd-output">0</div>
-            </div>
-            
-            <div class="button-grid" id="keypad">
-                <div class="key">y=</div><div class="key">win</div><div class="key">zoom</div><div class="key">trace</div><div class="key">graph</div>
-                <div class="key key-blue" data-key="2nd">2nd</div><div class="key">mode</div><div class="key" data-key="del">del</div><div class="key">stat</div><div class="key">prgm</div>
-                <div class="key key-green">alpha</div><div class="key">math</div><div class="key">apps</div><div class="key">prgm</div><div class="key">vars</div>
-                <div class="key key-num" data-val="7">7</div><div class="key key-num" data-val="8">8</div><div class="key key-num" data-val="9">9</div><div class="key">/</div><div class="key">^</div>
-                <div class="key key-num" data-val="4">4</div><div class="key key-num" data-val="5">5</div><div class="key key-num" data-val="6">6</div><div class="key">*</div><div class="key">(</div>
-                <div class="key key-num" data-val="1">1</div><div class="key key-num" data-val="2">2</div><div class="key key-num" data-val="3">3</div><div class="key">-</div><div class="key">)</div>
-                <div class="key key-num" data-val="0">0</div><div class="key">.</div><div class="key">(-)</div><div class="key key-black col-span-2" data-key="enter">ENTER</div>
+    <div id="rain-zone"></div>
+
+    <div id="cloak">
+        <div class="ti-chassis animate-glow">
+            <div class="lcd"><div id="lcd-text">READY</div></div>
+            <div class="btn-grid">
+                <div class="k">y=</div><div class="k">win</div><div class="k">zoom</div><div class="k">trace</div><div class="k">graph</div>
+                <div class="k k-2" onclick="calc('2nd')">2nd</div><div class="k">mode</div><div class="k" onclick="calc('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
+                <div class="k k-n" onclick="press('7')">7</div><div class="k k-n" onclick="press('8')">8</div><div class="k k-n" onclick="press('9')">9</div><div class="k">/</div><div class="k">^</div>
+                <div class="k k-n" onclick="press('4')">4</div><div class="k k-n" onclick="press('5')">5</div><div class="k k-n" onclick="press('6')">6</div><div class="k">*</div><div class="k">(</div>
+                <div class="k k-n" onclick="press('1')">1</div><div class="k k-n" onclick="press('2')">2</div><div class="k k-n" onclick="press('3')">3</div><div class="k">-</div><div class="k">)</div>
+                <div class="k k-n" onclick="press('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k col-span-2" style="background:#000" onclick="calc('ent')">ENTER</div>
             </div>
         </div>
     </div>
 
-    <div id="injector-modal" class="modal-overlay">
-        <div class="modal-body secure-glow">
-            <h2 class="text-3xl font-black italic text-orange-500 mb-6 text-glow">CORE INJECTOR</h2>
-            <div class="space-y-4">
-                <div class="bg-black p-4 rounded-lg">
-                    <label class="text-[10px] text-zinc-500 block mb-2 uppercase font-bold">Minecraft Core 1.12.2</label>
-                    <input type="file" id="core-12" class="text-xs text-orange-500">
-                </div>
-                <div class="bg-black p-4 rounded-lg">
-                    <label class="text-[10px] text-zinc-500 block mb-2 uppercase font-bold">Minecraft Core 1.8.8</label>
-                    <input type="file" id="core-8" class="text-xs text-orange-500">
-                </div>
-            </div>
-            <button id="commit-btn" class="w-full bg-orange-600 mt-8 py-4 font-black text-black rounded-xl hover:bg-orange-400">COMMIT BINARIES</button>
-            <button onclick="document.getElementById('injector-modal').style.display='none'" class="w-full text-zinc-500 text-[10px] mt-4 uppercase">Abort Sequence</button>
+    <div id="modal-inj" class="fixed inset-0 bg-black/90 z-[15000] hidden items-center justify-center p-6">
+        <div class="bg-zinc-900 p-10 w-full max-w-lg rounded-[40px] border-4 border-orange-600 slide-entry">
+            <h2 class="text-orange-500 font-black text-3xl italic mb-6">CORE INJECTOR</h2>
+            <input type="file" id="f12" class="w-full bg-black p-4 mb-4 border border-zinc-800 text-xs">
+            <input type="file" id="f8" class="w-full bg-black p-4 mb-6 border border-zinc-800 text-xs">
+            <button onclick="commitFiles()" class="w-full bg-orange-600 p-5 font-black text-black rounded-2xl hover:bg-white transition-colors">PUSH BINARIES</button>
+            <button onclick="document.getElementById('modal-inj').style.display='none'" class="w-full mt-4 text-zinc-600 text-xs uppercase">Abort Sequence</button>
         </div>
     </div>
 
     <div id="os-root">
-        <aside class="sidebar-nav">
-            <h1 class="text-4xl font-black italic text-orange-600 mb-10 text-glow tracking-tighter">ORANGE OS</h1>
-            
-            <nav class="space-y-4">
-                <div class="nav-btn" data-target="launcher"><span>LAUNCHER</span><span>⛏️</span></div>
-                <div class="nav-btn" data-target="browser"><span>BROWSER</span><span>🌐</span></div>
-                <div class="nav-btn" data-target="settings"><span>SETTINGS</span><span>⚙️</span></div>
-            </nav>
-
-            <div class="mt-auto nav-btn border-white/20" onclick="location.reload()">
-                <span>SECURE PURGE</span><span>❌</span>
-            </div>
+        <aside class="sidebar">
+            <h1 class="text-4xl font-black italic text-orange-600 mb-8 animate-glow">ORANGE OS</h1>
+            <div class="nav-btn" onclick="openView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-btn" onclick="openView('hub')"><span>FIND MORE</span><span>🔥</span></div>
+            <div class="nav-btn" onclick="exec('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
+            <div class="nav-btn" onclick="openView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
+            <div class="mt-auto nav-btn border-white/10" onclick="location.reload()"><span>REBOOT</span><span>❌</span></div>
         </aside>
 
-        <main class="content-engine" id="view-port">
-            <iframe id="integrated-iframe" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        <main class="relative flex-grow flex items-center justify-center bg-black">
+            <iframe id="iframe-container"></iframe>
 
-            <div id="view-launcher" class="hidden w-[900px] h-[550px] bg-[#313233] border border-zinc-700 flex rounded-lg overflow-hidden">
-                <div class="w-52 bg-[#212223] p-4 space-y-2 text-[11px] font-bold text-zinc-400 border-right border-black">
-                    <div class="bg-zinc-700 text-white p-2 rounded">Java Edition</div>
-                    <div class="p-2">Installations</div>
-                    <div class="p-2">Skins</div>
-                </div>
-                <div class="flex-grow flex flex-col bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover">
-                    <div class="mt-auto h-28 bg-black/90 flex items-center px-10 gap-6">
-                        <select id="version-selector" class="bg-[#313233] text-white p-3 border border-zinc-600 font-black outline-none">
-                            <option value="mc12">Release 1.12.2</option>
-                            <option value="mc8">Release 1.8.8</option>
-                        </select>
-                        <button id="play-trigger" class="bg-[#3c8527] px-12 py-4 text-2xl font-black rounded hover:bg-[#47a02e]">PLAY</button>
-                        <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main')" class="bg-zinc-800 text-[10px] px-4 py-4 border border-zinc-600 font-bold">RESOURCE PACKS</button>
+            <div id="v-launcher" class="hidden slide-entry">
+                <div class="w-[850px] h-[500px] bg-zinc-800 rounded-3xl overflow-hidden flex border-2 border-zinc-700">
+                    <div class="w-48 bg-zinc-900 p-6 space-y-4 font-bold text-zinc-500">
+                        <div class="text-orange-500">Java Edition</div>
+                        <div>Skins</div>
+                    </div>
+                    <div class="flex-grow flex flex-col bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover">
+                        <div class="mt-auto bg-black/95 p-8 flex items-center gap-6">
+                            <select id="v-sel" class="bg-zinc-800 text-white p-4 font-black outline-none"><option value="mc12">1.12.2</option><option value="mc8">1.8.8</option></select>
+                            <button onclick="playMC()" class="bg-green-600 px-12 py-4 text-2xl font-black rounded hover:bg-green-500">PLAY</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="view-settings" class="hidden w-[500px] bg-zinc-900 p-10 rounded-3xl secure-glow">
-                <h2 class="text-2xl font-black text-orange-500 mb-8 uppercase italic">System Controls</h2>
-                <div class="space-y-6">
-                    <div class="flex justify-between items-center bg-black p-6 rounded-2xl border border-orange-900">
-                        <span class="font-bold text-orange-200">INTEGRATED IFRAME MODE</span>
-                        <input type="checkbox" id="iframe-toggle" class="w-8 h-8 accent-orange-600">
+            <div id="v-hub" class="hidden w-full h-full p-10 overflow-y-auto slide-entry">
+                <h2 class="text-3xl font-black text-orange-500 mb-8 uppercase">Discovery Hub</h2>
+                <div class="hub-grid" id="hub-items">
                     </div>
-                    <p class="text-[9px] text-zinc-500 uppercase tracking-widest text-center">Toggle ON to keep apps inside the OS window.<br>Toggle OFF for standalone window execution.</p>
+            </div>
+
+            <div id="v-settings" class="hidden w-[500px] bg-zinc-900 p-10 rounded-[40px] border-2 border-orange-600 slide-entry">
+                <h2 class="text-2xl font-black text-orange-500 mb-6 uppercase">System Config</h2>
+                <div class="flex justify-between items-center bg-black p-6 rounded-3xl mb-4">
+                    <span class="font-bold">IFRAME EXECUTION</span>
+                    <input type="checkbox" id="if-toggle" class="w-8 h-8 accent-orange-600">
+                </div>
+                <div class="flex justify-between items-center bg-black p-6 rounded-3xl">
+                    <span class="font-bold">FRUIT RAIN</span>
+                    <input type="checkbox" id="rain-toggle" onchange="toggleRain(this.checked)" class="w-8 h-8 accent-orange-600">
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="overlay-window">
-        <div class="window-bar">
-            <span id="window-title">ORANGE_OS_PROCESS</span>
-            <button onclick="closeOverlay()" class="bg-black text-white px-8 h-full font-black">EXIT_PROCESS</button>
+    <div id="win-overlay">
+        <div class="bg-orange-600 p-2 flex justify-between items-center">
+            <span class="font-black italic px-4 text-xs">ORANGE_KERNEL_PROCESS</span>
+            <button onclick="closeWin()" class="bg-black text-white px-8 font-black py-2 hover:bg-zinc-900">TERMINATE</button>
         </div>
-        <iframe id="overlay-frame" class="flex-grow border-none"></iframe>
+        <iframe id="win-frame" class="flex-grow bg-black border-none"></iframe>
     </div>
 
     <script>
-    /* --- ENCAPSULATED OS KERNEL --- */
-    (function() {
-        let db;
-        let isShifted = false;
-        let displayBuffer = "";
-        
-        const ui = {
-            cloak: document.getElementById('cloak-container'),
-            root: document.getElementById('os-root'),
-            lcd: document.getElementById('lcd-output'),
-            lcdStatus: document.getElementById('lcd-status'),
-            iframe: document.getElementById('integrated-iframe'),
-            overlay: document.getElementById('overlay-window'),
-            overlayFrame: document.getElementById('overlay-frame'),
-            iframeToggle: document.getElementById('iframe-toggle')
-        };
+        (function() {
+            let db;
+            let isShift = false;
+            let buf = "";
 
-        // 1. DATABASE INITIALIZATION
-        const dbReq = indexedDB.open("ORANGE_VAULT", 5);
-        dbReq.onupgradeneeded = (e) => {
-            const d = e.target.result;
-            if (!d.objectStoreNames.contains("binaries")) d.createObjectStore("binaries");
-        };
-        dbReq.onsuccess = (e) => { db = e.target.result; console.log("Security Vault Online"); };
+            // 1. DATABASE
+            const req = indexedDB.open("ORANGE_V41", 1);
+            req.onupgradeneeded = e => e.target.result.createObjectStore("cores");
+            req.onsuccess = e => { db = e.target.result; populateHub(); };
 
-        // 2. CALCULATOR STATE ENGINE
-        document.getElementById('keypad').addEventListener('click', (e) => {
-            const key = e.target.closest('.key');
-            if (!key) return;
-
-            const val = key.dataset.val;
-            const action = key.dataset.key;
-
-            if (val) {
-                displayBuffer += val;
-                ui.lcd.innerText = displayBuffer;
-            }
-
-            if (action === '2nd') {
-                isShifted = !isShifted;
-                ui.lcd.style.color = isShifted ? '#2563eb' : '#0f172a';
-                ui.lcdStatus.innerText = isShifted ? "MODE: SHIFT_ACTIVE" : "MODE: STANDARD";
-            }
-
-            if (isShifted && action === 'del') {
-                document.getElementById('injector-modal').style.display = 'flex';
-                isShifted = false;
-                resetLCD();
-            }
-
-            if (isShifted && action === 'enter') {
-                ui.cloak.style.display = 'none';
-                ui.root.style.display = 'grid';
-                isShifted = false;
-            }
-
-            if (action === 'enter' && !isShifted) {
-                displayBuffer = "";
-                ui.lcd.innerText = "0";
-            }
-        });
-
-        function resetLCD() {
-            isShifted = false;
-            ui.lcd.style.color = '#0f172a';
-            ui.lcdStatus.innerText = "RAM CLEAR: OK";
-        }
-
-        // 3. INJECTION LOGIC
-        document.getElementById('commit-btn').addEventListener('click', async () => {
-            const f12 = document.getElementById('core-12').files[0];
-            const f8 = document.getElementById('core-8').files[0];
-
-            if (f12) await storeBinary('mc12', f12);
-            if (f8) await storeBinary('mc8', f8);
-
-            alert("SYSTEM CORE RELOADED");
-            document.getElementById('injector-modal').style.display = 'none';
-        });
-
-        async function storeBinary(id, file) {
-            const blob = new Blob([await file.arrayBuffer()], { type: 'text/html' });
-            const tx = db.transaction("binaries", "readwrite");
-            tx.objectStore("binaries").put(blob, id);
-        }
-
-        // 4. NAVIGATION SYSTEM
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = btn.dataset.target;
-                if (target === 'browser') {
-                    executeApp("https://storage.googleapis.com/fernisbest/index.html");
-                } else {
-                    switchView(target);
+            // 2. CALC FUNCTIONS
+            window.press = (v) => { buf += v; document.getElementById('lcd-text').innerText = buf; };
+            window.calc = (cmd) => {
+                const lcd = document.getElementById('lcd-text');
+                if(cmd === '2nd') { isShift = !isShift; lcd.style.color = isShift ? '#2563eb' : '#1e293b'; lcd.innerText = isShift ? "SHIFTED" : (buf || "0"); }
+                if(isShift && cmd === 'del') { document.getElementById('modal-inj').style.display = 'flex'; isShift = false; }
+                if(isShift && cmd === 'ent') { 
+                    document.getElementById('cloak').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('cloak').style.display = 'none';
+                        const root = document.getElementById('os-root');
+                        root.style.display = 'grid';
+                        setTimeout(() => root.style.opacity = '1', 10);
+                    }, 800);
                 }
-            });
-        });
-
-        function switchView(view) {
-            ui.iframe.style.display = 'none';
-            document.getElementById('view-launcher').style.display = 'none';
-            document.getElementById('view-settings').style.display = 'none';
-
-            const active = document.getElementById('view-' + view);
-            if (active) active.style.display = (view === 'launcher' ? 'flex' : 'block');
-        }
-
-        // 5. EXECUTION ENGINE
-        function executeApp(url) {
-            if (ui.iframeToggle.checked) {
-                switchView('none');
-                ui.iframe.src = url;
-                ui.iframe.style.display = 'block';
-            } else {
-                ui.overlayFrame.src = url;
-                ui.overlay.style.display = 'flex';
-            }
-        }
-
-        document.getElementById('play-trigger').addEventListener('click', () => {
-            const ver = document.getElementById('version-selector').value;
-            const tx = db.transaction("binaries", "readonly");
-            tx.objectStore("binaries").get(ver).onsuccess = (e) => {
-                const res = e.target.result;
-                if (!res) return alert("CORE BINARY MISSING. PLEASE INJECT.");
-                executeApp(URL.createObjectURL(res));
+                if(cmd === 'ent' && !isShift) { buf = ""; lcd.innerText = "0"; }
             };
-        });
 
-        window.closeOverlay = () => {
-            ui.overlay.style.display = 'none';
-            ui.overlayFrame.src = "";
-        };
+            // 3. INJECTOR
+            window.commitFiles = async () => {
+                const f12 = document.getElementById('f12').files[0];
+                const f8 = document.getElementById('f8').files[0];
+                const tx = db.transaction("cores", "readwrite");
+                if(f12) tx.objectStore("cores").put(new Blob([await f12.arrayBuffer()], {type:'text/html'}), "mc12");
+                if(f8) tx.objectStore("cores").put(new Blob([await f8.arrayBuffer()], {type:'text/html'}), "mc8");
+                alert("CORES INJECTED");
+                document.getElementById('modal-inj').style.display = 'none';
+            };
 
-        // 6. ANTI-TAMPER SECURITY
-        window.addEventListener('keydown', (e) => {
-            if (e.key === "Escape") location.reload();
-            if (e.ctrlKey && (e.key === 'u' || e.key === 's')) e.preventDefault();
-        });
+            // 4. HUB & EXECUTION
+            function populateHub() {
+                const apps = [
+                    {n: 'Eaglercraft 1.8.8', u: 'https://eaglercraft.com/mc/1.8.8/'},
+                    {n: 'Retro Hub', u: 'https://emulatorjs.org/'},
+                    {n: 'Shadow Browser', u: 'https://storage.googleapis.com/fernisbest/index.html'},
+                    {n: 'Discord Web', u: 'https://discord.com/app'}
+                ];
+                apps.forEach(a => {
+                    const d = document.createElement('div');
+                    d.className = 'hub-card slide-entry';
+                    d.innerHTML = `<h3 class="font-black text-orange-500">${a.n}</h3><p class="text-[10px] text-zinc-500">External Execution Module</p>`;
+                    d.onclick = () => exec(a.u);
+                    document.getElementById('hub-items').appendChild(d);
+                });
+            }
 
-    })();
+            window.exec = (url) => {
+                const mode = document.getElementById('if-toggle').checked;
+                if(mode) {
+                    hideViews();
+                    const f = document.getElementById('iframe-container');
+                    f.src = url; f.style.display = 'block';
+                } else {
+                    document.getElementById('win-frame').src = url;
+                    document.getElementById('win-overlay').style.display = 'flex';
+                }
+            };
+
+            window.playMC = () => {
+                const v = document.getElementById('v-sel').value;
+                db.transaction("cores").objectStore("cores").get(v).onsuccess = e => {
+                    if(!e.target.result) return alert("CORE MISSING");
+                    exec(URL.createObjectURL(e.target.result));
+                };
+            };
+
+            // 5. FRUIT RAIN
+            window.toggleRain = (on) => {
+                const z = document.getElementById('rain-zone');
+                z.innerHTML = '';
+                if(!on) return;
+                for(let i=0; i<25; i++) {
+                    const f = document.createElement('div');
+                    f.className = 'fruit'; f.innerText = ['🍊','🍋','🍇','🍎'][Math.floor(Math.random()*4)];
+                    f.style.left = Math.random()*100+'vw';
+                    f.style.animationDuration = (Math.random()*3 + 2) + 's';
+                    f.style.animationDelay = Math.random()*5 + 's';
+                    z.appendChild(f);
+                }
+            };
+
+            window.hideViews = () => { ['v-launcher', 'v-hub', 'v-settings', 'iframe-container'].forEach(id => document.getElementById(id).style.display = 'none'); };
+            window.openView = (v) => { hideViews(); document.getElementById('v-'+v).style.display = (v==='launcher'?'flex':'block'); };
+            window.closeWin = () => { document.getElementById('win-overlay').style.display = 'none'; document.getElementById('win-frame').src = ''; };
+        })();
     </script>
 </body>
 </html>
