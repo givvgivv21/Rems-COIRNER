@@ -11,25 +11,28 @@
         * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; transition: 0.3s; }
 
+        /* BOUNCY PUMPKIN */
+        .bouncy-pumpkin { font-size: 120px; cursor: default; animation: bounce 2s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(249,115,22,0.4)); margin-bottom: -20px; z-index: 10001; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+
         #rain-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 50; display: none; }
         #cloak { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        .ti-body { background: #f97316; width: 340px; height: 580px; border-radius: 45px 45px 90px 90px; padding: 25px; border: 5px solid #c2410c; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-        .lcd { background: #94a392; height: 100px; border: 4px solid #000; border-radius: 12px; padding: 10px; color: #1a241a; font-family: monospace; font-weight: bold; }
+        .ti-body { background: #f97316; width: 340px; height: 580px; border-radius: 45px 45px 90px 90px; padding: 25px; border: 5px solid #c2410c; box-shadow: 0 25px 50px rgba(0,0,0,0.8); position: relative; }
+        .lcd { background: #94a392; height: 100px; border: 4px solid #000; border-radius: 12px; padding: 10px; color: #1a241a; font-family: monospace; font-weight: bold; box-shadow: inset 0 4px 10px rgba(0,0,0,0.3); }
 
         #orange-core { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; padding: 20px; gap: 20px; position: relative; z-index: 100; }
         .sidebar { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(128,128,128,0.1); border-radius: 40px; padding: 30px 15px; display: flex; flex-direction: column; }
         .main-stage { background: var(--card); border-radius: 50px; border: 1px solid rgba(128,128,128,0.1); overflow: hidden; position: relative; }
-        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; }
+        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; flex-direction: column; }
         
-        .nav-link { padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #777; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-link { padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #777; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
         .nav-active { background: var(--p); color: #000 !important; }
 
         .ti-btn { height: 35px; background: #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; color: #fff; cursor: pointer; }
         .ti-btn-2nd-active { background: #2563eb !important; }
         
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; }
-
         .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #333; transition: .4s; border-radius: 34px; }
@@ -38,11 +41,12 @@
         input:checked + .slider:before { transform: translateX(22px); }
     </style>
 </head>
-<body onkeydown="if(event.key==='Escape') location.reload()">
+<body onkeydown="if(event.key==='Escape') panic()">
 
     <canvas id="rain-canvas"></canvas>
 
     <div id="cloak">
+        <div class="bouncy-pumpkin">🎃</div>
         <div class="ti-body">
             <div class="lcd">
                 <div id="calc-history" class="text-[10px] opacity-50 h-4"></div>
@@ -60,32 +64,24 @@
         </div>
     </div>
 
-    <div id="admin-panel" class="fixed inset-0 bg-black/95 z-[3000] hidden items-center justify-center">
-        <div class="bg-zinc-900 p-10 rounded-[50px] border-2 border-orange-500 w-[400px]">
-            <h2 class="text-orange-500 font-black mb-6 uppercase">Injection Port</h2>
-            <input type="file" id="f12" class="mb-2 text-xs text-white bg-white/5 p-4 rounded-2xl w-full">
-            <input type="file" id="f8" class="mb-4 text-xs text-white bg-white/5 p-4 rounded-2xl w-full">
-            <button onclick="injectFiles()" class="w-full py-4 bg-orange-500 text-black rounded-full font-black">SAVE BINARIES</button>
-            <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-zinc-600 mt-4 text-xs">EXIT</button>
-        </div>
-    </div>
-
     <div id="orange-core">
         <aside class="sidebar">
             <h1 class="text-2xl font-black italic text-orange-500 mb-10 text-center">PUMPKIN</h1>
             <nav class="flex-grow">
                 <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎃</span> Launcher</div>
-                <div class="nav-link" onclick="openApp('https://storage.googleapis.com/fernisbest/index.html')"><span>🌐</span> Pumpkin Browser</div>
-                <div class="nav-link" onclick="nav('updates')"><span>✨</span> Updates</div>
+                <div class="nav-link" onclick="openApp('https://storage.googleapis.com/fernisbest/index.html')"><span>🌐</span> Browser</div>
+                <div class="nav-link" onclick="nav('yt')"><span>📺</span> YouTube</div>
+                <div class="nav-link" onclick="nav('brotato')"><span>🥔</span> Brotato</div>
                 <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> Settings</div>
             </nav>
+            <button onclick="panic()" class="w-full py-4 bg-red-600/20 text-red-500 rounded-full font-black text-xs uppercase border border-red-500/30 hover:bg-red-600 hover:text-white transition-all">Panic Button</button>
         </aside>
 
         <main class="main-stage">
-            <div id="launcher-view" class="view-pane flex-col items-center justify-center" style="display:flex;">
+            <div id="launcher-view" class="view-pane items-center justify-center" style="display:flex;">
                 <div class="w-full max-w-lg p-10 bg-white/5 rounded-[50px] border border-white/10 text-center">
                     <h2 class="text-2xl font-black mb-8 uppercase text-orange-500 italic">Eagler Loader</h2>
-                    <select id="v-sel" class="w-full bg-zinc-800 p-4 rounded-3xl font-bold text-orange-500 mb-6 outline-none">
+                    <select id="v-sel" class="w-full bg-zinc-800 p-4 rounded-3xl font-bold text-orange-500 mb-6 border border-white/5">
                         <option value="mc12">Eaglercraft 1.12.2</option>
                         <option value="mc8">Eaglercraft 1.8.8</option>
                     </select>
@@ -97,21 +93,29 @@
                 </div>
             </div>
 
-            <div id="updates-view" class="view-pane flex-col items-center justify-center text-center">
-                <h2 class="text-4xl font-black text-orange-500 mb-4 uppercase">V82.0 LIVE</h2>
-                <p class="text-zinc-500 mb-8">In-app browser and Rain Engine integrated.</p>
-                <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')" class="px-8 py-3 border border-orange-500 rounded-full font-bold text-xs">OFFICIAL HUB</button>
+            <div id="yt-view" class="view-pane items-center">
+                <h2 class="text-3xl font-black text-orange-500 mb-6 italic">CINEMA HUB</h2>
+                <div class="w-full max-w-4xl aspect-video rounded-[30px] overflow-hidden border border-white/10 bg-black">
+                    <iframe id="yt-frame" src="https://www.youtube.com/embed/jfKfPfyJRdk" class="w-full h-full" allowfullscreen></iframe>
+                </div>
+                <p class="mt-4 text-zinc-500 text-xs">Currently Streaming: Lofi Hip Hop / Pumpkin Beats</p>
+            </div>
+
+            <div id="brotato-view" class="view-pane items-center justify-center">
+                <div class="text-center">
+                    <h2 class="text-3xl font-black text-orange-500 mb-4 uppercase">Brotato Web</h2>
+                    <div class="p-10 bg-white/5 rounded-[40px] border border-white/10 mb-6">
+                        <p class="text-zinc-400 mb-6">Brotato binary container ready.</p>
+                        <button onclick="openApp('https://brotato.io/')" class="px-12 py-4 bg-orange-500 text-black rounded-full font-black uppercase text-xs">Launch Brotato</button>
+                    </div>
+                </div>
             </div>
 
             <div id="settings-view" class="view-pane">
                 <h2 class="text-2xl font-black mb-10 uppercase italic">System Config</h2>
                 <div class="max-w-md space-y-4">
                     <div class="bg-white/5 p-6 rounded-[30px] flex justify-between items-center border border-white/5">
-                        <span class="font-bold">Dark/Light Mode</span>
-                        <button onclick="toggleTheme()" class="px-6 py-2 bg-orange-500 text-black rounded-full font-black text-[10px] uppercase">Swap</button>
-                    </div>
-                    <div class="bg-white/5 p-6 rounded-[30px] flex justify-between items-center border border-white/5">
-                        <span class="font-bold">Open in Iframe</span>
+                        <span class="font-bold">Iframe Mode</span>
                         <label class="switch"><input type="checkbox" id="iframe-toggle" checked><span class="slider"></span></label>
                     </div>
                     <div class="bg-white/5 p-6 rounded-[30px] flex justify-between items-center border border-white/5">
@@ -140,7 +144,7 @@
         
         function handleOp(op) {
             if(op==='2nd') { is2nd = !is2nd; document.getElementById('btn-2nd').classList.toggle('ti-btn-2nd-active', is2nd); return; }
-            if(is2nd && op==='DEL') { document.getElementById('admin-panel').style.display='flex'; reset2nd(); return; }
+            if(is2nd && op==='DEL') { /* (Admin panel functionality hidden) */ return; }
             if(is2nd && op==='EXE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='grid'; reset2nd(); return; }
             if(op==='DEL') { currentInput = ""; }
             else if(op==='EXE') { try { currentInput = eval(currentInput).toString(); } catch { currentInput = "ERR"; } }
@@ -148,7 +152,9 @@
         }
 
         function reset2nd() { is2nd = false; document.getElementById('btn-2nd').classList.remove('ti-btn-2nd-active'); }
-
+        function panic() { document.getElementById('orange-core').style.display='none'; document.getElementById('cloak').style.display='flex'; closeApp(); }
+        function nav(v) { document.querySelectorAll('.view-pane').forEach(p => p.style.display = 'none'); document.getElementById(v + '-view').style.display = 'flex'; }
+        
         function openApp(url) {
             if (document.getElementById('iframe-toggle').checked) {
                 document.getElementById('app-frame').src = url;
@@ -158,29 +164,18 @@
 
         function playGame() {
             db.transaction("core").objectStore("core").get(document.getElementById('v-sel').value).onsuccess = e => {
-                if(!e.target.result) return alert("Missing Binary!");
+                if(!e.target.result) return alert("Binary missing!");
                 openApp(URL.createObjectURL(e.target.result));
             };
         }
 
         function closeApp() { document.getElementById('app-overlay').style.display='none'; document.getElementById('app-frame').src=''; }
-        function nav(v) { document.querySelectorAll('.view-pane').forEach(p => p.style.display = 'none'); document.getElementById(v + '-view').style.display = 'flex'; }
-        function toggleTheme() { const h = document.documentElement; h.setAttribute('data-theme', h.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
-        // RAIN
+        // RAIN SYSTEM
         const canv = document.getElementById('rain-canvas'), ct = canv.getContext('2d');
         let pk = [], active = false;
-        function toggleRain(on) { 
-            active = on; canv.style.display = on ? 'block' : 'none'; 
-            if(on) { canv.width = window.innerWidth; canv.height = window.innerHeight; pk = Array.from({length:30},()=>({x:Math.random()*canv.width,y:Math.random()*-canv.height,s:2+Math.random()*4})); loop(); }
-        }
+        function toggleRain(on) { active = on; canv.style.display = on ? 'block' : 'none'; if(on) { canv.width = window.innerWidth; canv.height = window.innerHeight; pk = Array.from({length:30},()=>({x:Math.random()*canv.width,y:Math.random()*-canv.height,s:2+Math.random()*4})); loop(); } }
         function loop() { if(!active) return; ct.clearRect(0,0,canv.width,canv.height); ct.font='25px serif'; pk.forEach(p=>{ct.fillText('🎃',p.x,p.y); p.y+=p.s; if(p.y>canv.height)p.y=-30;}); requestAnimationFrame(loop); }
-
-        async function injectFiles() {
-            const f = { mc12: document.getElementById('f12').files[0], mc8: document.getElementById('f8').files[0] };
-            for (let [k, v] of Object.entries(f)) { if(v) { const tx = db.transaction("core", "readwrite"); tx.objectStore("core").put(new Blob([await v.arrayBuffer()], {type: 'text/html'}), k); } }
-            alert("Injected.");
-        }
     </script>
 </body>
 </html>
