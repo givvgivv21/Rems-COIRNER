@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator | TI-84 Plus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { 
+            --orange-dark: #7c2d12; 
+            --orange-mid: #ea580c; 
+            --orange-bright: #fb923c; 
+            --bg: #0c0a09; 
+        }
+        body, html { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Segoe UI', sans-serif; overflow: hidden; color: white; }
+        
+        /* THE CLOAK */
+        #cloak { position: fixed; inset: 0; z-index: 9999; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+        .calc { background: #1e1e1e; width: 380px; padding: 30px; border-radius: 15px; border: 3px solid #333; }
+        .lcd { background: #000; border: 2px solid var(--orange-dark); height: 80px; margin-bottom: 25px; padding: 15px; color: var(--orange-bright); font-size: 2.2rem; text-align: right; font-family: monospace; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .btn { background: #2a2a2a; border: 1px solid #444; padding: 20px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 5px; }
+        .btn-s { color: var(--orange-bright); border-color: var(--orange-bright); }
+
+        /* REM'S ORANGE CORNER */
+        #orange-core { display: none; height: 100vh; width: 100vw; flex-direction: row; background: var(--bg); }
+        .sidebar { width: 320px; background: #1c1917; border-right: 2px solid var(--orange-mid); padding: 30px; display: flex; flex-direction: column; }
+        .nav-item { border: 2px solid var(--orange-mid); padding: 15px; margin-bottom: 12px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; transition: 0.2s; color: var(--orange-bright); }
+        .nav-item:hover { background: var(--orange-mid); color: #000; box-shadow: 0 0 20px var(--orange-mid); }
+        
+        .main-view { flex-grow: 1; display: flex; position: relative; overflow: hidden; }
+        .pane { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
+        .pane.active { display: flex; }
+
+        .logo { font-size: 10rem; filter: drop-shadow(0 0 20px var(--orange-mid)); }
+        .ticker { margin-top: 20px; color: var(--orange-bright); letter-spacing: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* AI & DOWNLOAD TERMINALS */
+        .terminal { background: #0c0a09; border: 1px solid var(--orange-mid); width: 90%; height: 85%; padding: 20px; font-family: monospace; color: var(--orange-bright); }
+        #ai-history { height: 80%; overflow-y: auto; }
+        .code-box { background: #1c1917; padding: 10px; border: 1px dashed var(--orange-mid); width: 100%; height: 70%; overflow: auto; font-size: 12px; white-space: pre; }
+
+        /* BROWSER */
+        iframe { width: 100%; height: 100%; border: none; background: white; }
+    </style>
+</head>
+<body onkeydown="if(event.key==='Escape') location.reload()">
+
+    <div id="cloak">
+        <div class="calc">
+            <div id="lcd" class="lcd">0.00</div>
+            <div class="grid">
+                <div class="btn btn-s" onclick="op('2nd')">2nd</div>
+                <div class="btn" style="color:#ff4d4d" onclick="location.reload()">OFF</div>
+                <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
+                <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
+                <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
+                <div class="btn" onclick="ins('1')">1</div><div class="btn" onclick="ins('2')">2</div><div class="btn" onclick="ins('3')">3</div>
+                <div class="btn btn-s" onclick="op('EXE')">EXE</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="orange-core">
+        <div class="sidebar">
+            <h1 class="text-3xl font-black italic mb-1 text-orange-500">REM'S CORNER</h1>
+            <p class="text-[10px] text-orange-300 mb-8 tracking-[4px]">CITRUS_BYPASS_v1.0</p>
+            
+            <div class="nav-item" onclick="spawnLauncher()"><span>ORANGE LAUNCHER</span><span>🍊</span></div>
+            <div class="nav-item" onclick="showPane('browser')"><span>GHOST BROWSER</span><span>🌐</span></div>
+            <div class="nav-item" onclick="showPane('ai')"><span>ORANGE AI</span><span>🤖</span></div>
+            <div class="nav-item" onclick="showPane('download')"><span>GET BYPASS</span><span>📥</span></div>
+            
+            <div class="mt-auto nav-item" style="border-color:white; color:white" onclick="location.reload()"><span>PURGE [ESC]</span><span>🚫</span></div>
+        </div>
+
+        <div class="main-view">
+            <div id="pane-home" class="pane active">
+                <div class="logo">🍊</div>
+                <h2 class="text-6xl font-black text-orange-600 italic">ORANGE_OS</h2>
+                <p class="ticker">CORE BYPASS STABLE</p>
+            </div>
+
+            <div id="pane-ai" class="pane p-10">
+                <div class="terminal flex flex-col">
+                    <div id="ai-history" class="mb-4">
+                        <div>[SYSTEM] Neural Orange Link Established...</div>
+                    </div>
+                    <input type="text" id="ai-input" class="bg-transparent border-t border-orange-900 p-3 outline-none text-white w-full" placeholder="Query AI..." onkeydown="if(event.key==='Enter') askAI()">
+                </div>
+            </div>
+
+            <div id="pane-browser" class="pane">
+                <iframe src="https://duckduckgo.com"></iframe>
+            </div>
+
+            <div id="pane-download" class="pane p-10 text-left">
+                <div class="terminal">
+                    <h3 class="text-xl mb-4 underline">BYPASS REPOSITORY</h3>
+                    <p class="mb-2">Copy this code to a local .html file to run Rem's Corner offline:</p>
+                    <div class="code-box" id="code-content">
+&lt;!DOCTYPE html&gt;
+&lt;!-- Rem's Corner Citrus Edition --&gt;
+&lt;!-- Deployment: Save as index.html --&gt;
+[Full Code is within this script]
+                    </div>
+                    <button class="mt-4 p-2 bg-orange-600 text-black font-bold" onclick="alert('Code copied to clipboard (Simulated)')">COPY SOURCE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let input = "0", is2nd = false;
+        function ins(v) { input = (input === "0") ? v : input + v; document.getElementById('lcd').innerText = input; }
+        function op(k) {
+            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.color = is2nd ? 'white' : '#ea580c'; }
+            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='flex'; }
+            if(!is2nd && k === 'EXE') { try { input = eval(input.replace('X', '*')) + ""; } catch { input = "ERR"; } document.getElementById('lcd').innerText = input; }
+        }
+        function showPane(id) {
+            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('pane-' + id).classList.add('active');
+        }
+        function askAI() {
+            const box = document.getElementById('ai-input'), hist = document.getElementById('ai-history');
+            if(!box.value) return;
+            hist.innerHTML += `<div class="text-white mt-2">> ${box.value}</div><div class="text-orange-400 mt-1">[ORANGE]: Processing bypass request... Success.</div>`;
+            box.value = ""; hist.scrollTop = hist.scrollHeight;
+        }
+
+        function spawnLauncher() {
+            const win = window.open('about:blank', '_blank', 'width=1100,height=750');
+            win.document.write(`
+                <style>
+                    body { background: #1c1917; color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
+                    .side { width: 250px; background: #0c0a09; border-right: 2px solid #ea580c; display: flex; flex-direction: column; }
+                    .n-btn { padding: 20px; cursor: pointer; color: #ea580c; border-bottom: 1px solid #444; }
+                    .n-btn:hover { background: #ea580c; color: #000; }
+                    .main { flex-grow: 1; display: flex; flex-direction: column; background: #0c0a09; padding: 40px; }
+                    .p-btn { background: #ea580c; color: #000; padding: 20px; font-size: 24px; font-weight: bold; border: none; cursor: pointer; margin-top: auto; }
+                </style>
+                <body>
+                    <div class="side">
+                        <div class="n-btn" onclick="alert('Launching 1.8.9...')">EAGLERCRAFT 1.8.9</div>
+                        <div class="n-btn" onclick="alert('Launching 1.12.2...')">EAGLERCRAFT 1.12.2</div>
+                    </div>
+                    <div class="main">
+                        <h1>ORANGE LAUNCHER v1.0</h1>
+                        <p>Select a version on the left to begin bypass.</p>
+                        <button class="p-btn">INITIALIZE CORE</button>
+                    </div>
+                </body>
+            `);
+        }
+    </script>
+</body>
+</html>
