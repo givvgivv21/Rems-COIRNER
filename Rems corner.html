@@ -5,8 +5,21 @@
     <title>Calculator | TI-84 Plus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --orange: #ea580c; --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: sans-serif; overflow: hidden; color: var(--text); }
+        :root { 
+            --orange-dark: #7c2d12; --orange-mid: #ea580c; --orange-bright: #fb923c; 
+            --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
+            --win-bg: #212121;
+        }
+        .light-mode {
+            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(220,220,220,0.8);
+            --win-bg: #e4e4e7;
+        }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.3s; }
+
+        /* DECOR */
+        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
+        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
+        @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
 
         /* CALC CLOAK */
         #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
@@ -15,33 +28,34 @@
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 12px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
-        /* OS UI */
+        /* CORE UI */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange); padding: 20px; display: flex; flex-direction: column; }
-        .nav-item { border: 2px solid var(--orange); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; color: #fb923c; text-align: center; }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; }
+        .nav-item { border: 2px solid var(--orange-mid); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
-        .mojang-window { width: 800px; height: 500px; background: #212121; border: 2px solid #000; display: flex; flex-direction: column; }
+        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 2px solid #000; display: flex; flex-direction: column; z-index: 1050; }
         .mojang-body { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
-        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; gap: 10px; }
-        .play-btn { background: #3c8527; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; border: 2px solid #000; box-shadow: inset 2px 2px #5dbb3d, inset -2px -2px #1a3911; }
+        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 2px solid #444; gap: 10px; color: white; }
+        .play-btn { background: #3c8527; border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
 
         /* ADMIN PANEL */
-        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.98); align-items:center; justify-content:center; }
-        .admin-box { width: 450px; padding: 40px; background: #000; border: 3px solid var(--orange); border-radius: 12px; box-shadow: 0 0 50px rgba(234, 88, 12, 0.3); }
-        
-        .wipe-btn { background: #7f1d1d; color: #fecaca; border: 1px solid #dc2626; padding: 10px; width: 100%; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.2s; }
-        .wipe-btn:hover { background: #dc2626; color: white; }
+        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
+        .admin-box { width: 420px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 12px; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
 
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
     </style>
 </head>
-<body onkeydown="if(event.key==='Escape') location.reload()">
+<body onkeydown="handleGlobalKeys(event)">
+
+    <div id="orange-rain"></div>
 
     <div id="cloak">
         <div class="calc">
             <div id="lcd" class="lcd">0</div>
             <div class="grid">
-                <div class="btn" onclick="op('2nd')">2nd</div><div class="btn" onclick="op('DEL')">DEL</div>
+                <div class="btn" onclick="op('2nd')">2nd</div>
+                <div class="btn" onclick="op('DEL')">DEL</div>
                 <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
                 <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
                 <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
@@ -53,146 +67,150 @@
 
     <div id="admin-panel">
         <div class="admin-box">
-            <h2 class="text-orange-500 font-black mb-2 uppercase text-center text-xl italic">System Recovery</h2>
-            <p class="text-[10px] text-zinc-500 text-center mb-6">IF GAME SHOWS CODE, USE THE WIPE BUTTON BELOW FIRST.</p>
-            
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
             <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] text-orange-400 font-bold uppercase block mb-1">Upload 1.12.2 (Chunks Enabled)</label>
-                    <input type="file" id="file12" class="w-full text-xs bg-zinc-900 p-2 border border-zinc-700">
-                </div>
-                <button id="commit-btn" onclick="injectChunked()" class="w-full bg-orange-600 py-3 font-black text-white hover:bg-orange-500 transition-colors">INJECT SELECTED CORE</button>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2 (Priority)</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
                 
-                <hr class="border-zinc-800 my-4">
-                
-                <button onclick="wipeDB()" class="wipe-btn uppercase">⚠️ Wipe Storage & Reset Engine ⚠️</button>
-                
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 mt-4 uppercase font-bold tracking-widest">Exit Interface</button>
+                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close Interface</button>
             </div>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-2xl font-black italic text-orange-500 mb-6">ORANGE OS</h1>
-            <div class="nav-item" onclick="showView('launcher')">LAUNCHER ⛏️</div>
-            <div class="nav-item" onclick="launch('https://google.com')">BROWSER 🌐</div>
-            <div class="nav-item mt-auto border-white text-white" onclick="location.reload()">PURGE [ESC]</div>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Orange OS</h1>
+            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
+            <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
+            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
+            <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
+            
+            <div class="mt-auto p-3 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center mb-2">
+                <span>LIGHT THEME</span>
+                <input type="checkbox" id="theme-check" onchange="toggleLight(this.checked)">
+            </div>
+            <div class="nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
+
         <div id="content-area" class="flex-grow flex items-center justify-center">
             <div id="launcher-view" class="mojang-window hidden">
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 font-bold outline-none">
-                        <option value="mc12">Eaglercraft 1.12.2</option>
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-56 font-bold outline-none">
+                        <option value="mc12" selected>Eaglercraft 1.12.2</option>
                         <option value="mc8">Eaglercraft 1.8.8</option>
                     </select>
-                    <button onclick="playChunked()" class="play-btn ml-4">PLAY GAME</button>
+                    <button onclick="playSelected()" class="play-btn ml-2">PLAY</button>
+                    <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold">
+                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12</div>
+                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8</div>
+                    </div>
                 </div>
+            </div>
+
+            <div id="settings-view" class="hidden p-10 bg-black/80 border border-orange-500 rounded-2xl w-full max-w-md">
+                <h2 class="text-2xl font-bold text-orange-500 mb-6">SETTINGS</h2>
+                <div class="flex justify-between items-center mb-4"><span>Orange Rain</span><input type="checkbox" onchange="toggleRain(this.checked)"></div>
+                <div class="flex justify-between items-center"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked></div>
             </div>
         </div>
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end border-b border-zinc-800">
-            <button onclick="closeApp()" class="bg-red-600 px-6 py-1 font-bold text-xs hover:bg-red-500">EXIT APP</button>
-        </div>
+        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
         let db;
-        // Use a persistent DB name for stability
-        const dbReq = indexedDB.open("OrangeOS_FinalEngine", 1);
-        dbReq.onupgradeneeded = (e) => { 
-            db = e.target.result; 
-            if(!db.objectStoreNames.contains("chunks")) db.createObjectStore("chunks"); 
-        };
-        dbReq.onsuccess = (e) => { db = e.target.result; };
+        const dbReq = indexedDB.open("OrangeOS_V22", 1);
+        dbReq.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("core"); };
+        dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-        // NEW CHUNK INJECTION (Fixes the code/letter glitch)
-        async function injectChunked() {
+        // CORE INJECTION: Prioritizes 1.12.2
+        async function startHeavyInjection() {
             const btn = document.getElementById('commit-btn');
-            const file = document.getElementById('file12').files[0];
-            if(!file) return alert("Please select the 1.12.2 file!");
-
-            btn.innerText = "CHUNKING DATA...";
-            btn.disabled = true;
-
-            const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
-            const text = await file.text();
-            const totalChunks = Math.ceil(text.length / CHUNK_SIZE);
-            
-            const tx = db.transaction(["chunks"], "readwrite");
-            const store = tx.objectStore("chunks");
-            
-            store.put(totalChunks, "mc12_count");
-
-            for(let i=0; i<totalChunks; i++) {
-                const chunk = text.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                store.put(chunk, `mc12_${i}`);
-            }
-
-            tx.oncomplete = () => { 
-                btn.innerText = "INJECTION SUCCESS!"; 
-                btn.disabled = false;
-                setTimeout(()=>btn.innerText="INJECT SELECTED CORE", 2000); 
+            // Reordered keys to process mc12 first
+            const files = { 
+                mc12: document.getElementById('file12').files[0],
+                mc8: document.getElementById('file8').files[0] 
             };
+            
+            if(!files.mc12 && !files.mc8) return alert("Select a file first!");
+
+            btn.innerText = "PROCESSING...";
+            for (const [key, file] of Object.entries(files)) {
+                if(!file) continue;
+                const text = await file.text();
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").put(text, key);
+                await new Promise(r => tx.oncomplete = r);
+            }
+            btn.innerText = "CORE UPDATED!";
+            updateStatusDots();
+            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
         }
 
-        // REASSEMBLY ENGINE
-        async function playChunked() {
-            const tx = db.transaction(["chunks"], "readonly");
-            const store = tx.objectStore("chunks");
-
-            store.get("mc12_count").onsuccess = async (e) => {
-                const count = e.target.result;
-                if(!count) return alert("Core 1.12.2 not found! Please Inject in Admin Panel.");
-
-                let fullText = "";
-                for(let i=0; i<count; i++) {
-                    const chunkReq = await new Promise(r => {
-                        const req = store.get(`mc12_${i}`);
-                        req.onsuccess = ev => r(ev.target.result);
-                    });
-                    fullText += chunkReq;
-                }
-
-                // Force browser to treat as HTML/UTF-8
-                const blob = new Blob([fullText], {type: 'text/html;charset=utf-8'});
+        function playSelected() {
+            const key = document.getElementById('ver-select').value;
+            const tx = db.transaction(["core"], "readonly");
+            tx.objectStore("core").get(key).onsuccess = (e) => {
+                const data = e.target.result;
+                if(!data) return alert("Build not found! Upload in Admin Panel first.");
+                
+                const blob = new Blob([data], {type: 'text/html'});
                 const url = URL.createObjectURL(blob);
-                document.getElementById('app-frame').src = url;
-                document.getElementById('app-overlay').style.display = 'flex';
+                
+                if(document.getElementById('iframe-toggle').checked) {
+                    document.getElementById('app-frame').src = url;
+                    document.getElementById('app-overlay').style.display = 'flex';
+                } else { window.open(url, '_blank'); }
             };
         }
 
-        // THE WIPE BUTTON FUNCTION
-        function wipeDB() {
-            if(confirm("THIS WILL ERASE ALL STORED GAMES. Are you sure? Use this if you see black text/code when playing.")){
-                const tx = db.transaction(["chunks"], "readwrite");
-                tx.objectStore("chunks").clear();
-                tx.oncomplete = () => {
-                    alert("System Cleared. Please re-inject your 1.12.2 file now.");
-                };
-            }
+        function updateStatusDots() {
+            if(!db) return;
+            const tx = db.transaction(["core"], "readonly");
+            const store = tx.objectStore("core");
+            // Check 1.12 status first
+            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').style.background = e.target.result ? '#44ff44' : '#ff4444';
+            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').style.background = e.target.result ? '#44ff44' : '#ff4444';
         }
 
-        // CALCULATOR & NAVIGATION
+        // CALCULATOR LOGIC
+        let inputStr = "0", is2nd = false;
         function op(k) {
-            let lcd = document.getElementById('lcd');
-            if(k === '2nd') { window.is2nd = !window.is2nd; lcd.style.background = window.is2nd ? '#d1ffd1' : '#99ad99'; return; }
-            if(window.is2nd && k === 'DEL') {
-                if(prompt("ADMIN KEY:") === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
-                window.is2nd = false; return;
+            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
+            if(is2nd && k === 'DEL') {
+                let p = prompt("ADMIN KEY:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
+                is2nd = false; return;
             }
-            if(window.is2nd && k === 'EXE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='flex'; return; }
-            if(k === 'DEL') lcd.innerText = lcd.innerText.length > 1 ? lcd.innerText.slice(0, -1) : "0";
-            if(k === 'EXE') try { lcd.innerText = eval(lcd.innerText.replace(/X/g, '*')); } catch { lcd.innerText = "ERR"; }
+            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
+            if(k === 'DEL') inputStr = inputStr.length > 1 ? inputStr.slice(0, -1) : "0";
+            if(k === 'EXE') try { inputStr = String(eval(inputStr.replace(/X/g, '*'))); } catch { inputStr = "ERR"; }
+            document.getElementById('lcd').innerText = inputStr;
         }
-        function ins(v) { let lcd = document.getElementById('lcd'); lcd.innerText = (lcd.innerText === "0") ? v : lcd.innerText + v; }
-        function showView(v) { document.getElementById('launcher-view').classList.remove('hidden'); }
-        function closeApp() { document.getElementById('app-overlay').style.display='none'; document.getElementById('app-frame').src='about:blank'; }
-        function launch(u) { document.getElementById('app-frame').src=u; document.getElementById('app-overlay').style.display='flex'; }
+        function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
+        
+        // UI HELPERS
+        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
+        function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
+        function toggleLight(on) { if(on) document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
+        function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
+        function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        
+        function toggleRain(on) {
+            document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
+            if(on && document.getElementById('orange-rain').innerHTML === "") {
+                for(let i=0; i<30; i++) {
+                    let o = document.createElement('div'); o.className='falling-orange'; o.innerText='🍊';
+                    o.style.left=Math.random()*100+'vw'; o.style.animationDuration=(Math.random()*3+2)+'s';
+                    document.getElementById('orange-rain').appendChild(o);
+                }
+            }
+        }
     </script>
 </body>
 </html>
