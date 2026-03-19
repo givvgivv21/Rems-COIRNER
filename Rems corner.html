@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V54.0</title>
+    <title>Orange OS | V55.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ++++++++++++++++++++++++++++++++++++++++++++++
@@ -15,76 +15,85 @@
         :root { 
             --p: #f97316; 
             --bg: #0a0a0b; 
-            --ti-body: #f97316; /* NEW: Orange Calculator Body */
+            --ti-body: #f97316;
             --fruit: '🍊';
         }
         
         * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Segoe UI', sans-serif; }
         body { background: #000; color: #fff; overflow: hidden; height: 100vh; }
 
-        /* --- HARDWARE: SHORTER ORANGE TI-84 --- */
+        /* --- HARDWARE: ORANGE TI-84 --- */
         #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
         .ti-chassis { 
-            background: var(--ti-body); width: 360px; height: 640px; /* NEW: Shorter Height */
+            background: var(--ti-body); width: 360px; height: 620px;
             border-radius: 35px 35px 110px 110px; border: 6px solid #7c2d12; 
             padding: 20px; position: relative; box-shadow: 0 0 80px rgba(249, 115, 22, 0.4); 
-            display: flex; flex-direction: column; transform: scale(1); 
+            display: flex; flex-direction: column; 
         }
-        .ti-lcd { background: #94a392; height: 120px; border: 8px solid #111; border-radius: 4px; font-family: monospace; color: #1a241a; padding: 8px; display: flex; flex-direction: column; }
+        .ti-lcd { background: #94a392; height: 110px; border: 8px solid #111; border-radius: 4px; font-family: monospace; color: #1a241a; padding: 8px; display: flex; flex-direction: column; }
         
-        /* KEYPAD */
         .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 15px; }
-        .k { height: 32px; background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
+        .k { height: 30px; background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
         .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
         .k-2nd { background: #2563eb !important; } 
         .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 0.9rem; }
         .k::before { content: attr(data-lbl); position: absolute; top: -14px; font-size: 0.45rem; color: #2563eb; font-weight: bold; }
 
-        /* --- OS DESKTOP --- */
-        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; background: #121212; }
-        .sidebar { background: #000; border-right: 1px solid #222; padding: 30px 15px; display: flex; flex-direction: column; gap: 6px; }
-        .nav-link { padding: 10px 15px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #888; display: flex; align-items: center; gap: 10px; }
-        .nav-link:hover { background: #1a1a1a; color: #fff; }
-        .nav-active { background: #222; color: var(--p) !important; border-left: 3px solid var(--p); }
+        /* --- OS DESKTOP (VIBRANT ORANGE) --- */
+        #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; background: #0f0f0f; }
+        .sidebar { background: #000; border-right: 2px solid var(--p); padding: 30px 15px; display: flex; flex-direction: column; gap: 6px; }
+        .nav-link { padding: 12px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer; color: #666; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .nav-link:hover { background: #1a0a00; color: var(--p); border-color: #442200; }
+        .nav-active { background: #221100; color: var(--p) !important; border-color: var(--p); }
 
-        /* --- MODULES --- */
-        .module-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; }
-        .glass-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 25px; }
+        /* --- MOJANG LAUNCHER + TUFF UPGRADES --- */
+        .mc-launcher { width: 100%; height: 100%; display: flex; flex-direction: column; background: #1a1a1a; }
+        .mc-hero { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
+        .mc-footer { height: 100px; background: #28292a; display: flex; align-items: center; padding: 0 30px; gap: 20px; border-top: 2px solid var(--p); }
+        .play-btn { background: #3c8527; color: #fff; padding: 12px 60px; font-size: 1.5rem; font-weight: 900; border-radius: 4px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3); transition: 0.1s; }
+        .play-btn:hover { background: #4caf34; transform: scale(1.02); }
+        .play-btn:active { transform: scale(0.98); }
+        .tuff-btn { background: #444; color: #fff; padding: 10px 20px; font-size: 0.7rem; font-weight: 800; border-radius: 4px; border: 1px solid #555; }
+        .tuff-btn:hover { background: var(--p); border-color: #fff; }
+
+        /* --- MODAL / MODULES --- */
+        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; }
+        .module-pane { display: none; width: 100%; height: 100%; padding: 40px; }
         #os-frame { width: 100%; height: 100%; border: none; display: none; }
 
-        /* --- MODAL INJECTOR --- */
-        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; }
-        
-        /* MOJANG FOOTER */
-        .mc-footer { height: 90px; background: #313233; display: flex; align-items: center; padding: 0 30px; gap: 15px; border-top: 1px solid #444; }
-        .play-btn { background: #3c8527; color: #fff; padding: 10px 50px; font-size: 1.4rem; font-weight: 900; border-radius: 2px; }
+        /* RAIN */
+        #rain-wrap { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+        .falling-fruit { position: absolute; font-size: 2.5rem; animation: fall linear forwards; }
+        @keyframes fall { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh); } }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') location.reload()">
 
+    <div id="rain-wrap"></div>
+
     <div id="inj-modal">
-        <div class="bg-zinc-900 p-10 rounded-[40px] border-4 border-orange-500 w-[500px]">
-            <h2 class="text-orange-500 font-black text-2xl mb-2 italic">KERNEL INJECTOR</h2>
-            <p class="text-[10px] text-zinc-500 mb-6 uppercase tracking-widest">Offline Blob Management</p>
-            <div class="space-y-5">
-                <div>
-                    <label class="text-[10px] font-bold block mb-1">EAGLERCRAFT 1.8.8 (HTML/JS)</label>
-                    <input type="file" id="blob-18" class="text-xs bg-black p-3 w-full border border-zinc-800 rounded">
+        <div class="bg-zinc-900 p-10 rounded-[40px] border-4 border-orange-500 w-[500px] shadow-[0_0_50px_rgba(249,115,22,0.5)]">
+            <h2 class="text-orange-500 font-black text-2xl mb-2 italic">SYSTEM INJECTOR</h2>
+            <p class="text-[9px] text-zinc-500 mb-6 font-bold uppercase tracking-tighter">Minecraft Blobs Required for Play</p>
+            <div class="space-y-4">
+                <div class="bg-black p-4 rounded-xl border border-zinc-800">
+                    <label class="text-[10px] font-black text-orange-400 block mb-2">EAGLERCRAFT 1.8.8</label>
+                    <input type="file" id="blob-18" class="text-xs w-full text-zinc-400">
                 </div>
-                <div>
-                    <label class="text-[10px] font-bold block mb-1">EAGLERCRAFT 1.12.2 (HTML/JS)</label>
-                    <input type="file" id="blob-112" class="text-xs bg-black p-3 w-full border border-zinc-800 rounded">
+                <div class="bg-black p-4 rounded-xl border border-zinc-800">
+                    <label class="text-[10px] font-black text-orange-400 block mb-2">EAGLERCRAFT 1.12.2</label>
+                    <input type="file" id="blob-112" class="text-xs w-full text-zinc-400">
                 </div>
-                <button onclick="commitBlobs()" class="w-full bg-orange-600 p-4 font-black rounded-xl hover:bg-orange-500">INJECT TO SYSTEM</button>
+                <button onclick="commitBlobs()" class="w-full bg-orange-600 p-4 font-black rounded-xl text-white hover:bg-orange-500 shadow-lg">STORE IN KERNEL</button>
             </div>
-            <button onclick="document.getElementById('inj-modal').style.display='none'" class="mt-4 text-[10px] w-full text-zinc-600">CANCEL</button>
+            <button onclick="document.getElementById('inj-modal').style.display='none'" class="mt-4 text-[10px] w-full text-zinc-600 font-bold">CLOSE</button>
         </div>
     </div>
 
     <div id="boot-gate">
         <div class="ti-chassis">
             <div class="ti-lcd">
-                <div style="font-size: 0.5rem">KERNEL v54.0 - READY</div>
+                <div style="font-size: 0.5rem; font-weight: bold;">TUFF-KERNEL v55.0</div>
                 <div id="ti-display" class="text-3xl text-right mt-10">0</div>
             </div>
             <div class="key-grid">
@@ -99,48 +108,66 @@
 
     <div id="orange-desktop">
         <aside class="sidebar">
-            <h1 class="text-xl font-black italic text-orange-500 mb-6">ORANGE OS</h1>
-            <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎮</span> Minecraft</div>
-            <div class="nav-link" onclick="nav('brotato')"><span>🥔</span> Brotato</div>
-            <div class="nav-link" onclick="nav('youtube')"><span>🎬</span> YouTube</div>
-            <div class="nav-link" onclick="nav('browser')"><span>🌐</span> Browser</div>
-            <div class="nav-link mt-4 text-orange-400" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')"><span>🔥</span> Find More</div>
-            <div class="mt-auto nav-link opacity-40" onclick="location.reload()"><span>❌</span> Shutdown</div>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-8 tracking-tighter">ORANGE OS</h1>
+            <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎮</span> LAUNCHER</div>
+            <div class="nav-link" onclick="nav('brotato')"><span>🥔</span> BROTATO</div>
+            <div class="nav-link" onclick="nav('youtube')"><span>🎬</span> YOUTUBE</div>
+            <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> SETTINGS</div>
+            <div class="mt-auto nav-link border-zinc-900 text-orange-600 font-black" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')"><span>🔥</span> FIND MORE</div>
         </aside>
 
         <main class="relative flex-grow">
             <iframe id="os-frame"></iframe>
 
-            <div id="v-launcher" class="h-full flex flex-col bg-[#222]">
-                <div class="flex-grow bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover relative"></div>
+            <div id="v-launcher" class="mc-launcher">
+                <div class="mc-hero">
+                    <div class="h-full w-full bg-gradient-to-t from-black to-transparent flex items-end p-10">
+                        <h2 class="text-4xl font-black italic">Minecraft: Java Edition</h2>
+                    </div>
+                </div>
                 <div class="mc-footer">
-                    <select id="ver-select" class="bg-[#1e1e1e] border border-[#444] p-3 rounded font-bold text-sm w-48"><option value="18">1.8.8</option><option value="112">1.12.2</option></select>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-zinc-500 ml-1">VERSION</span>
+                        <select id="ver-select" class="bg-[#1e1e1e] border border-orange-500/30 p-3 rounded font-bold text-sm text-orange-500 w-48 outline-none">
+                            <option value="18">Eaglercraft 1.8.8</option>
+                            <option value="112">Eaglercraft 1.12.2</option>
+                        </select>
+                    </div>
                     <button onclick="bootMC()" class="play-btn">PLAY</button>
+                    <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="tuff-btn">USEFUL TEXTUREPACKS</button>
                 </div>
             </div>
 
-            <div id="v-youtube" class="module-pane">
-                <input type="text" id="yt-url" class="w-full bg-black p-4 rounded-full border border-zinc-800 mb-4" placeholder="YouTube Video ID...">
-                <button onclick="loadYT()" class="bg-red-600 px-6 py-2 rounded-full">WATCH</button>
-                <div id="yt-player" class="mt-4 aspect-video bg-black rounded-xl border border-zinc-800"></div>
+            <div id="v-settings" class="module-pane">
+                <div class="max-w-md space-y-4">
+                    <h2 class="text-2xl font-black text-orange-500 mb-6">PERSONALIZATION</h2>
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 flex justify-between items-center">
+                        <span class="font-bold">Fruit Rain Component</span>
+                        <input type="checkbox" id="rain-chk" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-500">
+                    </div>
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+                        <span class="font-bold block mb-4">Color Scheme</span>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-orange-600 cursor-pointer border-2 border-white" onclick="setTheme('#f97316','🍊')"></div>
+                            <div class="w-12 h-12 rounded-lg bg-red-600 cursor-pointer" onclick="setTheme('#dc2626','🍎')"></div>
+                            <div class="w-12 h-12 rounded-lg bg-yellow-500 cursor-pointer" onclick="setTheme('#eab308','🍋')"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div id="v-brotato" class="module-pane text-center">
-                <h2 class="text-3xl font-black mb-4">BROTATO</h2>
-                <button onclick="run('PASTE_LINK_HERE')" class="bg-orange-600 px-10 py-4 rounded-xl font-black">LAUNCH</button>
-            </div>
+
+            <div id="v-brotato" class="module-pane text-center"><button class="play-btn" onclick="run('PASTE_LINK')">LAUNCH BROTATO</button></div>
+            <div id="v-youtube" class="module-pane"><input type="text" id="yt-in" class="bg-black p-4 w-full rounded-xl border border-orange-900 mb-4" placeholder="Video ID..."><button onclick="loadYT()" class="play-btn">WATCH</button><div id="yt-area" class="mt-4 aspect-video bg-black rounded-xl"></div></div>
         </main>
     </div>
 
     <script>
         let db, is2nd = false, buf = "";
 
-        // DB INIT
-        const req = indexedDB.open("ORANGE_FINAL", 1);
+        const req = indexedDB.open("ORANGE_V55", 1);
         req.onupgradeneeded = e => { e.target.result.createObjectStore("blobs"); };
         req.onsuccess = e => { db = e.target.result; };
 
-        // TI ENGINE
         function press(n) { buf += n; document.getElementById('ti-display').innerText = buf; }
         function ti(k) {
             if(k==='2nd') { is2nd = !is2nd; return; }
@@ -149,14 +176,13 @@
             if(k==='ent') { buf=""; document.getElementById('ti-display').innerText="0"; }
         }
 
-        // BLOBS
         async function commitBlobs() {
             const f18 = document.getElementById('blob-18').files[0];
             const f112 = document.getElementById('blob-112').files[0];
             const tx = db.transaction("blobs", "readwrite");
             if(f18) tx.objectStore("blobs").put(new Blob([await f18.arrayBuffer()], {type:'text/html'}), "18");
             if(f112) tx.objectStore("blobs").put(new Blob([await f112.arrayBuffer()], {type:'text/html'}), "112");
-            alert("SYSTEM INJECTED");
+            alert("KERNAL STORAGE UPDATED");
             document.getElementById('inj-modal').style.display='none';
         }
 
@@ -164,25 +190,43 @@
             const v = document.getElementById('ver-select').value;
             db.transaction("blobs").objectStore("blobs").get(v).onsuccess = e => {
                 if(e.target.result) run(URL.createObjectURL(e.target.result));
-                else run(v === '18' ? "https://eaglercraft.com/mc/1.8.8/" : "https://storage.googleapis.com/fernisbest/index.html");
+                else alert("ERROR: NO LOCAL BLOB FOUND. USE 2nd + DEL TO INJECT 1.8.8 OR 1.12.2 FIRST.");
             };
         }
 
-        // NAV
         function nav(t) {
-            ['v-launcher','v-youtube','v-brotato','os-frame'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
-            if(t === 'browser') run("https://storage.googleapis.com/fernisbest/index.html");
-            else document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block');
+            ['v-launcher','v-youtube','v-brotato','v-settings','os-frame'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
+            document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('nav-active'));
+            event.currentTarget.classList.add('nav-active');
         }
 
         function run(url) { 
             const f = document.getElementById('os-frame'); f.src = url; f.style.display = 'block'; 
-            ['v-launcher','v-youtube','v-brotato'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['v-launcher','v-youtube','v-brotato','v-settings'].forEach(id => document.getElementById(id).style.display = 'none');
+        }
+
+        function setTheme(c, f) {
+            document.documentElement.style.setProperty('--p', c);
+            document.documentElement.style.setProperty('--ti-body', c);
+            document.documentElement.style.setProperty('--fruit', f);
+        }
+
+        function doRain(on) {
+            const wrap = document.getElementById('rain-wrap'); wrap.innerHTML = '';
+            if(!on) return;
+            setInterval(() => {
+                if(!document.getElementById('rain-chk').checked) return;
+                const f = document.createElement('div'); f.className='falling-fruit';
+                f.innerText = getComputedStyle(document.documentElement).getPropertyValue('--fruit').trim();
+                f.style.left = Math.random()*95+'vw'; f.style.animationDuration = (Math.random()*2+2)+'s';
+                wrap.appendChild(f); setTimeout(()=>f.remove(), 4000);
+            }, 500);
         }
 
         function loadYT() {
-            const id = document.getElementById('yt-url').value;
-            document.getElementById('yt-player').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
+            const id = document.getElementById('yt-in').value;
+            document.getElementById('yt-area').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`;
         }
     </script>
 </body>
