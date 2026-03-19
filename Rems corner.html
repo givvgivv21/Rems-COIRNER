@@ -10,57 +10,50 @@
             --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
             --mojang-green: #3c8527; --win-bg: #212121;
         }
-        /* LIGHT MODE OVERRIDES */
         .light-mode {
             --bg: #e4e4e7; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.6);
             --win-bg: #f4f4f5;
         }
-        
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: all 0.4s ease; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.4s; }
+
+        /* --- THE RAIN SYSTEM --- */
+        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: none; }
+        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; user-select: none; }
+        @keyframes fall { 
+            from { transform: translateY(-10vh) rotate(0deg); } 
+            to { transform: translateY(110vh) rotate(360deg); } 
+        }
 
         /* FX */
-        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 9000; display: none; }
-        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
-        @keyframes fall { from { transform: translateY(-50px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
         .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 0; pointer-events: none; }
-        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.3; }
-        @keyframes pulsate { 0%, 100% { transform: scale(1); opacity: 0.2; } 50% { transform: scale(1.1); opacity: 0.5; } }
+        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.2; }
+        @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
         /* CALC CLOAK */
         #cloak { position: fixed; inset: 0; z-index: 10000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
-        .calc { background: #1e1e1e; width: 380px; padding: 30px; border-radius: 20px; border: 4px solid #333; }
-        .lcd { background: #99ad99; border: 4px solid #555; height: 90px; margin-bottom: 25px; padding: 15px; color: #111; font-size: 2.2rem; text-align: right; font-family: monospace; display: flex; align-items: flex-end; justify-content: flex-end; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 18px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
+        .calc { background: #1e1e1e; width: 360px; padding: 30px; border-radius: 20px; border: 4px solid #333; }
+        .lcd { background: #99ad99; border: 4px solid #555; height: 80px; margin-bottom: 20px; padding: 15px; color: #111; font-size: 2rem; text-align: right; font-family: monospace; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 15px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
         /* OS CORE */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 5000; }
-        .sidebar { width: 300px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 30px; display: flex; flex-direction: column; z-index: 10; transition: background 0.4s; }
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 25px; display: flex; flex-direction: column; z-index: 10; }
         .nav-item { border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
-        .nav-item:hover { background: var(--orange-mid); color: white; }
-
-        #content-area { flex-grow: 1; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; }
 
         /* MOJANG UI */
-        .mojang-window { width: 900px; height: 550px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-        .mojang-nav { height: 50px; background: rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 20px; gap: 30px; border-bottom: 1px solid #333; }
-        .mojang-nav-link { color: var(--text); opacity: 0.6; font-size: 13px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .mojang-nav-link.active { opacity: 1; border-bottom: 2px solid var(--orange-mid); }
-        .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
-        .mojang-play-bar { height: 100px; background: var(--glass); display: flex; align-items: center; justify-content: center; padding: 0 40px; border-top: 1px solid #333; gap: 20px; }
-        .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 200px; height: 50px; color: white; font-size: 24px; font-weight: 900; cursor: pointer; }
+        .mojang-window { width: 850px; height: 520px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.6); position: relative; z-index: 20; }
+        .mojang-nav { height: 45px; background: rgba(0,0,0,0.2); display: flex; align-items: center; padding: 0 20px; gap: 25px; border-bottom: 1px solid #333; }
+        .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; position: relative; }
+        .mojang-play-bar { height: 90px; background: var(--glass); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 0 30px; border-top: 1px solid #444; gap: 15px; }
+        .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 180px; height: 45px; color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
+        
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
+        .dot-red { background: #ff4444; border: 1px solid #000; }
+        .dot-green { background: #44ff44; box-shadow: 0 0 8px #44ff44; border: 1px solid #000; }
 
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 10px; }
-        .dot-red { background: #ff4444; }
-        .dot-green { background: #44ff44; box-shadow: 0 0 10px #44ff44; }
-
-        /* TOGGLE SWITCH */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        input:checked + .slider { background-color: var(--orange-mid); }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider:before { transform: translateX(24px); }
+        #admin-panel { display:none; position:fixed; inset:0; z-index:30000; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
+        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 40000; flex-direction: column; }
     </style>
 </head>
 <body onkeydown="handleGlobalKeys(event)">
@@ -83,108 +76,101 @@
         </div>
     </div>
 
-    <div id="admin-panel" style="display:none; position:fixed; inset:0; z-index:30000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center;">
-        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-600 border-2">
-            <h2 class="text-orange-500 font-black mb-6 uppercase text-center text-2xl italic">Core Injection</h2>
-            <div class="space-y-4">
-                <input type="file" id="file8" class="bg-black p-3 w-full border border-zinc-700 text-xs">
-                <input type="file" id="file12" class="bg-black p-3 w-full border border-zinc-700 text-xs">
-                <button onclick="saveToIndexedDB()" class="w-full bg-orange-600 py-4 font-black text-white hover:bg-orange-500 transition-all">SAVE TO LARGE STORAGE</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-xs text-zinc-500 mt-2">CLOSE INTERFACE</button>
+    <div id="admin-panel">
+        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-500 border-2">
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
+            <div class="space-y-6">
+                <div>
+                    <div class="flex justify-between text-[10px] mb-1"><span>1.8.8</span><button onclick="clearGame('mc8')" class="text-red-500">WIPE</button></div>
+                    <input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-700">
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] mb-1"><span>1.12.2</span><button onclick="clearGame('mc12')" class="text-red-500">WIPE</button></div>
+                    <input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-700">
+                </div>
+                <button onclick="saveToIndexedDB()" class="w-full bg-orange-600 py-3 font-black text-white border-b-4 border-orange-900">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-500">CLOSE</button>
             </div>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-2xl font-black italic text-orange-500 mb-8 uppercase tracking-widest">Rem's Corner</h1>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-8 uppercase">Rem's Corner</h1>
             <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
             <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
             <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
             <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
             
-            <div class="mt-auto p-4 border-2 border-orange-500 rounded bg-black/20">
-                <div class="flex justify-between items-center text-[10px] font-bold">
-                    <span>LIGHT MODE</span>
-                    <label class="switch">
-                        <input type="checkbox" onchange="toggleLight(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <div class="mt-auto p-4 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center">
+                <span>LIGHT THEME</span>
+                <input type="checkbox" onchange="toggleLight(this.checked)">
             </div>
             <div class="mt-4 nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
 
         <div id="content-area">
             <div id="launcher-view" class="mojang-window hidden">
-                <div class="mojang-nav">
-                    <div class="mojang-nav-link active">Play</div>
-                    <div class="mojang-nav-link">Installations</div>
-                </div>
+                <div class="mojang-nav"><div class="text-white border-b-2 border-orange-500 h-full flex items-center px-4 font-bold text-xs uppercase">Play</div></div>
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 outline-none w-64">
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-64 outline-none font-bold">
                         <option value="mc8">Eaglercraft 1.8.8 Build</option>
                         <option value="mc12">Eaglercraft 1.12.2 Build</option>
                     </select>
                     <button onclick="playSelected()" class="play-btn">PLAY</button>
-                    <div class="ml-4">
-                        <div class="text-[10px] opacity-60">CLIENT CORE</div>
-                        <div class="flex items-center gap-2">
-                            <span id="dot8" class="status-dot dot-red"></span>
-                            <span id="dot12" class="status-dot dot-red"></span>
-                        </div>
+                    <div class="flex flex-col gap-1 ml-4">
+                        <div class="flex items-center gap-2"><span id="dot8" class="status-dot dot-red"></span><span class="text-[9px]">1.8</span></div>
+                        <div class="flex items-center gap-2"><span id="dot12" class="status-dot dot-red"></span><span class="text-[9px]">1.12</span></div>
                     </div>
                 </div>
             </div>
 
-            <div id="settings-view" class="hidden bg-black/40 backdrop-blur-xl p-10 rounded-2xl border border-orange-500 w-full max-w-lg">
-                <h2 class="text-3xl font-black text-orange-500 mb-8 uppercase">System Config</h2>
-                <div class="space-y-6">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold">Orange Rain FX</span>
-                        <label class="switch"><input type="checkbox" onchange="toggleRain(this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold">Open in Iframe</span>
-                        <label class="switch"><input type="checkbox" id="iframe-toggle" checked><span class="slider"></span></label>
-                    </div>
+            <div id="settings-view" class="hidden p-10 bg-black/60 backdrop-blur-xl border border-orange-500 rounded-2xl w-full max-w-md">
+                <h2 class="text-2xl font-bold text-orange-500 mb-6">SETTINGS</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <span class="font-bold">Orange Rain FX</span>
+                    <input type="checkbox" onchange="toggleRain(this.checked)" class="w-5 h-5">
                 </div>
+                <div class="flex justify-between items-center"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked></div>
             </div>
         </div>
     </div>
 
-    <div id="app-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:20000; flex-direction:column;">
-        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-6 py-1 font-bold">EXIT X</button></div>
+    <div id="app-overlay">
+        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT SESSION</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
+        // --- CORE DATABASE ENGINE ---
         let db;
-        const request = indexedDB.open("OrangeOS_Core", 1);
-        request.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("games"); };
+        const request = indexedDB.open("OrangeOS_Storage", 2);
+        request.onupgradeneeded = (e) => { 
+            db = e.target.result; 
+            if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); 
+        };
         request.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-        function saveToIndexedDB() {
+        async function saveToIndexedDB() {
             const files = { mc8: document.getElementById('file8').files[0], mc12: document.getElementById('file12').files[0] };
-            Object.keys(files).forEach(key => {
-                if(!files[key]) return;
-                const r = new FileReader();
-                r.onload = (e) => {
-                    const tx = db.transaction(["games"], "readwrite");
-                    tx.objectStore("games").put(e.target.result, key);
-                    tx.oncomplete = () => { alert(key + " UPDATED"); updateStatusDots(); };
-                };
-                r.readAsText(files[key]);
-            });
+            for (const [key, file] of Object.entries(files)) {
+                if(!file) continue;
+                const text = await file.text();
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").put(text, key);
+                await new Promise(r => tx.oncomplete = r);
+            }
+            alert("CORE REGISTRY UPDATED");
+            updateStatusDots();
         }
 
         function playSelected() {
             const key = document.getElementById('ver-select').value;
-            const tx = db.transaction(["games"], "readonly");
-            const req = tx.objectStore("games").get(key);
+            const tx = db.transaction(["core"], "readonly");
+            const req = tx.objectStore("core").get(key);
             req.onsuccess = () => {
-                if(!req.result) return alert("NO FILE! Upload in Admin (2nd+DEL)");
+                if(!req.result) return alert("Version missing! Upload in Admin (2nd + DEL)");
                 const url = URL.createObjectURL(new Blob([req.result], {type: 'text/html'}));
                 if(document.getElementById('iframe-toggle').checked) {
                     document.getElementById('app-frame').src = url;
@@ -195,17 +181,35 @@
 
         function updateStatusDots() {
             if(!db) return;
-            const tx = db.transaction(["games"], "readonly");
-            const store = tx.objectStore("games");
+            const tx = db.transaction(["core"], "readonly");
+            const store = tx.objectStore("core");
             store.get("mc8").onsuccess = (e) => document.getElementById('dot8').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
             store.get("mc12").onsuccess = (e) => document.getElementById('dot12').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
         }
 
+        // --- RAIN LOGIC ---
+        function toggleRain(on) {
+            const container = document.getElementById('orange-rain');
+            container.style.display = on ? 'block' : 'none';
+            if(on && container.innerHTML === "") {
+                for(let i=0; i<35; i++) {
+                    let o = document.createElement('div');
+                    o.className = 'falling-orange';
+                    o.innerText = '🍊';
+                    o.style.left = Math.random() * 100 + 'vw';
+                    o.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    o.style.animationDelay = (Math.random() * 5) + 's';
+                    container.appendChild(o);
+                }
+            }
+        }
+
+        // --- UI & CALC ---
         let inputStr = "0", is2nd = false;
         function op(k) {
             if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
             if(is2nd && k === 'DEL') {
-                let p = prompt("ADMIN PASS:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
+                let p = prompt("ADMIN KEY:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
                 is2nd = false; return;
             }
             if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
@@ -219,16 +223,6 @@
         function toggleLight(on) { document.body.classList.toggle('light-mode', on); }
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
-        function toggleRain(on) {
-            document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
-            if(on && document.getElementById('orange-rain').innerHTML === "") {
-                for(let i=0; i<30; i++) {
-                    let o = document.createElement('div'); o.className='falling-orange'; o.innerText='🍊';
-                    o.style.left=Math.random()*100+'vw'; o.style.animationDuration=(Math.random()*3+2)+'s';
-                    document.getElementById('orange-rain').appendChild(o);
-                }
-            }
-        }
     </script>
 </body>
 </html>
