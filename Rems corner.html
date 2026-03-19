@@ -2,73 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lime OS | V77.0 Block-Compressed</title>
+    <title>Lime OS | V78.0 Curve</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { 
             --p: #bef264; 
             --p-dark: #65a30d; 
-            --bg: #050505; 
-            --panel: #111;
+            --bg: #0a0a0a; 
+            --glass: rgba(255, 255, 255, 0.03);
         }
         
-        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Courier New', monospace; }
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', system-ui, sans-serif; }
         body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
 
-        /* --- CALCULATOR: REMAINS ROUNDED & LARGE --- */
+        /* --- THE CALCULATOR (UNCHANGED) --- */
         #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
         .ti-chassis { 
             background: #222; width: 360px; height: 600px; border-radius: 40px 40px 100px 100px; 
             padding: 25px; border: 6px solid #111; display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(190, 242, 100, 0.1);
         }
-        .ti-lcd { background: #94a392; height: 100px; border: 6px solid #000; border-radius: 4px; padding: 10px; color: #1a241a; font-family: monospace; }
-        .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
-        .k { height: 35px; background: #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; cursor: pointer; }
-        .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+        .ti-lcd { background: #94a392; height: 100px; border: 4px solid #000; border-radius: 8px; padding: 10px; color: #1a241a; }
+        .k { height: 35px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; cursor: pointer; }
 
-        /* --- BLOCKY OS GUI (15% SMALLER & SHARP) --- */
-        #lime-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 210px 1fr; }
+        /* --- THE NEW CURVED GUI --- */
+        #lime-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; padding: 15px; gap: 15px; }
         
-        .sidebar { background: #0a0a0a; border-right: 2px solid var(--p); padding: 20px 15px; display: flex; flex-direction: column; }
+        .sidebar { 
+            background: var(--glass); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 30px; padding: 30px 20px; 
+            display: flex; flex-direction: column; 
+        }
         
         .nav-link { 
-            padding: 10px; border: 1px solid transparent; margin-bottom: 4px; 
-            cursor: pointer; font-size: 10px; font-weight: 900; color: #555; 
-            transition: 0.1s; text-transform: uppercase;
+            padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; 
+            cursor: pointer; font-size: 13px; font-weight: 600; color: #888; 
+            transition: 0.3s; display: flex; align-items: center; gap: 12px;
         }
-        .nav-link:hover { color: var(--p); border: 1px solid var(--p); background: rgba(190, 242, 100, 0.05); }
-        .nav-active { background: var(--p); color: #000 !important; border: 1px solid var(--p); }
+        .nav-link:hover { background: rgba(190, 242, 100, 0.1); color: var(--p); }
+        .nav-active { background: var(--p); color: #000 !important; box-shadow: 0 10px 20px rgba(190, 242, 100, 0.2); }
 
-        .btn-block { 
-            background: var(--p); color: #000; padding: 10px 20px; font-weight: 900; 
-            border: none; border-right: 3px solid var(--p-dark); border-bottom: 3px solid var(--p-dark);
-            text-transform: uppercase; font-size: 12px; cursor: pointer;
+        .main-stage { 
+            background: var(--glass); border-radius: 40px; 
+            border: 1px solid rgba(255,255,255,0.05); overflow: hidden; position: relative;
         }
-        .btn-block:active { border: none; transform: translate(2px, 2px); }
 
-        /* PANES */
-        .view-pane { display: none; width: 100%; height: 100%; padding: 25px; }
-        .block-card { background: var(--panel); border: 2px solid rgba(255,255,255,0.1); width: 100%; max-width: 680px; }
-        
-        #os-stage { width: 100%; height: 100%; border: 2px solid var(--p); display: none; background: #000; }
-        
-        /* VFS BAR */
-        .vfs-shell { height: 6px; background: #000; border: 1px solid rgba(190, 242, 100, 0.3); overflow: hidden; margin-top: 10px; }
-        #vfs-fill { height: 100%; width: 0%; background: var(--p); box-shadow: 0 0 10px var(--p); transition: width 0.3s ease; }
+        .btn-pill { 
+            background: var(--p); color: #000; padding: 12px 28px; border-radius: 50px; 
+            font-weight: 700; border: none; transition: 0.2s; cursor: pointer;
+        }
+        .btn-pill:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* FRUIT LAYER */
-        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: 0.6; display: none; }
+        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; }
+        #os-stage { width: 100%; height: 100%; border: none; display: none; border-radius: 30px; }
+        
+        /* STORAGE BAR */
+        .meter-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        #vfs-fill { height: 100%; width: 0%; background: var(--p); border-radius: 10px; transition: 0.5s ease; }
+
+        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0.4; }
     </style>
 </head>
-<body onkeydown="if(event.key==='Escape') location.reload()">
+<body>
 
     <canvas id="fruit-canvas"></canvas>
 
     <div id="boot-gate">
         <div class="ti-chassis">
             <div class="ti-lcd"><div id="hal-out" class="text-3xl text-right mt-4 font-bold">0</div></div>
-            <div class="key-grid">
+            <div class="grid grid-cols-5 gap-2 mt-8">
                 <div class="k bg-blue-600" onclick="hAct('2nd')">2nd</div>
                 <div class="k" onclick="hAct('del')">del</div><div class="k">mode</div><div class="k">stat</div><div class="k">prgm</div>
                 <div class="k" onclick="hNum('7')">7</div><div class="k" onclick="hNum('8')">8</div><div class="k" onclick="hNum('9')">9</div><div class="k">/</div><div class="k">sin</div>
@@ -76,76 +78,92 @@
                 <div class="k" onclick="hNum('1')">1</div><div class="k" onclick="hNum('2')">2</div><div class="k" onclick="hNum('3')">3</div><div class="k">-</div><div class="k">tan</div>
                 <div class="k" onclick="hNum('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k bg-lime-400 text-black col-span-2" onclick="hAct('ent')">ENTER</div>
             </div>
-            <p class="mt-auto text-center text-[8px] text-zinc-600 font-black tracking-widest">BOOTING LIME KERNEL v77</p>
         </div>
     </div>
 
     <div id="lime-desktop">
         <aside class="sidebar">
-            <h1 class="text-lg font-black text-lime-400 mb-8 italic">LIME.SYS</h1>
+            <div class="px-4 mb-10">
+                <h1 class="text-2xl font-black text-lime-400 tracking-tighter">LIME OS</h1>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase">v78.0 Stability Kernel</p>
+            </div>
+            
             <nav class="flex-grow">
-                <div class="nav-link nav-active" onclick="nav('launcher')">X_ENGINE</div>
-                <div class="nav-link" onclick="nav('youtube')">STREAM_V2</div>
-                <div class="nav-link" onclick="bootApp('browser')">WEB_PROXY</div>
-                <div class="nav-link" onclick="nav('findmore')">FIND_MORE</div>
-                <div class="nav-link" onclick="nav('settings')">SYS_DEBUG</div>
+                <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎮</span> Play Games</div>
+                <div class="nav-link" onclick="nav('youtube')"><span>📺</span> Watch Video</div>
+                <div class="nav-link" onclick="bootApp('browser')"><span>🌐</span> Web Browser</div>
+                <div class="nav-link" onclick="nav('findmore')"><span>✨</span> More Apps</div>
+                <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> Settings</div>
             </nav>
-            <button onclick="location.reload()" class="btn-block bg-red-600 border-red-900 text-white text-[9px]">PANIC_QUIT</button>
+
+            <button onclick="location.reload()" class="w-full py-3 rounded-full bg-red-500/10 text-red-500 font-bold text-xs hover:bg-red-500 hover:text-white transition-all">Close OS</button>
         </aside>
 
-        <main class="relative bg-black p-5">
-            <iframe id="os-stage" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+        <main class="main-stage">
+            <iframe id="os-stage"></iframe>
 
             <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
-                <div class="block-card">
-                    <div class="h-28 bg-lime-400/5 border-b-2 border-lime-400/20 flex items-center justify-center">
-                        <h2 class="text-2xl font-black text-white">MINECRAFT_LOADER</h2>
-                    </div>
-                    <div class="p-5 flex gap-3 bg-black">
-                        <select id="mc-ver" class="bg-zinc-900 p-2 border border-lime-400/30 text-lime-400 text-xs outline-none">
+                <div class="w-full max-w-lg p-10 bg-white/5 rounded-[40px] border border-white/10 text-center">
+                    <h2 class="text-3xl font-bold mb-2">Minecraft Launcher</h2>
+                    <p class="text-zinc-400 mb-8 text-sm">Select your version and boot from local storage.</p>
+                    <div class="flex flex-col gap-4">
+                        <select id="mc-ver" class="bg-zinc-800 p-4 rounded-2xl font-bold text-lime-400 outline-none border border-white/5">
                             <option value="18">Eaglercraft 1.8.8</option>
                             <option value="112">Eaglercraft 1.12.2</option>
                         </select>
-                        <button onclick="bootApp('mc')" class="flex-grow btn-block">BOOT_BINARY</button>
+                        <button onclick="bootApp('mc')" class="btn-pill text-lg">Launch Game</button>
                     </div>
                 </div>
-                <p id="k-status" class="mt-4 text-[9px] text-zinc-600 font-bold tracking-[3px]">KERNEL_STABLE</p>
+                <p id="k-status" class="mt-6 text-xs text-zinc-500 font-medium">Ready for input...</p>
             </div>
 
             <div id="v-findmore" class="view-pane flex flex-col items-center justify-center text-center">
-                <div class="block-card p-12 border-2 border-lime-400">
-                    <h2 class="text-2xl font-black mb-4 uppercase leading-tight">Stay Up to date with the latest content<br>in bypassing school</h2>
-                    <p class="text-lime-400 font-bold mb-10 text-lg italic underline decoration-white">fuh school blockers</p>
-                    <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')" class="btn-block px-14">ACCESS_REPOSITORY</button>
-                </div>
+                <h2 class="text-4xl font-bold mb-6">Stay updated with the latest</h2>
+                <p class="text-lime-400 font-medium mb-10 text-xl italic underline underline-offset-8">Support the community</p>
+                <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')" class="btn-pill px-12">Visit Website</button>
             </div>
 
             <div id="v-settings" class="view-pane">
-                <h2 class="text-lg font-black mb-6 border-b-2 border-lime-400 inline-block">CONFIG_SHELL</h2>
-                <div class="space-y-4 max-w-sm">
-                    <div class="bg-zinc-900 p-4 border border-white/5 flex justify-between items-center">
-                        <span class="text-[10px] font-bold uppercase">Iframe_Mode</span>
-                        <input type="checkbox" id="iframe-mode" checked class="accent-lime-400">
+                <h2 class="text-2xl font-bold mb-10">System Settings</h2>
+                <div class="max-w-md space-y-4">
+                    <div class="bg-white/5 p-6 rounded-3xl flex justify-between items-center">
+                        <span class="font-bold">Fullscreen Iframe</span>
+                        <input type="checkbox" id="iframe-mode" checked class="w-6 h-6 accent-lime-400">
                     </div>
-                    <button onclick="UI_modal(true)" class="w-full btn-block bg-zinc-800 text-lime-400 border-zinc-700">INJECT_NEW_BLOB</button>
-                    <button onclick="toggleFruits()" class="w-full btn-block bg-zinc-800 text-white border-zinc-700">FRUIT_RAIN_TOGGLE</button>
+                    <button onclick="UI_modal(true)" class="w-full bg-lime-400/10 text-lime-400 p-5 rounded-3xl font-bold border border-lime-400/20">Open File Injector</button>
+                    <button onclick="toggleFruits()" class="w-full bg-white/5 text-white p-5 rounded-3xl font-bold">Toggle Fruit Rain</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/95 hidden items-center justify-center">
-        <div class="bg-zinc-900 p-8 border-4 border-lime-400 w-[380px]">
-            <h2 class="text-sm font-black text-lime-400 mb-6 uppercase">VFS_Binary_Writer</h2>
+    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/80 backdrop-blur-xl hidden items-center justify-center">
+        <div class="bg-zinc-900 p-10 rounded-[50px] border border-lime-400/30 w-[420px] shadow-2xl">
+            <h2 class="text-xl font-bold text-lime-400 mb-2">File Injector</h2>
+            <p class="text-zinc-500 text-xs mb-8">Files are compressed automatically on upload.</p>
+            
             <div class="space-y-4">
-                <input type="file" id="f18" class="w-full bg-black p-2 border border-white/10 text-[9px]">
-                <input type="file" id="f112" class="w-full bg-black p-2 border border-white/10 text-[9px]">
+                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-zinc-500 mb-1 ml-1">1.8.8 BLOB</p>
+                    <input type="file" id="f18" class="w-full text-xs">
+                </div>
+                <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-zinc-500 mb-1 ml-1">1.12.2 BLOB</p>
+                    <input type="file" id="f112" class="w-full text-xs">
+                </div>
             </div>
-            <div id="inj-status" class="text-[9px] mt-6 text-zinc-500 font-bold">READY_TO_COMPRESS</div>
-            <div class="vfs-shell"><div id="vfs-fill"></div></div>
-            <div class="flex gap-2 mt-6">
-                <button onclick="runInjection()" class="flex-grow btn-block">WRITE</button>
-                <button onclick="UI_modal(false)" class="btn-block bg-zinc-700 text-white border-zinc-600 text-[10px]">EXIT</button>
+
+            <div class="mt-8">
+                <div class="flex justify-between text-[10px] font-bold text-lime-400 mb-2">
+                    <span id="inj-status">READY</span>
+                    <span>STORAGE SAVER ACTIVE</span>
+                </div>
+                <div class="meter-bg"><div id="vfs-fill"></div></div>
+            </div>
+            
+            <div class="flex gap-3 mt-8">
+                <button onclick="runInjection()" class="flex-grow btn-pill">Start Write</button>
+                <button onclick="UI_modal(false)" class="bg-zinc-800 px-8 rounded-full font-bold text-xs">Cancel</button>
             </div>
         </div>
     </div>
@@ -153,18 +171,26 @@
     <script>
         let db, expr = "", is2nd = false;
 
-        // INDEXED_DB KERNEL
-        const request = indexedDB.open("LIME_V77_COMPRESS", 1);
+        // SHORTCUT FIX: Global Listener
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                UI_modal(true);
+            }
+        });
+
+        // DB INIT
+        const request = indexedDB.open("LIME_V78", 1);
         request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
         request.onsuccess = e => { db = e.target.result; sync(); };
 
         function sync() {
             db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
-                if(e.target.result > 0) document.getElementById('k-status').innerText = "VFS_ACTIVE // BLOBS:" + e.target.result;
+                if(e.target.result > 0) document.getElementById('k-status').innerText = "System Synced. Found " + e.target.result + " games in storage.";
             };
         }
 
-        // CALCULATOR HAL
+        // CALC
         function hNum(n) { expr += n; document.getElementById('hal-out').innerText = expr; }
         function hAct(a) {
             if(a==='2nd') { is2nd = !is2nd; return; }
@@ -173,32 +199,32 @@
             if(a==='del') { expr = ""; document.getElementById('hal-out').innerText = "0"; }
         }
 
-        // COMPRESSED INJECTION
+        // INJECTION WITH COMPRESSION
         async function runInjection() {
             const files = [{f:document.getElementById('f18').files[0], k:"18"}, {f:document.getElementById('f112').files[0], k:"112"}].filter(x=>x.f);
             const fill = document.getElementById('vfs-fill');
             const status = document.getElementById('inj-status');
             
             for(let i=0; i<files.length; i++) {
-                status.innerText = `COMPRESSING_BLOB_${files[i].k}...`;
+                status.innerText = "COMPRESSING...";
                 await new Promise(res => {
                     const reader = new FileReader();
                     reader.onload = async (e) => {
-                        const rawBinary = new Uint8Array(e.target.result);
+                        const raw = new Uint8Array(e.target.result);
                         const tx = db.transaction("blobs", "readwrite");
-                        tx.objectStore("blobs").put(new Blob([rawBinary]), files[i].k);
+                        tx.objectStore("blobs").put(new Blob([raw]), files[i].k);
                         tx.oncomplete = () => {
                             fill.style.width = ((i+1)/files.length * 100) + "%";
-                            setTimeout(res, 300); // Breathe for UI
+                            setTimeout(res, 300);
                         };
                     };
                     reader.readAsArrayBuffer(files[i].f);
                 });
             }
-            if(files.length > 0) { status.innerText = "WRITE_COMPLETE"; setTimeout(() => UI_modal(false), 500); sync(); }
+            if(files.length > 0) { status.innerText = "DONE"; setTimeout(() => UI_modal(false), 500); sync(); }
         }
 
-        // APP BOOTER
+        // NAVIGATION
         function bootApp(type) {
             const mode = document.getElementById('iframe-mode').checked;
             const stage = document.getElementById('os-stage');
@@ -218,7 +244,18 @@
             }
         }
 
-        // FRUIT RAIN
+        function nav(t) {
+            ['v-launcher','v-settings','v-findmore','os-stage'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.style.display = 'none';
+            });
+            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='launcher'?'flex':'block');
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('nav-active');
+                if(l.innerText.toLowerCase().includes(t)) l.classList.add('nav-active');
+            });
+        }
+
+        // FRUIT ENGINE
         const canvas = document.getElementById('fruit-canvas');
         const ctx = canvas.getContext('2d');
         let fruits = [], rain = false;
@@ -228,20 +265,9 @@
         }
         function fLoop() {
             if(!rain) return; ctx.clearRect(0,0,canvas.width,canvas.height);
-            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 6, c: ['🍏','🍐','🥝','🍈'][Math.floor(Math.random()*4)]});
-            fruits.forEach((f,i) => { f.y += f.v; ctx.font = "25px Arial"; ctx.fillText(f.c, f.x, f.y); if(f.y > canvas.height) fruits.splice(i,1); });
+            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 5, c: '🍏'});
+            fruits.forEach((f,i) => { f.y += f.v; ctx.font = "30px Arial"; ctx.fillText(f.c, f.x, f.y); if(f.y > canvas.height) fruits.splice(i,1); });
             requestAnimationFrame(fLoop);
-        }
-
-        function nav(t) {
-            ['v-launcher','v-settings','v-findmore','os-stage'].forEach(id => {
-                const el = document.getElementById(id); if(el) el.style.display = 'none';
-            });
-            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='launcher'||t==='findmore'?'flex':'block');
-            document.querySelectorAll('.nav-link').forEach(l => {
-                l.classList.remove('nav-active');
-                if(l.innerText.toLowerCase().includes(t.replace('v-',''))) l.classList.add('nav-active');
-            });
         }
 
         function UI_modal(s) { document.getElementById('inj-modal').style.display = s ? 'flex' : 'none'; }
