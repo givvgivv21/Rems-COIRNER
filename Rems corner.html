@@ -2,237 +2,222 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V23.0 Unlocked</title>
+    <title>Orange OS | V28.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { 
-            --orange-dark: #7c2d12; --orange-mid: #ea580c; --orange-bright: #fb923c; 
-            --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
-            --win-bg: #212121; --primary: #ea580c;
+        :root { --primary: #ea580c; --ti-orange: #fb923c; --bg: #0c0a09; --sidebar: #1c1917; }
+        .theme-lemon { --primary: #a3e635; --ti-orange: #d9f99d; }
+        .theme-grape { --primary: #a855f7; --ti-orange: #ddd6fe; }
+
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; transition: 0.5s; }
+
+        /* TI-84 GUI */
+        #cloak { position: fixed; inset: 0; z-index: 100000; background: #050505; display: flex; align-items: center; justify-content: center; }
+        .ti-body { 
+            background: #fb923c; width: 360px; height: 680px; 
+            border-radius: 40px; padding: 25px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 4px solid #c2712d; 
         }
-        /* COLOR SCHEMES */
-        .theme-lemon { --primary: #a3e635; --orange-mid: #a3e635; --orange-bright: #fef08a; --bg: #050501; }
-        .theme-grape { --primary: #a855f7; --orange-mid: #a855f7; --orange-bright: #e9d5ff; --bg: #05010a; }
-
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.5s; }
-
-        /* ULTRA FLASHY FX */
-        @keyframes neonPulse {
-            0%, 100% { border-color: var(--primary); box-shadow: 0 0 5px var(--primary), inset 0 0 5px var(--primary); }
-            50% { border-color: var(--orange-bright); box-shadow: 0 0 25px var(--primary), inset 0 0 10px var(--primary); }
+        .lcd { 
+            background: #fdfdfd; height: 160px; border-radius: 4px; padding: 10px; color: #111; 
+            font-family: monospace; font-size: 1.4rem; text-align: right;
+            display: flex; flex-direction: column; justify-content: flex-end; border: 2px solid #000;
         }
-        .flashy-glow { animation: neonPulse 1.5s infinite; border-width: 2px !important; }
+
+        .grid-ti { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+        .ti-btn { height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px #222; transition: 0.1s; user-select: none; }
+        .ti-btn:active { transform: translateY(2px); box-shadow: 0 1px #222; }
+        .btn-2nd { background: #2563eb; color: white; }
+        .btn-mode { background: #4b5563; color: white; }
+        .btn-func { background: #333; color: white; }
+        .btn-num { background: #e5e7eb; color: #111; font-size: 1rem; }
+
+        /* FRUIT RAIN */
+        #fruit-rain { position: fixed; inset: 0; pointer-events: none; z-index: 100; display: none; }
+        .falling-fruit { position: absolute; font-size: 2rem; animation: fall linear infinite; }
+        @keyframes fall { from { transform: translateY(-10vh) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* OS LAYOUT */
+        #orange-core { display: none; height: 100vh; width: 100vw; }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 4px solid var(--primary); padding: 20px; display: flex; flex-direction: column; }
+        .nav-item { border: 2px solid var(--primary); padding: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; }
+        .nav-item:hover { background: var(--primary); color: #000; }
         
-        .glitch-text { text-shadow: 2px 0 var(--primary), -2px 0 #00fff9; animation: glitch 2s infinite linear alternate-reverse; }
-        @keyframes glitch { 0% { opacity: 1; } 50% { opacity: 0.8; transform: skew(0.5deg); } 100% { opacity: 1; } }
+        .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
+        .yt-card { background: #111; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .yt-card:hover { border-color: var(--primary); transform: scale(1.05); }
 
-        /* SIDEBAR & UI */
-        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 4px solid var(--primary); padding: 20px; display: flex; flex-direction: column; z-index: 1100; box-shadow: 10px 0 40px rgba(0,0,0,0.8); }
-        .nav-item { border: 2px solid var(--primary); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); transition: 0.3s; }
-        .nav-item:hover { background: var(--primary); color: #000; transform: scale(1.05); }
-
-        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 3px solid #000; display: flex; flex-direction: column; z-index: 1050; border-radius: 8px; overflow: hidden; }
-        .mojang-body { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
-        .mojang-play-bar { height: 90px; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 4px solid var(--primary); gap: 10px; }
-        
-        /* ADMIN PANEL */
-        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
-        .admin-box { width: 420px; padding: 30px; background: #111; border: 3px solid var(--primary); color: white; border-radius: 12px; }
-        .progress-bar-wrap { width: 100%; height: 10px; background: #222; border-radius: 5px; margin-top: 15px; display: none; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s ease; box-shadow: 0 0 10px var(--primary); }
-
-        /* CLOAK */
-        #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
-        .calc { background: #1e1e1e; width: 340px; padding: 25px; border-radius: 20px; border: 4px solid #333; }
-        .lcd { background: #99ad99; border: 4px solid #555; height: 70px; margin-bottom: 15px; padding: 15px; color: #111; font-size: 1.8rem; text-align: right; font-family: monospace; }
-        .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 12px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
+        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; }
     </style>
 </head>
-<body onkeydown="handleGlobalKeys(event)">
+<body onkeydown="if(event.key==='Escape') location.reload()">
+
+    <div id="fruit-rain"></div>
 
     <div id="cloak">
-        <div class="calc flashy-glow">
-            <div id="lcd" class="lcd">0</div>
-            <div class="grid grid-cols-4 gap-2">
-                <div class="btn" onclick="op('2nd')">2nd</div>
-                <div class="btn" onclick="op('DEL')">DEL</div>
-                <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
-                <div class="btn col-span-4 bg-orange-600 text-white flashy-glow" onclick="op('EXE')">EXE</div>
+        <div class="ti-body shadow-[0_0_30px_var(--primary)]">
+            <div class="bg-[#1a1a1a] p-4 rounded-lg mb-4">
+                <div id="lcd" class="lcd">
+                    <div style="font-size: 0.5rem; color: #888; text-align: left;">TI-84 Plus CE</div>
+                    <div id="calc-display">0</div>
+                </div>
+            </div>
+            <div class="grid-ti">
+                <div class="ti-btn btn-func">y=</div><div class="ti-btn btn-func">win</div><div class="ti-btn btn-func">zoom</div><div class="ti-btn btn-func">trace</div><div class="ti-btn btn-func">graph</div>
+                <div class="ti-btn btn-2nd" onclick="op('2nd')">2nd</div><div class="ti-btn btn-mode" onclick="op('MODE')">mode</div><div class="ti-btn btn-func" onclick="op('DEL')">del</div><div class="ti-btn btn-func">stat</div><div class="ti-btn btn-func">prgm</div>
+                <div class="ti-btn btn-num" onclick="ins('7')">7</div><div class="ti-btn btn-num" onclick="ins('8')">8</div><div class="ti-btn btn-num" onclick="ins('9')">9</div><div class="ti-btn btn-func">÷</div><div class="ti-btn btn-func">×</div>
+                <div class="ti-btn btn-num" onclick="ins('4')">4</div><div class="ti-btn btn-num" onclick="ins('5')">5</div><div class="ti-btn btn-num" onclick="ins('6')">6</div><div class="ti-btn btn-func">-</div><div class="ti-btn btn-func">+</div>
+                <div class="ti-btn btn-num" onclick="ins('1')">1</div><div class="ti-btn btn-num" onclick="ins('2')">2</div><div class="ti-btn btn-num" onclick="ins('3')">3</div><div class="col-span-2 ti-btn btn-func" style="background:black" onclick="op('EXE')">ENTER</div>
             </div>
         </div>
     </div>
 
-    <div id="admin-panel">
-        <div class="admin-box flashy-glow">
-            <h2 class="text-primary font-black mb-4 uppercase text-center text-2xl glitch-text">Core Injection</h2>
-            <div class="space-y-4">
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase font-bold">Build 1.12.2</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase font-bold">Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                
-                <div id="p-wrap" class="progress-bar-wrap"><div id="p-fill" class="progress-fill"></div></div>
-                <p id="p-status" class="text-[10px] text-center text-primary font-bold uppercase mt-2"></p>
-
-                <button id="commit-btn" onclick="startHeavyInjection()" class="bg-primary text-black p-4 w-full font-black border-b-4 border-black/40 hover:brightness-110 transition-all uppercase">Inject Core</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close</button>
-            </div>
+    <div id="admin-panel" class="fixed inset-0 bg-black/95 z-[3000] hidden items-center justify-center">
+        <div class="bg-zinc-900 p-8 border-2 border-primary w-[400px]">
+            <h2 class="text-primary font-black text-xl mb-4">DATA INJECTOR</h2>
+            <input type="file" id="f12" class="w-full mb-4 text-xs text-white">
+            <input type="file" id="f8" class="w-full mb-4 text-xs text-white">
+            <div id="p-wrap" class="w-full h-2 bg-zinc-800 hidden mb-4"><div id="p-fill" class="h-full bg-primary w-0 transition-all"></div></div>
+            <button onclick="injectFiles()" class="w-full bg-primary p-3 font-black text-black">COMMIT CORES</button>
+            <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-zinc-500 text-[10px] mt-4">CANCEL</button>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 id="os-logo" class="text-2xl font-black italic text-primary mb-6 uppercase glitch-text">Orange OS</h1>
-            <div class="nav-item flashy-glow" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <h1 id="os-logo" class="text-2xl font-black italic text-primary mb-6">ORANGE OS</h1>
+            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-item" onclick="showView('yt')"><span>VIDEO HUB</span><span>📺</span></div>
             <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
-            <div class="nav-item" onclick="launch('https://www.youtube.com/embed?listType=search&list=minecraft')"><span>YOUTUBE</span><span>📺</span></div>
-            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
             <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
-            
-            <div class="mt-auto p-3 border border-primary bg-black/20 text-[10px] flex justify-between items-center mb-2">
-                <span class="font-bold">LIGHT MODE</span>
-                <input type="checkbox" onchange="toggleLight(this.checked)" class="accent-primary">
-            </div>
-            <div class="nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
+            <div class="mt-auto nav-item border-white text-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
 
-        <div id="content-area" class="flex-grow flex items-center justify-center">
-            <div id="launcher-view" class="mojang-window flashy-glow hidden">
-                <div class="mojang-body"></div>
-                <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-44 font-bold outline-none text-xs">
-                        <option value="mc12">Eaglercraft 1.12.2</option>
-                        <option value="mc8">Eaglercraft 1.8.8</option>
-                    </select>
-                    <button onclick="playSelected()" class="bg-[#3c8527] border-2 border-black shadow-[inset_-3px_-3px_#1a3911,inset_3px_3px_#5dbb3d] width-[150px] h-[45px] text-white font-black px-8">PLAY</button>
-                    
-                    <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" 
-                            class="bg-zinc-700 border-2 border-black shadow-[inset_-2px_-2px_rgba(0,0,0,0.5),inset_2px_2px_rgba(255,255,255,0.1)] px-4 h-[45px] text-[9px] text-white font-black hover:bg-zinc-600 transition-all uppercase leading-tight">
-                        USEFUL TEXTURE <br> PACKS
-                    </button>
-
-                    <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold text-white">
-                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_red]"></span> 1.12</div>
-                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_red]"></span> 1.8</div>
+        <div id="main" class="flex-grow flex items-center justify-center">
+            <div id="launcher-view" class="w-[850px] h-[550px] bg-zinc-800 border-4 border-black hidden flex-col shadow-2xl">
+                <div class="flex-grow bg-[url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg')] bg-cover"></div>
+                <div class="h-28 bg-black flex items-center justify-center gap-4 p-4">
+                    <select id="v-sel" class="bg-zinc-900 p-2 text-white border border-primary font-bold"><option value="mc12">Eagler 1.12.2</option><option value="mc8">Eagler 1.8.8</option></select>
+                    <button onclick="play()" class="bg-green-600 px-10 py-3 font-black hover:bg-green-500">PLAY</button>
+                    <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="bg-zinc-700 px-4 py-3 text-[10px] font-black border border-zinc-500">USEFUL PACKS</button>
+                    <div class="flex flex-col text-[10px] font-bold">
+                        <div class="flex items-center gap-2"><span id="d12" class="w-2 h-2 rounded-full bg-red-600"></span> 1.12</div>
+                        <div class="flex items-center gap-2"><span id="d8" class="w-2 h-2 rounded-full bg-red-600"></span> 1.8</div>
                     </div>
                 </div>
             </div>
 
-            <div id="settings-view" class="hidden p-10 bg-black/80 border-2 border-primary rounded-2xl w-full max-w-md flashy-glow">
-                <h2 class="text-2xl font-bold text-primary mb-6 uppercase italic">System Config</h2>
+            <div id="yt-view" class="w-full h-full bg-black hidden overflow-y-auto p-6">
+                <h2 class="font-black text-primary mb-6">VIDEO HUB</h2>
+                <div class="yt-grid" id="yt-content"></div>
+            </div>
+
+            <div id="settings-view" class="bg-zinc-900 p-10 border-2 border-primary hidden w-[450px]">
+                <h2 class="font-black text-xl text-primary mb-6">SYSTEM CONFIG</h2>
                 <div class="space-y-6">
-                    <div class="flex justify-between items-center font-bold"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked class="w-5 h-5 accent-primary"></div>
+                    <div class="flex justify-between items-center"><span>Fruit Rain</span> <input type="checkbox" id="rain-toggle" onchange="toggleRain(this.checked)" class="w-6 h-6"></div>
                     <hr class="border-zinc-800">
-                    <p class="text-[10px] font-black text-zinc-500 uppercase">System Tint</p>
+                    <p class="text-[10px] font-bold text-zinc-500">COLOR SCHEMES</p>
                     <div class="flex gap-4">
-                        <div class="w-10 h-10 rounded-full bg-orange-600 cursor-pointer border-2 border-white" onclick="setTheme('orange')"></div>
-                        <div class="w-10 h-10 rounded-full bg-lime-500 cursor-pointer border-2 border-white" onclick="setTheme('lemon')"></div>
-                        <div class="w-10 h-10 rounded-full bg-purple-600 cursor-pointer border-2 border-white" onclick="setTheme('grape')"></div>
+                        <div class="w-12 h-12 bg-orange-600 rounded-full cursor-pointer border-2 border-white" onclick="setTheme('orange')"></div>
+                        <div class="w-12 h-12 bg-lime-500 rounded-full cursor-pointer border-2 border-white" onclick="setTheme('lemon')"></div>
+                        <div class="w-12 h-12 bg-purple-600 rounded-full cursor-pointer border-2 border-white" onclick="setTheme('grape')"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="app-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:150000; flex-direction:column;">
-        <div class="p-2 bg-primary flex justify-between items-center text-black font-black text-xs">
-            <span class="ml-4 uppercase">External Core Execution</span>
-            <button onclick="closeApp()" class="bg-black text-white px-6 py-1 font-bold text-xs">EXIT</button>
-        </div>
-        <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
+    <div id="app-overlay">
+        <div class="bg-primary p-2 flex justify-end"><button onclick="closeApp()" class="bg-black text-white px-4 font-black">EXIT</button></div>
+        <iframe id="app-frame" class="w-full h-full border-none"></iframe>
     </div>
 
     <script>
         let db;
-        const dbReq = indexedDB.open("OrangeOS_V22", 1);
-        dbReq.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("core"); };
-        dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
+        const req = indexedDB.open("OS_DATA", 2);
+        req.onsuccess = e => { db = e.target.result; updateDots(); loadYT(); };
 
-        function setTheme(t) {
-            document.body.className = '';
-            const logo = document.getElementById('os-logo');
-            if(t === 'lemon') { document.body.classList.add('theme-lemon'); logo.innerText = 'Lemon OS'; }
-            else if(t === 'grape') { document.body.classList.add('theme-grape'); logo.innerText = 'Grape OS'; }
-            else { logo.innerText = 'Orange OS'; }
+        function loadYT() {
+            const vids = [
+                {id:'dQw4w9WgXcQ', t:'Survival #1'}, {id:'XqZ_mE_Z97U', t:'Eaglercraft Pro'},
+                {id:'70S8v7FvM_k', t:'2B2T Lore'}, {id:'p3G5UXn2YGo', t:'Minecraft 1.21'},
+                {id:'f_pB_07983c', t:'Redstone Pro'}, {id:'9uY6_E_tPQU', t:'Minecraft Movie'},
+                {id:'J---aiyznGQ', t:'Keyboard ASMR'}, {id:'8-X72v_SInE', t:'PVP Montage'}
+            ];
+            const container = document.getElementById('yt-content');
+            vids.forEach(v => {
+                let card = document.createElement('div'); card.className = 'yt-card';
+                card.innerHTML = `<img src="https://img.youtube.com/vi/${v.id}/0.jpg" class="w-full"><p class="p-2 text-xs font-bold">${v.t}</p>`;
+                card.onclick = () => launch(`https://www.youtube.com/embed/${v.id}`);
+                container.appendChild(card);
+            });
         }
 
-        async function startHeavyInjection() {
-            const btn = document.getElementById('commit-btn');
-            const wrap = document.getElementById('p-wrap');
-            const fill = document.getElementById('p-fill');
-            const stat = document.getElementById('p-status');
-            const files = { mc12: document.getElementById('file12').files[0], mc8: document.getElementById('file8').files[0] };
-            if(!files.mc12 && !files.mc8) return alert("Select files!");
-
-            wrap.style.display = 'block';
-            btn.innerText = "INJECTING...";
-
-            for (const [key, file] of Object.entries(files)) {
-                if(!file) continue;
-                stat.innerText = `READING ${key.toUpperCase()}...`;
-                fill.style.width = '30%';
-                const text = await file.text();
-                stat.innerText = `WRITING TO DATABASE...`;
-                fill.style.width = '70%';
-                const tx = db.transaction(["core"], "readwrite");
-                tx.objectStore("core").put(text, key);
+        async function injectFiles() {
+            const files = { mc12: document.getElementById('f12').files[0], mc8: document.getElementById('f8').files[0] };
+            document.getElementById('p-wrap').style.display = 'block';
+            for (let [k, f] of Object.entries(files)) {
+                if(!f) continue;
+                const blob = new Blob([await f.arrayBuffer()], {type: 'text/html'});
+                const tx = db.transaction("core", "readwrite");
+                tx.objectStore("core").put(blob, k);
                 await new Promise(r => tx.oncomplete = r);
-                fill.style.width = '100%';
-                stat.innerText = `${key.toUpperCase()} SUCCESS!`;
-                await new Promise(r => setTimeout(r, 600));
             }
-            btn.innerText = "DONE!";
-            updateStatusDots();
-            setTimeout(() => { wrap.style.display = 'none'; stat.innerText = ""; btn.innerText = "Inject Core"; }, 2000);
+            updateDots();
+            alert("CORES UPDATED");
         }
 
-        function playSelected() {
-            const key = document.getElementById('ver-select').value;
-            const tx = db.transaction(["core"], "readonly");
-            tx.objectStore("core").get(key).onsuccess = (e) => {
-                const data = e.target.result;
-                if(!data) return alert("Build not found!");
-                const blob = new Blob([data], {type: 'text/html'});
-                const url = URL.createObjectURL(blob);
-                if(document.getElementById('iframe-toggle').checked) {
-                    document.getElementById('app-frame').src = url;
-                    document.getElementById('app-overlay').style.display = 'flex';
-                } else { window.open(url, '_blank'); }
+        function play() {
+            const ver = document.getElementById('v-sel').value;
+            db.transaction("core").objectStore("core").get(ver).onsuccess = e => {
+                if(!e.target.result) return alert("Core missing!");
+                document.getElementById('app-frame').src = URL.createObjectURL(e.target.result);
+                document.getElementById('app-overlay').style.display = 'flex';
             };
         }
 
-        function updateStatusDots() {
-            if(!db) return;
-            const tx = db.transaction(["core"], "readonly");
-            const store = tx.objectStore("core");
-            store.get("mc12").onsuccess = (e) => {
-                const color = e.target.result ? '#44ff44' : '#ff4444';
-                document.getElementById('dot12').style.background = color;
-                document.getElementById('dot12').style.boxShadow = `0 0 10px ${color}`;
-            };
-            store.get("mc8").onsuccess = (e) => {
-                const color = e.target.result ? '#44ff44' : '#ff4444';
-                document.getElementById('dot8').style.background = color;
-                document.getElementById('dot8').style.boxShadow = `0 0 10px ${color}`;
-            };
+        function updateDots() {
+            const tx = db.transaction("core").objectStore("core");
+            tx.get("mc12").onsuccess = e => document.getElementById('d12').style.background = e.target.result ? '#4f4' : '#f44';
+            tx.get("mc8").onsuccess = e => document.getElementById('d8').style.background = e.target.result ? '#4f4' : '#f44';
         }
 
-        let inputStr = "0", is2nd = false;
+        let inputStr = "0", is2nd = false, fruitIcon = '🍊';
         function op(k) {
-            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
-            if(is2nd && k === 'DEL') {
-                document.getElementById('admin-panel').style.display = 'flex';
-                is2nd = false; return;
-            }
-            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
-            if(k === 'DEL') inputStr = inputStr.length > 1 ? inputStr.slice(0, -1) : "0";
-            document.getElementById('lcd').innerText = inputStr;
+            if(k==='2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#fdfdfd'; return; }
+            // COMBO: 2nd + DEL = Injector
+            if(is2nd && k==='DEL') { document.getElementById('admin-panel').style.display = 'flex'; is2nd = false; return; }
+            // COMBO: 2nd + MODE = Open OS
+            if(is2nd && k==='MODE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='flex'; return; }
+            if(k==='DEL') inputStr = "0";
+            document.getElementById('calc-display').innerText = inputStr;
         }
-        function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
-        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
-        function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
-        function toggleLight(on) { if(on) document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
-        function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
+        function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('calc-display').innerText = inputStr; }
+        
+        function setTheme(t) {
+            document.body.className = (t === 'orange') ? '' : 'theme-' + t;
+            const logo = document.getElementById('os-logo');
+            logo.innerText = t.toUpperCase() + ' OS';
+            fruitIcon = (t === 'lemon') ? '🍋' : (t === 'grape') ? '🍇' : '🍊';
+            if(document.getElementById('rain-toggle').checked) toggleRain(true);
+        }
+
+        function toggleRain(on) {
+            const rain = document.getElementById('fruit-rain');
+            rain.innerHTML = ''; rain.style.display = on ? 'block' : 'none';
+            if(on) {
+                for(let i=0; i<30; i++) {
+                    let f = document.createElement('div'); f.className='falling-fruit'; f.innerText=fruitIcon;
+                    f.style.left=Math.random()*100+'vw'; f.style.animationDuration=(Math.random()*3+2)+'s';
+                    rain.appendChild(f);
+                }
+            }
+        }
+
+        function showView(v) { ['launcher-view', 'yt-view', 'settings-view'].forEach(id => document.getElementById(id).classList.add('hidden')); document.getElementById(v+'-view').classList.remove('hidden'); }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        function closeApp() { document.getElementById('app-overlay').style.display='none'; document.getElementById('app-frame').src=''; }
     </script>
 </body>
 </html>
