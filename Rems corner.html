@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V55.0</title>
+    <title>Orange OS | V57.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ++++++++++++++++++++++++++++++++++++++++++++++
@@ -12,59 +12,52 @@
         ++++++++++++++++++++++++++++++++++++++++++++++
         */
 
-        :root { 
-            --p: #f97316; 
-            --bg: #0a0a0b; 
-            --ti-body: #f97316;
-            --fruit: '🍊';
-        }
-        
+        :root { --p: #f97316; --ti-body: #f97316; --fruit: '🍊'; }
         * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Segoe UI', sans-serif; }
         body { background: #000; color: #fff; overflow: hidden; height: 100vh; }
 
-        /* --- HARDWARE: ORANGE TI-84 --- */
+        /* --- HARDWARE: COMPACT ORANGE TI-84 --- */
         #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
         .ti-chassis { 
-            background: var(--ti-body); width: 360px; height: 620px;
+            background: var(--ti-body); width: 340px; height: 580px;
             border-radius: 35px 35px 110px 110px; border: 6px solid #7c2d12; 
-            padding: 20px; position: relative; box-shadow: 0 0 80px rgba(249, 115, 22, 0.4); 
+            padding: 20px; position: relative; box-shadow: 0 0 80px rgba(249, 115, 22, 0.3); 
             display: flex; flex-direction: column; 
         }
-        .ti-lcd { background: #94a392; height: 110px; border: 8px solid #111; border-radius: 4px; font-family: monospace; color: #1a241a; padding: 8px; display: flex; flex-direction: column; }
-        
-        .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 15px; }
-        .k { height: 30px; background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
-        .k:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
-        .k-2nd { background: #2563eb !important; } 
-        .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 0.9rem; }
-        .k::before { content: attr(data-lbl); position: absolute; top: -14px; font-size: 0.45rem; color: #2563eb; font-weight: bold; }
+        .ti-lcd { background: #94a392; height: 100px; border: 8px solid #111; border-radius: 4px; font-family: monospace; color: #1a241a; padding: 8px; }
+        .key-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 15px; }
+        .k { height: 28px; background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 #000; color: #fff; position: relative; }
+        .k-2nd { background: #2563eb !important; } .k-num { background: #e5e7eb !important; color: #000 !important; font-size: 0.8rem; }
 
-        /* --- OS DESKTOP (VIBRANT ORANGE) --- */
+        /* --- ORANGE UI --- */
         #orange-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 260px 1fr; background: #0f0f0f; }
-        .sidebar { background: #000; border-right: 2px solid var(--p); padding: 30px 15px; display: flex; flex-direction: column; gap: 6px; }
-        .nav-link { padding: 12px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer; color: #666; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
-        .nav-link:hover { background: #1a0a00; color: var(--p); border-color: #442200; }
-        .nav-active { background: #221100; color: var(--p) !important; border-color: var(--p); }
+        .sidebar { background: #000; border-right: 2px solid var(--p); padding: 30px 15px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-link { padding: 12px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer; color: #666; display: flex; align-items: center; gap: 10px; }
+        .nav-active { background: #221100; color: var(--p) !important; border: 1px solid var(--p); }
 
-        /* --- MOJANG LAUNCHER + TUFF UPGRADES --- */
+        /* --- LAUNCHER & TUFF BUTTON --- */
         .mc-launcher { width: 100%; height: 100%; display: flex; flex-direction: column; background: #1a1a1a; }
         .mc-hero { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
         .mc-footer { height: 100px; background: #28292a; display: flex; align-items: center; padding: 0 30px; gap: 20px; border-top: 2px solid var(--p); }
-        .play-btn { background: #3c8527; color: #fff; padding: 12px 60px; font-size: 1.5rem; font-weight: 900; border-radius: 4px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3); transition: 0.1s; }
-        .play-btn:hover { background: #4caf34; transform: scale(1.02); }
-        .play-btn:active { transform: scale(0.98); }
+        .play-btn { background: #3c8527; color: #fff; padding: 12px 50px; font-size: 1.3rem; font-weight: 900; border-radius: 2px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3); }
         .tuff-btn { background: #444; color: #fff; padding: 10px 20px; font-size: 0.7rem; font-weight: 800; border-radius: 4px; border: 1px solid #555; }
-        .tuff-btn:hover { background: var(--p); border-color: #fff; }
+        .tuff-btn:hover { background: var(--p); color: #fff; }
 
-        /* --- MODAL / MODULES --- */
-        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; }
-        .module-pane { display: none; width: 100%; height: 100%; padding: 40px; }
-        #os-frame { width: 100%; height: 100%; border: none; display: none; }
+        /* --- INJECTOR GUI --- */
+        #inj-modal { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
+        .inj-box { background: #111; padding: 40px; rounded: 30px; border: 3px solid var(--p); width: 450px; transform: scale(1); animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .progress-bar { height: 6px; background: #222; border-radius: 10px; overflow: hidden; margin-top: 10px; display: none; }
+        .progress-fill { height: 100%; background: var(--p); width: 0%; transition: width 0.3s; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pop { from { transform: scale(0.8); } to { transform: scale(1); } }
 
-        /* RAIN */
+        /* FRUIT RAIN */
         #rain-wrap { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
-        .falling-fruit { position: absolute; font-size: 2.5rem; animation: fall linear forwards; }
-        @keyframes fall { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh); } }
+        .falling-fruit { position: absolute; font-size: 2rem; animation: fall linear forwards; }
+        @keyframes fall { from { transform: translateY(-50px); } to { transform: translateY(110vh); } }
+        
+        #os-frame { width: 100%; height: 100%; border: none; display: none; }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') location.reload()">
@@ -72,29 +65,36 @@
     <div id="rain-wrap"></div>
 
     <div id="inj-modal">
-        <div class="bg-zinc-900 p-10 rounded-[40px] border-4 border-orange-500 w-[500px] shadow-[0_0_50px_rgba(249,115,22,0.5)]">
-            <h2 class="text-orange-500 font-black text-2xl mb-2 italic">SYSTEM INJECTOR</h2>
-            <p class="text-[9px] text-zinc-500 mb-6 font-bold uppercase tracking-tighter">Minecraft Blobs Required for Play</p>
+        <div class="inj-box rounded-3xl">
+            <h2 class="text-orange-500 font-black text-2xl mb-1 italic">BLOB KERNEL</h2>
+            <p class="text-[9px] text-zinc-500 mb-6 uppercase">Local Data Management</p>
+            
             <div class="space-y-4">
-                <div class="bg-black p-4 rounded-xl border border-zinc-800">
-                    <label class="text-[10px] font-black text-orange-400 block mb-2">EAGLERCRAFT 1.8.8</label>
-                    <input type="file" id="blob-18" class="text-xs w-full text-zinc-400">
+                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+                    <label class="text-[10px] font-black text-zinc-400 block mb-2">EAGLERCRAFT 1.8.8 (.HTML)</label>
+                    <input type="file" id="blob-18" class="text-xs w-full text-zinc-500">
                 </div>
-                <div class="bg-black p-4 rounded-xl border border-zinc-800">
-                    <label class="text-[10px] font-black text-orange-400 block mb-2">EAGLERCRAFT 1.12.2</label>
-                    <input type="file" id="blob-112" class="text-xs w-full text-zinc-400">
+                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+                    <label class="text-[10px] font-black text-zinc-400 block mb-2">EAGLERCRAFT 1.12.2 (.HTML)</label>
+                    <input type="file" id="blob-112" class="text-xs w-full text-zinc-500">
                 </div>
-                <button onclick="commitBlobs()" class="w-full bg-orange-600 p-4 font-black rounded-xl text-white hover:bg-orange-500 shadow-lg">STORE IN KERNEL</button>
+                
+                <div id="prog-wrap" class="progress-bar"><div id="prog-fill" class="progress-fill"></div></div>
+
+                <div class="flex gap-2">
+                    <button onclick="commitBlobs()" class="flex-grow bg-orange-600 p-3 font-black rounded-lg text-white hover:bg-orange-500">INJECT</button>
+                    <button onclick="clearInputs()" class="bg-zinc-800 px-4 font-bold rounded-lg text-zinc-400 hover:text-white">CLEAR</button>
+                </div>
             </div>
-            <button onclick="document.getElementById('inj-modal').style.display='none'" class="mt-4 text-[10px] w-full text-zinc-600 font-bold">CLOSE</button>
+            <button onclick="document.getElementById('inj-modal').style.display='none'" class="mt-4 text-[10px] w-full text-zinc-600 font-bold uppercase">Back to OS</button>
         </div>
     </div>
 
     <div id="boot-gate">
         <div class="ti-chassis">
             <div class="ti-lcd">
-                <div style="font-size: 0.5rem; font-weight: bold;">TUFF-KERNEL v55.0</div>
-                <div id="ti-display" class="text-3xl text-right mt-10">0</div>
+                <div style="font-size: 0.5rem; font-weight: bold;">TUFF_KERNEL_v57</div>
+                <div id="ti-display" class="text-3xl text-right mt-8">0</div>
             </div>
             <div class="key-grid">
                 <div class="k k-2nd" data-lbl="QUIT" onclick="ti('2nd')">2nd</div><div class="k">mode</div><div class="k" data-lbl="INS" onclick="ti('del')">del</div><div class="k">stat</div><div class="k">prgm</div>
@@ -113,58 +113,38 @@
             <div class="nav-link" onclick="nav('brotato')"><span>🥔</span> BROTATO</div>
             <div class="nav-link" onclick="nav('youtube')"><span>🎬</span> YOUTUBE</div>
             <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> SETTINGS</div>
-            <div class="mt-auto nav-link border-zinc-900 text-orange-600 font-black" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')"><span>🔥</span> FIND MORE</div>
+            <div class="mt-auto nav-link text-orange-600 font-black" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER', '_blank')"><span>🔥</span> FIND MORE</div>
         </aside>
 
         <main class="relative flex-grow">
             <iframe id="os-frame"></iframe>
 
             <div id="v-launcher" class="mc-launcher">
-                <div class="mc-hero">
-                    <div class="h-full w-full bg-gradient-to-t from-black to-transparent flex items-end p-10">
-                        <h2 class="text-4xl font-black italic">Minecraft: Java Edition</h2>
-                    </div>
-                </div>
+                <div class="mc-hero"><div class="h-full w-full bg-gradient-to-t from-black to-transparent flex items-end p-10"><h2 class="text-4xl font-black italic">Minecraft: Java Edition</h2></div></div>
                 <div class="mc-footer">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-zinc-500 ml-1">VERSION</span>
-                        <select id="ver-select" class="bg-[#1e1e1e] border border-orange-500/30 p-3 rounded font-bold text-sm text-orange-500 w-48 outline-none">
-                            <option value="18">Eaglercraft 1.8.8</option>
-                            <option value="112">Eaglercraft 1.12.2</option>
-                        </select>
-                    </div>
+                    <select id="ver-select" class="bg-[#1e1e1e] border border-orange-500/30 p-3 rounded font-bold text-sm text-orange-500 w-48 outline-none">
+                        <option value="18">Eaglercraft 1.8.8</option>
+                        <option value="112">Eaglercraft 1.12.2</option>
+                    </select>
                     <button onclick="bootMC()" class="play-btn">PLAY</button>
-                    <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="tuff-btn">USEFUL TEXTUREPACKS</button>
+                    <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-/tree/main', '_blank')" class="tuff-btn">USEFUL TPACKS</button>
                 </div>
             </div>
 
-            <div id="v-settings" class="module-pane">
-                <div class="max-w-md space-y-4">
-                    <h2 class="text-2xl font-black text-orange-500 mb-6">PERSONALIZATION</h2>
-                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 flex justify-between items-center">
-                        <span class="font-bold">Fruit Rain Component</span>
-                        <input type="checkbox" id="rain-chk" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-500">
-                    </div>
-                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
-                        <span class="font-bold block mb-4">Color Scheme</span>
-                        <div class="flex gap-4">
-                            <div class="w-12 h-12 rounded-lg bg-orange-600 cursor-pointer border-2 border-white" onclick="setTheme('#f97316','🍊')"></div>
-                            <div class="w-12 h-12 rounded-lg bg-red-600 cursor-pointer" onclick="setTheme('#dc2626','🍎')"></div>
-                            <div class="w-12 h-12 rounded-lg bg-yellow-500 cursor-pointer" onclick="setTheme('#eab308','🍋')"></div>
-                        </div>
-                    </div>
-                </div>
+            <div id="v-settings" class="p-10 space-y-4">
+                <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 flex justify-between items-center"><span>Fruit Rain</span><input type="checkbox" id="rain-chk" onchange="doRain(this.checked)" class="w-8 h-8 accent-orange-500"></div>
+                <button onclick="wipeSystem()" class="w-full bg-red-900/30 text-red-500 p-4 rounded-xl border border-red-900 font-bold">WIPE LOCAL BLOBS (CLEAR SYSTEM)</button>
             </div>
-
-            <div id="v-brotato" class="module-pane text-center"><button class="play-btn" onclick="run('PASTE_LINK')">LAUNCH BROTATO</button></div>
-            <div id="v-youtube" class="module-pane"><input type="text" id="yt-in" class="bg-black p-4 w-full rounded-xl border border-orange-900 mb-4" placeholder="Video ID..."><button onclick="loadYT()" class="play-btn">WATCH</button><div id="yt-area" class="mt-4 aspect-video bg-black rounded-xl"></div></div>
+            
+            <div id="v-brotato" class="p-10"><button class="play-btn" onclick="run('PASTE_LINK')">LAUNCH BROTATO</button></div>
+            <div id="v-youtube" class="p-10"><input type="text" id="yt-in" class="bg-black p-4 w-full rounded-xl border border-orange-900 mb-4" placeholder="ID..."><button onclick="loadYT()" class="play-btn">WATCH</button><div id="yt-area" class="mt-4 aspect-video bg-black rounded-xl"></div></div>
         </main>
     </div>
 
     <script>
         let db, is2nd = false, buf = "";
 
-        const req = indexedDB.open("ORANGE_V55", 1);
+        const req = indexedDB.open("ORANGE_V57", 1);
         req.onupgradeneeded = e => { e.target.result.createObjectStore("blobs"); };
         req.onsuccess = e => { db = e.target.result; };
 
@@ -176,21 +156,48 @@
             if(k==='ent') { buf=""; document.getElementById('ti-display').innerText="0"; }
         }
 
+        function clearInputs() { 
+            document.getElementById('blob-18').value = ""; 
+            document.getElementById('blob-112').value = ""; 
+        }
+
         async function commitBlobs() {
             const f18 = document.getElementById('blob-18').files[0];
             const f112 = document.getElementById('blob-112').files[0];
-            const tx = db.transaction("blobs", "readwrite");
-            if(f18) tx.objectStore("blobs").put(new Blob([await f18.arrayBuffer()], {type:'text/html'}), "18");
-            if(f112) tx.objectStore("blobs").put(new Blob([await f112.arrayBuffer()], {type:'text/html'}), "112");
-            alert("KERNAL STORAGE UPDATED");
-            document.getElementById('inj-modal').style.display='none';
+            if(!f18 && !f112) return alert("Select a file first");
+
+            const bar = document.getElementById('prog-wrap');
+            const fill = document.getElementById('prog-fill');
+            bar.style.display = 'block';
+            
+            let p = 0;
+            const iv = setInterval(async () => {
+                p += 10;
+                fill.style.width = p + '%';
+                if(p >= 100) {
+                    clearInterval(iv);
+                    const tx = db.transaction("blobs", "readwrite");
+                    if(f18) tx.objectStore("blobs").put(new Blob([await f18.arrayBuffer()], {type:'text/html'}), "18");
+                    if(f112) tx.objectStore("blobs").put(new Blob([await f112.arrayBuffer()], {type:'text/html'}), "112");
+                    alert("KERNEL UPDATED");
+                    bar.style.display = 'none';
+                    fill.style.width = '0%';
+                }
+            }, 50);
+        }
+
+        function wipeSystem() {
+            if(confirm("WIPE ALL INJECTED BLOBS?")) {
+                db.transaction("blobs", "readwrite").objectStore("blobs").clear();
+                alert("SYSTEM CLEARED");
+            }
         }
 
         function bootMC() {
             const v = document.getElementById('ver-select').value;
             db.transaction("blobs").objectStore("blobs").get(v).onsuccess = e => {
                 if(e.target.result) run(URL.createObjectURL(e.target.result));
-                else alert("ERROR: NO LOCAL BLOB FOUND. USE 2nd + DEL TO INJECT 1.8.8 OR 1.12.2 FIRST.");
+                else alert("NO LOCAL BLOB: Use 2nd+DEL to inject " + (v==='18'?'1.8.8':'1.12.2'));
             };
         }
 
@@ -206,20 +213,13 @@
             ['v-launcher','v-youtube','v-brotato','v-settings'].forEach(id => document.getElementById(id).style.display = 'none');
         }
 
-        function setTheme(c, f) {
-            document.documentElement.style.setProperty('--p', c);
-            document.documentElement.style.setProperty('--ti-body', c);
-            document.documentElement.style.setProperty('--fruit', f);
-        }
-
         function doRain(on) {
             const wrap = document.getElementById('rain-wrap'); wrap.innerHTML = '';
             if(!on) return;
             setInterval(() => {
                 if(!document.getElementById('rain-chk').checked) return;
                 const f = document.createElement('div'); f.className='falling-fruit';
-                f.innerText = getComputedStyle(document.documentElement).getPropertyValue('--fruit').trim();
-                f.style.left = Math.random()*95+'vw'; f.style.animationDuration = (Math.random()*2+2)+'s';
+                f.innerText = '🍊'; f.style.left = Math.random()*95+'vw'; f.style.animationDuration = (Math.random()*2+2)+'s';
                 wrap.appendChild(f); setTimeout(()=>f.remove(), 4000);
             }, 500);
         }
