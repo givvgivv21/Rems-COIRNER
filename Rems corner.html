@@ -67,12 +67,13 @@
 
     <div id="admin-panel">
         <div class="admin-box">
-            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection (1.12.2 Priority)</h2>
             <div class="space-y-4">
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2 (Priority)</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase font-bold text-orange-400">Step 1: Build 1.12.2</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Step 2: Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
                 
-                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">COMMIT 1.12.2 FIRST</button>
+                <button onclick="wipeDB()" class="w-full text-[10px] text-red-600 border border-red-900 py-1 uppercase mt-2">Wipe All Stored Data</button>
                 <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close Interface</button>
             </div>
         </div>
@@ -104,8 +105,8 @@
                     </select>
                     <button onclick="playSelected()" class="play-btn ml-2">PLAY</button>
                     <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold">
-                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12</div>
-                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8</div>
+                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12.2</div>
+                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8.8</div>
                     </div>
                 </div>
             </div>
@@ -125,30 +126,41 @@
 
     <script>
         let db;
-        const dbReq = indexedDB.open("OrangeOS_V22", 1);
-        dbReq.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("core"); };
+        // Bumped version to 23 to force a clean schema update
+        const dbReq = indexedDB.open("OrangeOS_V23", 1);
+        dbReq.onupgradeneeded = (e) => { 
+            db = e.target.result; 
+            if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); 
+        };
         dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-        // CORE INJECTION: Prioritizes 1.12.2
         async function startHeavyInjection() {
             const btn = document.getElementById('commit-btn');
-            // Reordered keys to process mc12 first
-            const files = { 
-                mc12: document.getElementById('file12').files[0],
-                mc8: document.getElementById('file8').files[0] 
-            };
+            const f12 = document.getElementById('file12').files[0];
+            const f8 = document.getElementById('file8').files[0];
             
-            if(!files.mc12 && !files.mc8) return alert("Select a file first!");
+            if(!f12 && !f8) return alert("Select 1.12.2 file first!");
 
-            btn.innerText = "PROCESSING...";
-            for (const [key, file] of Object.entries(files)) {
-                if(!file) continue;
-                const text = await file.text();
+            btn.innerText = "INJECTING 1.12.2...";
+            
+            // PRIORITY 1: 1.12.2
+            if(f12) {
+                const text = await f12.text();
                 const tx = db.transaction(["core"], "readwrite");
-                tx.objectStore("core").put(text, key);
+                tx.objectStore("core").put(text, "mc12");
                 await new Promise(r => tx.oncomplete = r);
             }
-            btn.innerText = "CORE UPDATED!";
+
+            // PRIORITY 2: 1.8.8
+            if(f8) {
+                btn.innerText = "INJECTING 1.8.8...";
+                const text = await f8.text();
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").put(text, "mc8");
+                await new Promise(r => tx.oncomplete = r);
+            }
+
+            btn.innerText = "ALL CORES READY!";
             updateStatusDots();
             setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
         }
@@ -156,17 +168,17 @@
         function playSelected() {
             const key = document.getElementById('ver-select').value;
             const tx = db.transaction(["core"], "readonly");
-            tx.objectStore("core").get(key).onsuccess = (e) => {
+            const request = tx.objectStore("core").get(key);
+            
+            request.onsuccess = (e) => {
                 const data = e.target.result;
-                if(!data) return alert("Build not found! Upload in Admin Panel first.");
+                if(!data) return alert("Version " + key + " not found. Please upload in Admin Panel.");
                 
                 const blob = new Blob([data], {type: 'text/html'});
                 const url = URL.createObjectURL(blob);
                 
-                if(document.getElementById('iframe-toggle').checked) {
-                    document.getElementById('app-frame').src = url;
-                    document.getElementById('app-overlay').style.display = 'flex';
-                } else { window.open(url, '_blank'); }
+                document.getElementById('app-frame').src = url;
+                document.getElementById('app-overlay').style.display = 'flex';
             };
         }
 
@@ -174,12 +186,19 @@
             if(!db) return;
             const tx = db.transaction(["core"], "readonly");
             const store = tx.objectStore("core");
-            // Check 1.12 status first
             store.get("mc12").onsuccess = (e) => document.getElementById('dot12').style.background = e.target.result ? '#44ff44' : '#ff4444';
             store.get("mc8").onsuccess = (e) => document.getElementById('dot8').style.background = e.target.result ? '#44ff44' : '#ff4444';
         }
 
-        // CALCULATOR LOGIC
+        function wipeDB() {
+            if(confirm("Wipe all stored games? You will need to re-upload.")){
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").clear();
+                tx.oncomplete = () => { alert("Storage Cleared."); updateStatusDots(); };
+            }
+        }
+
+        // CALC/UI LOGIC
         let inputStr = "0", is2nd = false;
         function op(k) {
             if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
@@ -193,14 +212,11 @@
             document.getElementById('lcd').innerText = inputStr;
         }
         function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
-        
-        // UI HELPERS
         function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
         function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
         function toggleLight(on) { if(on) document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
-        
         function toggleRain(on) {
             document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
             if(on && document.getElementById('orange-rain').innerHTML === "") {
