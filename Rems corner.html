@@ -10,31 +10,28 @@
             --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
             --win-bg: #212121;
         }
-        /* LIGHT MODE */
-        .light-theme {
-            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.8);
+        /* LIGHT MODE TOGGLE CLASS */
+        .light-mode {
+            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(220,220,220,0.8);
             --win-bg: #e4e4e7;
         }
         body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.3s; }
 
-        /* RAIN & BG */
+        /* DECOR */
         #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
         .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
         @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
-        .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
-        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.1; }
-        @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        /* CLOAK */
+        /* CALC */
         #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
         .calc { background: #1e1e1e; width: 340px; padding: 25px; border-radius: 20px; border: 4px solid #333; }
         .lcd { background: #99ad99; border: 4px solid #555; height: 70px; margin-bottom: 15px; padding: 15px; color: #111; font-size: 1.8rem; text-align: right; font-family: monospace; }
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 12px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
-        /* OS CORE */
+        /* CORE UI */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; }
         .nav-item { border: 2px solid var(--orange-mid); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
         .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 2px solid #000; display: flex; flex-direction: column; z-index: 1050; }
@@ -42,10 +39,10 @@
         .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 2px solid #444; gap: 10px; color: white; }
         .play-btn { background: #3c8527; border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
 
-        /* ADMIN (TOP) */
+        /* ADMIN PANEL (THE HIGHEST LAYER) */
         #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
-        .admin-box { width: 400px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 10px; }
-        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; border-radius: 5px; }
+        .admin-box { width: 420px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 12px; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
 
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
     </style>
@@ -53,7 +50,6 @@
 <body onkeydown="handleGlobalKeys(event)">
 
     <div id="orange-rain"></div>
-    <div class="bg-orange-container"><div class="big-orange">🍊</div></div>
 
     <div id="cloak">
         <div class="calc">
@@ -74,10 +70,10 @@
         <div class="admin-box">
             <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
             <div class="space-y-4">
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8 File</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2 File</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <button id="commit-btn" onclick="startInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-2">Exit Interface</button>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close Interface</button>
             </div>
         </div>
     </div>
@@ -93,7 +89,7 @@
             
             <div class="mt-auto p-3 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center mb-2">
                 <span>LIGHT THEME</span>
-                <input type="checkbox" onchange="toggleLight(this.checked)">
+                <input type="checkbox" id="theme-check" onchange="toggleLight(this.checked)">
             </div>
             <div class="nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
@@ -102,7 +98,7 @@
             <div id="launcher-view" class="mojang-window hidden">
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-56 font-bold">
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-56 font-bold outline-none">
                         <option value="mc8">Eaglercraft 1.8.8</option>
                         <option value="mc12">Eaglercraft 1.12.2</option>
                     </select>
@@ -123,50 +119,47 @@
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end border-b border-orange-600"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs text-white">EXIT SESSION</button></div>
+        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT</button></div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
         let db;
-        const req = indexedDB.open("OrangeOS_Storage", 3);
-        req.onupgradeneeded = (e) => { db = e.target.result; if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); };
-        req.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
+        const dbReq = indexedDB.open("OrangeOS_V22", 1);
+        dbReq.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("core"); };
+        dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-        // THE "NO-HANG" INJECTION
-        async function startInjection() {
+        // HEAVY INJECTION: Handles large files without crashing
+        async function startHeavyInjection() {
             const btn = document.getElementById('commit-btn');
-            const f8 = document.getElementById('file8').files[0];
-            const f12 = document.getElementById('file12').files[0];
+            const files = { mc8: document.getElementById('file8').files[0], mc12: document.getElementById('file12').files[0] };
+            
+            if(!files.mc8 && !files.mc12) return alert("Select a file first!");
 
-            if(!f8 && !f12) return alert("Please select an HTML file first.");
-
-            btn.innerText = "READING FILES...";
-            const payload = {};
-            if(f8) payload.mc8 = await f8.text();
-            if(f12) payload.mc12 = await f12.text();
-
-            btn.innerText = "INJECTING...";
-            const tx = db.transaction(["core"], "readwrite");
-            const store = tx.objectStore("core");
-
-            Object.keys(payload).forEach(key => store.put(payload[key], key));
-
-            tx.oncomplete = () => {
-                btn.innerText = "SUCCESS! CORE UPDATED";
-                updateStatusDots();
-                setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
-            };
-            tx.onerror = () => { btn.innerText = "DATABASE ERROR!"; };
+            btn.innerText = "PROCESSING...";
+            for (const [key, file] of Object.entries(files)) {
+                if(!file) continue;
+                const text = await file.text();
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").put(text, key);
+                await new Promise(r => tx.oncomplete = r);
+            }
+            btn.innerText = "CORE UPDATED!";
+            updateStatusDots();
+            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
         }
 
         function playSelected() {
             const key = document.getElementById('ver-select').value;
             const tx = db.transaction(["core"], "readonly");
             tx.objectStore("core").get(key).onsuccess = (e) => {
-                if(!e.target.result) return alert("Build missing! Open Admin (2nd + DEL)");
-                const blob = new Blob([e.target.result], {type: 'text/html'});
+                const data = e.target.result;
+                if(!data) return alert("Build not found!");
+                
+                // Use a Blob with explicit type to prevent memory crashes
+                const blob = new Blob([data], {type: 'text/html'});
                 const url = URL.createObjectURL(blob);
+                
                 if(document.getElementById('iframe-toggle').checked) {
                     document.getElementById('app-frame').src = url;
                     document.getElementById('app-overlay').style.display = 'flex';
@@ -197,7 +190,10 @@
         function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
         function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
         function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
-        function toggleLight(on) { document.body.classList.toggle('light-theme', on); }
+        
+        // FIXED LIGHT MODE
+        function toggleLight(on) { if(on) document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
+        
         function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
         function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
         function toggleRain(on) {
