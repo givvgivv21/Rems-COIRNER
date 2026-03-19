@@ -5,47 +5,43 @@
     <title>Calculator | TI-84 Plus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { 
-            --orange-dark: #7c2d12; --orange-mid: #ea580c; --orange-bright: #fb923c; 
-            --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
-            --win-bg: #212121;
-        }
-        .light-mode {
-            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(220,220,220,0.8);
-            --win-bg: #e4e4e7;
-        }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.3s; }
+        :root { --orange: #ea580c; --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: sans-serif; overflow: hidden; color: var(--text); }
 
+        /* CALC CLOAK */
         #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
         .calc { background: #1e1e1e; width: 340px; padding: 25px; border-radius: 20px; border: 4px solid #333; }
         .lcd { background: #99ad99; border: 4px solid #555; height: 70px; margin-bottom: 15px; padding: 15px; color: #111; font-size: 1.8rem; text-align: right; font-family: monospace; }
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 12px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
+        /* OS UI */
         #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; }
-        .nav-item { border: 2px solid var(--orange-mid); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange); padding: 20px; display: flex; flex-direction: column; }
+        .nav-item { border: 2px solid var(--orange); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; color: #fb923c; text-align: center; }
 
-        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 2px solid #000; display: flex; flex-direction: column; z-index: 1050; }
+        .mojang-window { width: 800px; height: 500px; background: #212121; border: 2px solid #000; display: flex; flex-direction: column; }
         .mojang-body { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
-        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 2px solid #444; gap: 10px; color: white; }
-        .play-btn { background: #3c8527; border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
+        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; gap: 10px; }
+        .play-btn { background: #3c8527; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; border: 2px solid #000; box-shadow: inset 2px 2px #5dbb3d, inset -2px -2px #1a3911; }
 
-        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
-        .admin-box { width: 420px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 12px; }
-        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
+        /* ADMIN PANEL */
+        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.98); align-items:center; justify-content:center; }
+        .admin-box { width: 450px; padding: 40px; background: #000; border: 3px solid var(--orange); border-radius: 12px; box-shadow: 0 0 50px rgba(234, 88, 12, 0.3); }
+        
+        .wipe-btn { background: #7f1d1d; color: #fecaca; border: 1px solid #dc2626; padding: 10px; width: 100%; font-weight: 900; margin-top: 20px; cursor: pointer; transition: 0.2s; }
+        .wipe-btn:hover { background: #dc2626; color: white; }
 
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
     </style>
 </head>
-<body onkeydown="handleGlobalKeys(event)">
+<body onkeydown="if(event.key==='Escape') location.reload()">
 
     <div id="cloak">
         <div class="calc">
             <div id="lcd" class="lcd">0</div>
             <div class="grid">
-                <div class="btn" onclick="op('2nd')">2nd</div>
-                <div class="btn" onclick="op('DEL')">DEL</div>
+                <div class="btn" onclick="op('2nd')">2nd</div><div class="btn" onclick="op('DEL')">DEL</div>
                 <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
                 <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
                 <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
@@ -57,145 +53,146 @@
 
     <div id="admin-panel">
         <div class="admin-box">
-            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection (1.12.2 Fix)</h2>
+            <h2 class="text-orange-500 font-black mb-2 uppercase text-center text-xl italic">System Recovery</h2>
+            <p class="text-[10px] text-zinc-500 text-center mb-6">IF GAME SHOWS CODE, USE THE WIPE BUTTON BELOW FIRST.</p>
+            
             <div class="space-y-4">
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase font-bold text-orange-400">1.12.2 File (Priority)</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
-                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">1.8.8 File</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div>
+                    <label class="text-[10px] text-orange-400 font-bold uppercase block mb-1">Upload 1.12.2 (Chunks Enabled)</label>
+                    <input type="file" id="file12" class="w-full text-xs bg-zinc-900 p-2 border border-zinc-700">
+                </div>
+                <button id="commit-btn" onclick="injectChunked()" class="w-full bg-orange-600 py-3 font-black text-white hover:bg-orange-500 transition-colors">INJECT SELECTED CORE</button>
                 
-                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">INJECT CORE</button>
-                <button onclick="wipeDB()" class="w-full text-[10px] text-red-600 border border-red-900 py-1 uppercase mt-2">Force Wipe Storage</button>
-                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close Interface</button>
+                <hr class="border-zinc-800 my-4">
+                
+                <button onclick="wipeDB()" class="wipe-btn uppercase">⚠️ Wipe Storage & Reset Engine ⚠️</button>
+                
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 mt-4 uppercase font-bold tracking-widest">Exit Interface</button>
             </div>
         </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Orange OS</h1>
-            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
-            <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
-            <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
-            <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
-            <div class="nav-item text-white border-white mt-auto" onclick="location.reload()"><span>PURGE [ESC]</span></div>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-6">ORANGE OS</h1>
+            <div class="nav-item" onclick="showView('launcher')">LAUNCHER ⛏️</div>
+            <div class="nav-item" onclick="launch('https://google.com')">BROWSER 🌐</div>
+            <div class="nav-item mt-auto border-white text-white" onclick="location.reload()">PURGE [ESC]</div>
         </div>
-
         <div id="content-area" class="flex-grow flex items-center justify-center">
             <div id="launcher-view" class="mojang-window hidden">
                 <div class="mojang-body"></div>
                 <div class="mojang-play-bar">
-                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-56 font-bold outline-none">
-                        <option value="mc12" selected>Eaglercraft 1.12.2</option>
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 font-bold outline-none">
+                        <option value="mc12">Eaglercraft 1.12.2</option>
                         <option value="mc8">Eaglercraft 1.8.8</option>
                     </select>
-                    <button onclick="playSelected()" class="play-btn ml-2">PLAY</button>
-                    <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold">
-                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12.2</div>
-                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8.8</div>
-                    </div>
+                    <button onclick="playChunked()" class="play-btn ml-4">PLAY GAME</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT</button></div>
+        <div class="p-2 bg-zinc-900 flex justify-end border-b border-zinc-800">
+            <button onclick="closeApp()" class="bg-red-600 px-6 py-1 font-bold text-xs hover:bg-red-500">EXIT APP</button>
+        </div>
         <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
         let db;
-        // Bumped version to V24 to clear previous bad formatting
-        const dbReq = indexedDB.open("OrangeOS_V24", 1);
+        // Use a persistent DB name for stability
+        const dbReq = indexedDB.open("OrangeOS_FinalEngine", 1);
         dbReq.onupgradeneeded = (e) => { 
             db = e.target.result; 
-            if(!db.objectStoreNames.contains("core")) db.createObjectStore("core"); 
+            if(!db.objectStoreNames.contains("chunks")) db.createObjectStore("chunks"); 
         };
-        dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
+        dbReq.onsuccess = (e) => { db = e.target.result; };
 
-        async function startHeavyInjection() {
+        // NEW CHUNK INJECTION (Fixes the code/letter glitch)
+        async function injectChunked() {
             const btn = document.getElementById('commit-btn');
-            const f12 = document.getElementById('file12').files[0];
-            const f8 = document.getElementById('file8').files[0];
+            const file = document.getElementById('file12').files[0];
+            if(!file) return alert("Please select the 1.12.2 file!");
+
+            btn.innerText = "CHUNKING DATA...";
+            btn.disabled = true;
+
+            const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
+            const text = await file.text();
+            const totalChunks = Math.ceil(text.length / CHUNK_SIZE);
             
-            if(!f12 && !f8) return alert("Select 1.12.2 file!");
+            const tx = db.transaction(["chunks"], "readwrite");
+            const store = tx.objectStore("chunks");
+            
+            store.put(totalChunks, "mc12_count");
 
-            btn.innerText = "INJECTING 1.12.2...";
-            if(f12) {
-                const text = await f12.text();
-                const tx = db.transaction(["core"], "readwrite");
-                tx.objectStore("core").put(text, "mc12");
-                await new Promise(r => tx.oncomplete = r);
+            for(let i=0; i<totalChunks; i++) {
+                const chunk = text.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                store.put(chunk, `mc12_${i}`);
             }
 
-            if(f8) {
-                btn.innerText = "INJECTING 1.8.8...";
-                const text = await f8.text();
-                const tx = db.transaction(["core"], "readwrite");
-                tx.objectStore("core").put(text, "mc8");
-                await new Promise(r => tx.oncomplete = r);
-            }
-
-            btn.innerText = "INJECTION COMPLETE!";
-            updateStatusDots();
-            setTimeout(() => btn.innerText = "INJECT CORE", 2000);
+            tx.oncomplete = () => { 
+                btn.innerText = "INJECTION SUCCESS!"; 
+                btn.disabled = false;
+                setTimeout(()=>btn.innerText="INJECT SELECTED CORE", 2000); 
+            };
         }
 
-        let currentAppUrl = null;
+        // REASSEMBLY ENGINE
+        async function playChunked() {
+            const tx = db.transaction(["chunks"], "readonly");
+            const store = tx.objectStore("chunks");
 
-        function playSelected() {
-            const key = document.getElementById('ver-select').value;
-            const tx = db.transaction(["core"], "readonly");
-            const request = tx.objectStore("core").get(key);
-            
-            request.onsuccess = (e) => {
-                const data = e.target.result;
-                if(!data) return alert("Version " + key + " not found!");
+            store.get("mc12_count").onsuccess = async (e) => {
+                const count = e.target.result;
+                if(!count) return alert("Core 1.12.2 not found! Please Inject in Admin Panel.");
 
-                // CLEANUP OLD URL TO PREVENT BLACK LETTER GLITCH
-                if(currentAppUrl) URL.revokeObjectURL(currentAppUrl);
-                
-                // CRITICAL FIX: Explicit HTML type enforcement
-                const blob = new Blob([data], {type: 'text/html;charset=utf-8'});
-                currentAppUrl = URL.createObjectURL(blob);
-                
-                document.getElementById('app-frame').src = currentAppUrl;
+                let fullText = "";
+                for(let i=0; i<count; i++) {
+                    const chunkReq = await new Promise(r => {
+                        const req = store.get(`mc12_${i}`);
+                        req.onsuccess = ev => r(ev.target.result);
+                    });
+                    fullText += chunkReq;
+                }
+
+                // Force browser to treat as HTML/UTF-8
+                const blob = new Blob([fullText], {type: 'text/html;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                document.getElementById('app-frame').src = url;
                 document.getElementById('app-overlay').style.display = 'flex';
             };
         }
 
-        function updateStatusDots() {
-            if(!db) return;
-            const tx = db.transaction(["core"], "readonly");
-            const store = tx.objectStore("core");
-            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').style.background = e.target.result ? '#44ff44' : '#ff4444';
-            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').style.background = e.target.result ? '#44ff44' : '#ff4444';
-        }
-
+        // THE WIPE BUTTON FUNCTION
         function wipeDB() {
-            if(confirm("Confirm Wipe?")){
-                const tx = db.transaction(["core"], "readwrite");
-                tx.objectStore("core").clear();
-                tx.oncomplete = () => { alert("Cleared!"); updateStatusDots(); };
+            if(confirm("THIS WILL ERASE ALL STORED GAMES. Are you sure? Use this if you see black text/code when playing.")){
+                const tx = db.transaction(["chunks"], "readwrite");
+                tx.objectStore("chunks").clear();
+                tx.oncomplete = () => {
+                    alert("System Cleared. Please re-inject your 1.12.2 file now.");
+                };
             }
         }
 
+        // CALCULATOR & NAVIGATION
         function op(k) {
-            let inputStr = document.getElementById('lcd').innerText;
-            if(k === '2nd') { window.is2nd = !window.is2nd; document.getElementById('lcd').style.background = window.is2nd ? '#d1ffd1' : '#99ad99'; return; }
+            let lcd = document.getElementById('lcd');
+            if(k === '2nd') { window.is2nd = !window.is2nd; lcd.style.background = window.is2nd ? '#d1ffd1' : '#99ad99'; return; }
             if(window.is2nd && k === 'DEL') {
-                let p = prompt("KEY:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
+                if(prompt("ADMIN KEY:") === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
                 window.is2nd = false; return;
             }
-            if(window.is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
-            if(k === 'DEL') inputStr = inputStr.length > 1 ? inputStr.slice(0, -1) : "0";
-            if(k === 'EXE') try { inputStr = String(eval(inputStr.replace(/X/g, '*'))); } catch { inputStr = "ERR"; }
-            document.getElementById('lcd').innerText = inputStr;
+            if(window.is2nd && k === 'EXE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='flex'; return; }
+            if(k === 'DEL') lcd.innerText = lcd.innerText.length > 1 ? lcd.innerText.slice(0, -1) : "0";
+            if(k === 'EXE') try { lcd.innerText = eval(lcd.innerText.replace(/X/g, '*')); } catch { lcd.innerText = "ERR"; }
         }
         function ins(v) { let lcd = document.getElementById('lcd'); lcd.innerText = (lcd.innerText === "0") ? v : lcd.innerText + v; }
-        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
-        function showView(v) { ['launcher-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
-        function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = 'about:blank'; }
-        function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        function showView(v) { document.getElementById('launcher-view').classList.remove('hidden'); }
+        function closeApp() { document.getElementById('app-overlay').style.display='none'; document.getElementById('app-frame').src='about:blank'; }
+        function launch(u) { document.getElementById('app-frame').src=u; document.getElementById('app-overlay').style.display='flex'; }
     </script>
 </body>
 </html>
