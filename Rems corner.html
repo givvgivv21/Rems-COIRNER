@@ -1,259 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Lime OS | V79.0 Citrus</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root { --p: #bef264; --p-dark: #65a30d; --bg: #080808; }
-        
-        * { margin:0; padding:0; box-sizing:border-box; user-select:none; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: #fff; overflow: hidden; height: 100vh; }
+    <meta charset="UTF-8">
+    <title>Calculator | TI-84 Plus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { 
+            --orange-dark: #7c2d12; --orange-mid: #ea580c; --orange-bright: #fb923c; 
+            --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
+            --win-bg: #212121;
+        }
+        .light-mode {
+            --bg: #f4f4f5; --sidebar: #ffffff; --text: #18181b; --glass: rgba(220,220,220,0.8);
+            --win-bg: #e4e4e7;
+        }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: 0.3s; }
 
-        /* --- THE CITRUS STARTUP --- */
-        #boot-gate { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .lemon-logo { font-size: 120px; filter: drop-shadow(0 0 30px rgba(254, 240, 138, 0.4)); animation: float 3s ease-in-out infinite; margin-bottom: 20px; }
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
+        /* DECOR */
+        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
+        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
+        @keyframes fall { from { transform: translateY(-10vh); } to { transform: translateY(110vh); } }
 
-        .ti-chassis { 
-            background: #222; width: 340px; height: 520px; border-radius: 40px 40px 80px 80px; 
-            padding: 25px; border: 5px solid #111; display: flex; flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .ti-lcd { background: #94a392; height: 80px; border: 4px solid #000; border-radius: 12px; padding: 10px; color: #1a241a; font-family: monospace; font-weight: bold; }
+        /* CALC CLOAK */
+        #cloak { position: fixed; inset: 0; z-index: 100000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+        .calc { background: #1e1e1e; width: 340px; padding: 25px; border-radius: 20px; border: 4px solid #333; }
+        .lcd { background: #99ad99; border: 4px solid #555; height: 70px; margin-bottom: 15px; padding: 15px; color: #111; font-size: 1.8rem; text-align: right; font-family: monospace; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 12px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
-        /* --- BUTTON CLICK ANIMATIONS --- */
-        .btn-pill, .nav-link, .k, .util-card { transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
-        .btn-pill:active, .nav-link:active, .k:active, .util-card:active { transform: scale(0.92); }
+        /* CORE UI */
+        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; z-index: 1100; }
+        .nav-item { border: 2px solid var(--orange-mid); padding: 10px; margin-bottom: 8px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
 
-        /* --- THE CURVED GUI --- */
-        #lime-desktop { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; padding: 20px; gap: 20px; }
-        
-        .sidebar { 
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 35px; padding: 30px 15px; display: flex; flex-direction: column; 
-        }
-        
-        .nav-link { padding: 14px 20px; border-radius: 50px; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #777; display: flex; align-items: center; gap: 12px; }
-        .nav-active { background: var(--p); color: #000 !important; box-shadow: 0 10px 20px rgba(190, 242, 100, 0.2); }
+        .mojang-window { width: 800px; height: 500px; background: var(--win-bg); border: 2px solid #000; display: flex; flex-direction: column; z-index: 1050; }
+        .mojang-body { flex-grow: 1; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
+        .mojang-play-bar { height: 80px; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; padding: 0 20px; border-top: 2px solid #444; gap: 10px; color: white; }
+        .play-btn { background: #3c8527; border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 160px; height: 40px; color: white; font-weight: 900; cursor: pointer; }
 
-        .main-stage { background: rgba(255,255,255,0.02); border-radius: 45px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; position: relative; }
-        .view-pane { display: none; width: 100%; height: 100%; padding: 40px; overflow-y: auto; }
-        
-        .btn-pill { background: var(--p); color: #000; padding: 14px 32px; border-radius: 50px; font-weight: 800; border: none; }
-        
-        /* TEXTURE PACK CARDS */
-        .util-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .util-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        /* ADMIN PANEL */
+        #admin-panel { display:none; position:fixed; inset:0; z-index: 200000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
+        .admin-box { width: 420px; padding: 30px; background: #111; border: 2px solid var(--orange-mid); color: white; border-radius: 12px; }
+        .commit-btn { background: var(--orange-mid); color: white; padding: 15px; width: 100%; font-weight: 900; border-bottom: 4px solid #7c2d12; cursor: pointer; }
 
-        #os-stage { width: 100%; height: 100%; border: none; display: none; background: #000; border-radius: 35px; }
-        #fruit-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0.5; }
-        
-        /* CALC BUTTONS */
-        .k { height: 32px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; box-shadow: 0 4px 0 #000; }
-    </style>
+        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
+    </style>
 </head>
-<body>
+<body onkeydown="handleGlobalKeys(event)">
 
-    <canvas id="fruit-canvas"></canvas>
+    <div id="orange-rain"></div>
 
-    <div id="boot-gate">
-        <div class="lemon-logo">🍋</div>
-        <div class="ti-chassis">
-            <div class="ti-lcd">
-                <div class="text-[10px] opacity-50">LIME_KERNEL_V79</div>
-                <div id="hal-out" class="text-3xl text-right mt-2">0</div>
-            </div>
-            <div class="grid grid-cols-5 gap-2 mt-6">
-                <div class="k bg-blue-600" onclick="hAct('2nd')">2nd</div>
-                <div class="k" onclick="hAct('del')">del</div><div class="k">mode</div><div class="k">stat</div><div class="k">prgm</div>
-                <div class="k" onclick="hNum('7')">7</div><div class="k" onclick="hNum('8')">8</div><div class="k" onclick="hNum('9')">9</div><div class="k">/</div><div class="k">sin</div>
-                <div class="k" onclick="hNum('4')">4</div><div class="k" onclick="hNum('5')">5</div><div class="k" onclick="hNum('6')">6</div><div class="k">*</div><div class="k">cos</div>
-                <div class="k" onclick="hNum('1')">1</div><div class="k" onclick="hNum('2')">2</div><div class="k" onclick="hNum('3')">3</div><div class="k">-</div><div class="k">tan</div>
-                <div class="k" onclick="hNum('0')">0</div><div class="k">.</div><div class="k">(-)</div><div class="k bg-lime-400 text-black col-span-2" onclick="hAct('ent')">ENTER</div>
-            </div>
-        </div>
-        <p class="text-zinc-600 font-bold text-[10px] mt-8 tracking-[10px] uppercase">Verify Hardware</p>
-    </div>
+    <div id="cloak">
+        <div class="calc">
+            <div id="lcd" class="lcd">0</div>
+            <div class="grid">
+                <div class="btn" onclick="op('2nd')">2nd</div>
+                <div class="btn" onclick="op('DEL')">DEL</div>
+                <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
+                <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
+                <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
+                <div class="btn" onclick="ins('1')">1</div><div class="btn" onclick="ins('2')">2</div><div class="btn" onclick="ins('3')">3</div>
+                <div class="btn bg-orange-600 text-white" onclick="op('EXE')">EXE</div>
+            </div>
+        </div>
+    </div>
 
-    <div id="lime-desktop">
-        <aside class="sidebar">
-            <div class="px-4 mb-10">
-                <h1 class="text-2xl font-black text-lime-400">LIME OS</h1>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase">Citrus Edition</p>
-            </div>
-            
-            <nav class="flex-grow">
-                <div class="nav-link nav-active" onclick="nav('launcher')"><span>🎮</span> Play Games</div>
-                <div class="nav-link" onclick="nav('packs')"><span>🎨</span> Textures</div>
-                <div class="nav-link" onclick="nav('youtube')"><span>📺</span> YouTube Cinema</div>
-                <div class="nav-link" onclick="bootApp('browser')"><span>🌐</span> Web Browser</div>
-                <div class="nav-link" onclick="nav('settings')"><span>⚙️</span> Settings</div>
-            </nav>
+    <div id="admin-panel">
+        <div class="admin-box">
+            <h2 class="text-orange-500 font-black mb-4 uppercase text-center text-xl">Core Injection</h2>
+            <div class="space-y-4">
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.12.2 (Priority)</p><input type="file" id="file12" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                <div><p class="text-[10px] text-zinc-500 mb-1 uppercase">Build 1.8.8</p><input type="file" id="file8" class="bg-black p-2 w-full text-xs border border-zinc-800 text-white"></div>
+                
+                <button id="commit-btn" onclick="startHeavyInjection()" class="commit-btn mt-4">COMMIT TO CORE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-[10px] text-zinc-600 uppercase mt-4">Close Interface</button>
+            </div>
+        </div>
+    </div>
 
-            <button onclick="location.reload()" class="w-full py-4 rounded-full bg-white/5 text-zinc-400 font-bold text-xs hover:bg-red-500 hover:text-white transition-all active:scale-90">Shutdown</button>
-        </aside>
+    <div id="orange-core" class="flex">
+        <div class="sidebar">
+            <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Orange OS</h1>
+            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-item" onclick="launch('https://storage.googleapis.com/fernisbest/index.html')"><span>BROWSER</span><span>🌐</span></div>
+            <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
+            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
+            <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
+            
+            <div class="mt-auto p-3 border border-orange-500 bg-black/20 text-[10px] flex justify-between items-center mb-2">
+                <span>LIGHT THEME</span>
+                <input type="checkbox" id="theme-check" onchange="toggleLight(this.checked)">
+            </div>
+            <div class="nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
+        </div>
 
-        <main class="main-stage">
-            <iframe id="os-stage"></iframe>
+        <div id="content-area" class="flex-grow flex items-center justify-center">
+            <div id="launcher-view" class="mojang-window hidden">
+                <div class="mojang-body"></div>
+                <div class="mojang-play-bar">
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 w-56 font-bold outline-none">
+                        <option value="mc12" selected>Eaglercraft 1.12.2</option>
+                        <option value="mc8">Eaglercraft 1.8.8</option>
+                    </select>
+                    <button onclick="playSelected()" class="play-btn ml-2">PLAY</button>
+                    <div class="flex flex-col gap-1 ml-4 text-[9px] font-bold">
+                        <div class="flex items-center gap-2"><span id="dot12" class="w-2 h-2 rounded-full bg-red-500"></span> 1.12</div>
+                        <div class="flex items-center gap-2"><span id="dot8" class="w-2 h-2 rounded-full bg-red-500"></span> 1.8</div>
+                    </div>
+                </div>
+            </div>
 
-            <div id="v-launcher" class="view-pane flex flex-col items-center justify-center" style="display: flex;">
-                <div class="w-full max-w-lg p-10 bg-white/5 rounded-[45px] border border-white/10 text-center">
-                    <h2 class="text-3xl font-bold mb-8">Minecraft Bootloader</h2>
-                    <select id="mc-ver" class="w-full bg-zinc-800 p-4 rounded-2xl font-bold text-lime-400 border border-white/5 mb-4">
-                        <option value="18">Eaglercraft 1.8.8</option>
-                        <option value="112">Eaglercraft 1.12.2</option>
-                    </select>
-                    <button onclick="bootApp('mc')" class="w-full btn-pill text-lg">Launch Binary</button>
-                </div>
-                <p id="k-status" class="mt-6 text-xs text-zinc-500 font-medium">No blobs detected...</p>
-            </div>
+            <div id="settings-view" class="hidden p-10 bg-black/80 border border-orange-500 rounded-2xl w-full max-w-md">
+                <h2 class="text-2xl font-bold text-orange-500 mb-6">SETTINGS</h2>
+                <div class="flex justify-between items-center mb-4"><span>Orange Rain</span><input type="checkbox" onchange="toggleRain(this.checked)"></div>
+                <div class="flex justify-between items-center"><span>Iframe Mode</span><input type="checkbox" id="iframe-toggle" checked></div>
+            </div>
+        </div>
+    </div>
 
-            <div id="v-packs" class="view-pane">
-                <h2 class="text-3xl font-bold mb-2">Useful Packs</h2>
-                <p class="text-zinc-500 mb-8">Click to download external resource packs for Eaglercraft.</p>
-                <div class="util-grid">
-                    <div class="util-card" onclick="window.open('https://github.com/Eaglercraft/resource-packs', '_blank')">
-                        <div class="text-3xl mb-2">💎</div>
-                        <div class="font-bold">PvP Boost Pack</div>
-                    </div>
-                    <div class="util-card" onclick="window.open('https://eaglercraft.com/resourcepacks', '_blank')">
-                        <div class="text-3xl mb-2">🌿</div>
-                        <div class="font-bold">Faithful 32x</div>
-                    </div>
-                </div>
-            </div>
+    <div id="app-overlay">
+        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT</button></div>
+        <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
+    </div>
 
-            <div id="v-youtube" class="view-pane flex flex-col items-center">
-                <h2 class="text-3xl font-bold mb-6">YouTube Cinema</h2>
-                <div class="w-full max-w-3xl aspect-video bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                    <iframe id="yt-player" class="w-full h-full" src="https://www.youtube.com/embed/jfKfPfyJRdk" frameborder="0" allowfullscreen></iframe>
-                </div>
-                <div class="mt-6 flex gap-4 w-full max-w-3xl">
-                    <input type="text" id="yt-url" placeholder="Paste YouTube Link Here..." class="flex-grow bg-white/5 p-4 rounded-2xl border border-white/10 outline-none focus:border-lime-400 transition-all">
-                    <button onclick="loadYT()" class="btn-pill">Load Movie</button>
-                </div>
-            </div>
+    <script>
+        let db;
+        const dbReq = indexedDB.open("OrangeOS_V22", 1);
+        dbReq.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("core"); };
+        dbReq.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
 
-            <div id="v-settings" class="view-pane">
-                <h2 class="text-2xl font-bold mb-8">System Configuration</h2>
-                <div class="max-w-md space-y-4">
-                    <button onclick="UI_modal(true)" class="w-full bg-lime-400/10 text-lime-400 p-6 rounded-3xl font-bold border border-lime-400/20 text-left">📂 Open Binary Injector</button>
-                    <button onclick="toggleFruits()" class="w-full bg-white/5 text-white p-6 rounded-3xl font-bold text-left">🥝 Toggle Citrus Rain</button>
-                </div>
-            </div>
-        </main>
-    </div>
+        // CORE INJECTION: Prioritizes 1.12.2
+        async function startHeavyInjection() {
+            const btn = document.getElementById('commit-btn');
+            // Reordered keys to process mc12 first
+            const files = { 
+                mc12: document.getElementById('file12').files[0],
+                mc8: document.getElementById('file8').files[0] 
+            };
+            
+            if(!files.mc12 && !files.mc8) return alert("Select a file first!");
 
-    <div id="inj-modal" class="fixed inset-0 z-[20000] bg-black/90 backdrop-blur-xl hidden items-center justify-center">
-        <div class="bg-zinc-900 p-10 rounded-[50px] border border-lime-400/30 w-[400px]">
-            <h2 class="text-xl font-bold text-lime-400 mb-8 uppercase">VFS Injector</h2>
-            <div class="space-y-4">
-                <input type="file" id="f18" class="w-full text-xs text-zinc-500">
-                <input type="file" id="f112" class="w-full text-xs text-zinc-500">
-            </div>
-            <div class="mt-8 bg-white/5 h-2 rounded-full overflow-hidden">
-                <div id="vfs-fill" class="h-full bg-lime-400 w-0 transition-all duration-300"></div>
-            </div>
-            <div class="flex gap-3 mt-8">
-                <button onclick="runInjection()" class="flex-grow btn-pill">Start Write</button>
-                <button onclick="UI_modal(false)" class="bg-zinc-800 px-8 rounded-full font-bold text-xs">Close</button>
-            </div>
-        </div>
-    </div>
+            btn.innerText = "PROCESSING...";
+            for (const [key, file] of Object.entries(files)) {
+                if(!file) continue;
+                const text = await file.text();
+                const tx = db.transaction(["core"], "readwrite");
+                tx.objectStore("core").put(text, key);
+                await new Promise(r => tx.oncomplete = r);
+            }
+            btn.innerText = "CORE UPDATED!";
+            updateStatusDots();
+            setTimeout(() => btn.innerText = "COMMIT TO CORE", 2000);
+        }
 
-    <script>
-        let db, expr = "", is2nd = false;
+        function playSelected() {
+            const key = document.getElementById('ver-select').value;
+            const tx = db.transaction(["core"], "readonly");
+            tx.objectStore("core").get(key).onsuccess = (e) => {
+                const data = e.target.result;
+                if(!data) return alert("Build not found! Upload in Admin Panel first.");
+                
+                const blob = new Blob([data], {type: 'text/html'});
+                const url = URL.createObjectURL(blob);
+                
+                if(document.getElementById('iframe-toggle').checked) {
+                    document.getElementById('app-frame').src = url;
+                    document.getElementById('app-overlay').style.display = 'flex';
+                } else { window.open(url, '_blank'); }
+            };
+        }
 
-        // LOAD YOUTUBE
-        function loadYT() {
-            const val = document.getElementById('yt-url').value;
-            let id = "";
-            if(val.includes('v=')) id = val.split('v=')[1].split('&')[0];
-            else if(val.includes('youtu.be/')) id = val.split('youtu.be/')[1];
-            if(id) document.getElementById('yt-player').src = "https://www.youtube.com/embed/" + id;
-        }
+        function updateStatusDots() {
+            if(!db) return;
+            const tx = db.transaction(["core"], "readonly");
+            const store = tx.objectStore("core");
+            // Check 1.12 status first
+            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').style.background = e.target.result ? '#44ff44' : '#ff4444';
+            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').style.background = e.target.result ? '#44ff44' : '#ff4444';
+        }
 
-        // DB & INJECTION
-        const request = indexedDB.open("LIME_V79", 1);
-        request.onupgradeneeded = e => e.target.result.createObjectStore("blobs");
-        request.onsuccess = e => { db = e.target.result; sync(); };
-
-        function sync() {
-            db.transaction("blobs").objectStore("blobs").count().onsuccess = e => {
-                if(e.target.result > 0) document.getElementById('k-status').innerText = e.target.result + " Blobs Cached.";
-            };
-        }
-
-        async function runInjection() {
-            const files = [{f:document.getElementById('f18').files[0], k:"18"}, {f:document.getElementById('f112').files[0], k:"112"}].filter(x=>x.f);
-            const fill = document.getElementById('vfs-fill');
-            for(let i=0; i<files.length; i++) {
-                await new Promise(res => {
-                    const reader = new FileReader();
-                    reader.onload = async (e) => {
-                        const tx = db.transaction("blobs", "readwrite");
-                        tx.objectStore("blobs").put(new Blob([new Uint8Array(e.target.result)]), files[i].k);
-                        tx.oncomplete = () => { fill.style.width = ((i+1)/files.length * 100) + "%"; setTimeout(res, 200); };
-                    };
-                    reader.readAsArrayBuffer(files[i].f);
-                });
-            }
-            if(files.length > 0) { setTimeout(() => UI_modal(false), 500); sync(); }
-        }
-
-        // CALC GATING
-        function hNum(n) { expr += n; document.getElementById('hal-out').innerText = expr; }
-        function hAct(a) {
-            if(a==='2nd') { is2nd = !is2nd; return; }
-            if(is2nd && a==='ent') { document.getElementById('boot-gate').style.display='none'; document.getElementById('lime-desktop').style.display='grid'; return; }
-            if(a==='ent') { try { expr = eval(expr).toString(); document.getElementById('hal-out').innerText = expr; } catch { expr = "0"; } }
-            if(a==='del') { expr = ""; document.getElementById('hal-out').innerText = "0"; }
-        }
-
-        // NAVIGATION
-        function bootApp(type) {
-            const stage = document.getElementById('os-stage');
-            if(type === 'browser') {
-                nav('none'); stage.src = "https://storage.googleapis.com/fernisbest/index.html"; stage.style.display = 'block';
-            } else if(type === 'mc') {
-                const ver = document.getElementById('mc-ver').value;
-                db.transaction("blobs").objectStore("blobs").get(ver).onsuccess = e => {
-                    if(e.target.result) {
-                        nav('none'); stage.src = URL.createObjectURL(e.target.result); stage.style.display = 'block';
-                    } else { alert("Binary not found. Run Injector."); }
-                };
-            }
-        }
-
-        function nav(t) {
-            ['v-launcher','v-settings','v-findmore','v-packs','v-youtube','os-stage'].forEach(id => {
-                const el = document.getElementById(id); if(el) el.style.display = 'none';
-            });
-            if(t !== 'none') document.getElementById('v-'+t).style.display = (t==='settings'?'block':'flex');
-            document.querySelectorAll('.nav-link').forEach(l => {
-                l.classList.remove('nav-active');
-                if(l.innerText.toLowerCase().includes(t.replace('v-',''))) l.classList.add('nav-active');
-            });
-        }
-
-        // FRUIT RAIN (APPLES + LIMES)
-        const canvas = document.getElementById('fruit-canvas');
-        const ctx = canvas.getContext('2d');
-        let fruits = [], rain = false;
-        function toggleFruits() { 
-            rain = !rain; canvas.style.display = rain ? 'block' : 'none'; 
-            if(rain) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; fLoop(); }
-        }
-        function fLoop() {
-            if(!rain) return; ctx.clearRect(0,0,canvas.width,canvas.height);
-            if(Math.random() < 0.1) fruits.push({x: Math.random()*canvas.width, y: -50, v: 5, c: Math.random() > 0.5 ? '🍏' : '🍋'});
-            fruits.forEach((f,i) => { f.y += f.v; ctx.font = "30px Arial"; ctx.fillText(f.c, f.x, f.y); if(f.y > canvas.height) fruits.splice(i,1); });
-            requestAnimationFrame(fLoop);
-        }
-
-        function UI_modal(s) { document.getElementById('inj-modal').style.display = s ? 'flex' : 'none'; }
-    </script>
+        // CALCULATOR LOGIC
+        let inputStr = "0", is2nd = false;
+        function op(k) {
+            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
+            if(is2nd && k === 'DEL') {
+                let p = prompt("ADMIN KEY:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
+                is2nd = false; return;
+            }
+            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
+            if(k === 'DEL') inputStr = inputStr.length > 1 ? inputStr.slice(0, -1) : "0";
+            if(k === 'EXE') try { inputStr = String(eval(inputStr.replace(/X/g, '*'))); } catch { inputStr = "ERR"; }
+            document.getElementById('lcd').innerText = inputStr;
+        }
+        function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
+        
+        // UI HELPERS
+        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
+        function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
+        function toggleLight(on) { if(on) document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
+        function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
+        function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        
+        function toggleRain(on) {
+            document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
+            if(on && document.getElementById('orange-rain').innerHTML === "") {
+                for(let i=0; i<30; i++) {
+                    let o = document.createElement('div'); o.className='falling-orange'; o.innerText='🍊';
+                    o.style.left=Math.random()*100+'vw'; o.style.animationDuration=(Math.random()*3+2)+'s';
+                    document.getElementById('orange-rain').appendChild(o);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
+  in the launcher part of this when I click luacnher add a lil part that is a clickable that takes the user to a website and the button is called useful texture packs
