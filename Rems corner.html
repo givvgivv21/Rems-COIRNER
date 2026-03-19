@@ -6,152 +6,228 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { 
-            --orange-dark: #7c2d12; 
-            --orange-mid: #ea580c; 
-            --orange-bright: #fb923c; 
-            --bg: #0c0a09; 
+            --orange-dark: #7c2d12; --orange-mid: #ea580c; --orange-bright: #fb923c; 
+            --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff; --glass: rgba(0,0,0,0.7);
+            --mojang-green: #3c8527; --win-bg: #212121;
         }
-        body, html { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Segoe UI', sans-serif; overflow: hidden; color: white; }
+        /* LIGHT MODE OVERRIDES */
+        .light-mode {
+            --bg: #e4e4e7; --sidebar: #ffffff; --text: #18181b; --glass: rgba(255,255,255,0.6);
+            --win-bg: #f4f4f5;
+        }
         
-        /* THE CLOAK */
-        #cloak { position: fixed; inset: 0; z-index: 9999; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
-        .calc { background: #1e1e1e; width: 380px; padding: 30px; border-radius: 15px; border: 3px solid #333; }
-        .lcd { background: #000; border: 2px solid var(--orange-dark); height: 80px; margin-bottom: 25px; padding: 15px; color: var(--orange-bright); font-size: 2.2rem; text-align: right; font-family: monospace; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: var(--text); transition: all 0.4s ease; }
+
+        /* FX */
+        #orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 9000; display: none; }
+        .falling-orange { position: absolute; font-size: 2rem; animation: fall linear infinite; }
+        @keyframes fall { from { transform: translateY(-50px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
+        .bg-orange-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 0; pointer-events: none; }
+        .big-orange { font-size: 20rem; filter: drop-shadow(0 0 50px var(--orange-mid)); animation: pulsate 4s ease-in-out infinite; opacity: 0.3; }
+        @keyframes pulsate { 0%, 100% { transform: scale(1); opacity: 0.2; } 50% { transform: scale(1.1); opacity: 0.5; } }
+
+        /* CALC CLOAK */
+        #cloak { position: fixed; inset: 0; z-index: 10000; background: #0a0a0a; display: flex; align-items: center; justify-content: center; }
+        .calc { background: #1e1e1e; width: 380px; padding: 30px; border-radius: 20px; border: 4px solid #333; }
+        .lcd { background: #99ad99; border: 4px solid #555; height: 90px; margin-bottom: 25px; padding: 15px; color: #111; font-size: 2.2rem; text-align: right; font-family: monospace; display: flex; align-items: flex-end; justify-content: flex-end; }
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .btn { background: #2a2a2a; border: 1px solid #444; padding: 20px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 5px; }
-        .btn-s { color: var(--orange-bright); border-color: var(--orange-bright); }
+        .btn { background: #2a2a2a; border-bottom: 4px solid #000; padding: 18px 0; text-align: center; cursor: pointer; color: #bbb; font-weight: bold; border-radius: 8px; }
 
-        /* REM'S ORANGE CORNER */
-        #orange-core { display: none; height: 100vh; width: 100vw; flex-direction: row; background: var(--bg); }
-        .sidebar { width: 320px; background: #1c1917; border-right: 2px solid var(--orange-mid); padding: 30px; display: flex; flex-direction: column; }
-        .nav-item { border: 2px solid var(--orange-mid); padding: 15px; margin-bottom: 12px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; transition: 0.2s; color: var(--orange-bright); }
-        .nav-item:hover { background: var(--orange-mid); color: #000; box-shadow: 0 0 20px var(--orange-mid); }
-        
-        .main-view { flex-grow: 1; display: flex; position: relative; overflow: hidden; }
-        .pane { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
-        .pane.active { display: flex; }
+        /* OS CORE */
+        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 5000; }
+        .sidebar { width: 300px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 30px; display: flex; flex-direction: column; z-index: 10; transition: background 0.4s; }
+        .nav-item { border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 900; display: flex; justify-content: space-between; color: var(--orange-bright); background: var(--glass); backdrop-filter: blur(10px); }
+        .nav-item:hover { background: var(--orange-mid); color: white; }
 
-        .logo { font-size: 10rem; filter: drop-shadow(0 0 20px var(--orange-mid)); }
-        .ticker { margin-top: 20px; color: var(--orange-bright); letter-spacing: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        #content-area { flex-grow: 1; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; }
 
-        /* AI & DOWNLOAD TERMINALS */
-        .terminal { background: #0c0a09; border: 1px solid var(--orange-mid); width: 90%; height: 85%; padding: 20px; font-family: monospace; color: var(--orange-bright); }
-        #ai-history { height: 80%; overflow-y: auto; }
-        .code-box { background: #1c1917; padding: 10px; border: 1px dashed var(--orange-mid); width: 100%; height: 70%; overflow: auto; font-size: 12px; white-space: pre; }
+        /* MOJANG UI */
+        .mojang-window { width: 900px; height: 550px; background: var(--win-bg); border: 1px solid #000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .mojang-nav { height: 50px; background: rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 20px; gap: 30px; border-bottom: 1px solid #333; }
+        .mojang-nav-link { color: var(--text); opacity: 0.6; font-size: 13px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .mojang-nav-link.active { opacity: 1; border-bottom: 2px solid var(--orange-mid); }
+        .mojang-body { flex-grow: 1; display: flex; background: url('https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MC-Vanilla-KeyArt_Standard.jpg') center/cover; }
+        .mojang-play-bar { height: 100px; background: var(--glass); display: flex; align-items: center; justify-content: center; padding: 0 40px; border-top: 1px solid #333; gap: 20px; }
+        .play-btn { background: var(--mojang-green); border: 2px solid #000; box-shadow: inset -3px -3px #1a3911, inset 3px 3px #5dbb3d; width: 200px; height: 50px; color: white; font-size: 24px; font-weight: 900; cursor: pointer; }
 
-        /* BROWSER */
-        iframe { width: 100%; height: 100%; border: none; background: white; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 10px; }
+        .dot-red { background: #ff4444; }
+        .dot-green { background: #44ff44; box-shadow: 0 0 10px #44ff44; }
+
+        /* TOGGLE SWITCH */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        input:checked + .slider { background-color: var(--orange-mid); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider:before { transform: translateX(24px); }
     </style>
 </head>
-<body onkeydown="if(event.key==='Escape') location.reload()">
+<body onkeydown="handleGlobalKeys(event)">
+
+    <div id="orange-rain"></div>
+    <div class="bg-orange-container"><div class="big-orange">🍊</div></div>
 
     <div id="cloak">
         <div class="calc">
-            <div id="lcd" class="lcd">0.00</div>
+            <div id="lcd" class="lcd">0</div>
             <div class="grid">
-                <div class="btn btn-s" onclick="op('2nd')">2nd</div>
-                <div class="btn" style="color:#ff4d4d" onclick="location.reload()">OFF</div>
+                <div class="btn" style="color:var(--orange-bright)" onclick="op('2nd')">2nd</div>
+                <div class="btn" style="color:#ff4d4d" onclick="op('DEL')">DEL</div>
                 <div class="btn" onclick="ins('/')">/</div><div class="btn" onclick="ins('*')">X</div>
                 <div class="btn" onclick="ins('7')">7</div><div class="btn" onclick="ins('8')">8</div><div class="btn" onclick="ins('9')">9</div><div class="btn" onclick="ins('-')">-</div>
                 <div class="btn" onclick="ins('4')">4</div><div class="btn" onclick="ins('5')">5</div><div class="btn" onclick="ins('6')">6</div><div class="btn" onclick="ins('+')">+</div>
                 <div class="btn" onclick="ins('1')">1</div><div class="btn" onclick="ins('2')">2</div><div class="btn" onclick="ins('3')">3</div>
-                <div class="btn btn-s" onclick="op('EXE')">EXE</div>
+                <div class="btn bg-orange-600 text-white" onclick="op('EXE')">EXE</div>
             </div>
         </div>
     </div>
 
-    <div id="orange-core">
+    <div id="admin-panel" style="display:none; position:fixed; inset:0; z-index:30000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center;">
+        <div class="mojang-window h-auto p-10 max-w-md bg-zinc-900 border-orange-600 border-2">
+            <h2 class="text-orange-500 font-black mb-6 uppercase text-center text-2xl italic">Core Injection</h2>
+            <div class="space-y-4">
+                <input type="file" id="file8" class="bg-black p-3 w-full border border-zinc-700 text-xs">
+                <input type="file" id="file12" class="bg-black p-3 w-full border border-zinc-700 text-xs">
+                <button onclick="saveToIndexedDB()" class="w-full bg-orange-600 py-4 font-black text-white hover:bg-orange-500 transition-all">SAVE TO LARGE STORAGE</button>
+                <button onclick="document.getElementById('admin-panel').style.display='none'" class="w-full text-xs text-zinc-500 mt-2">CLOSE INTERFACE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="orange-core" class="flex">
         <div class="sidebar">
-            <h1 class="text-3xl font-black italic mb-1 text-orange-500">REM'S CORNER</h1>
-            <p class="text-[10px] text-orange-300 mb-8 tracking-[4px]">CITRUS_BYPASS_v1.0</p>
+            <h1 class="text-2xl font-black italic text-orange-500 mb-8 uppercase tracking-widest">Rem's Corner</h1>
+            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-item" onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main', '_blank')"><span>FIND MORE</span><span>📁</span></div>
+            <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
+            <div class="nav-item" onclick="showView('settings')"><span>SETTINGS</span><span>⚙️</span></div>
             
-            <div class="nav-item" onclick="spawnLauncher()"><span>ORANGE LAUNCHER</span><span>🍊</span></div>
-            <div class="nav-item" onclick="showPane('browser')"><span>GHOST BROWSER</span><span>🌐</span></div>
-            <div class="nav-item" onclick="showPane('ai')"><span>ORANGE AI</span><span>🤖</span></div>
-            <div class="nav-item" onclick="showPane('download')"><span>GET BYPASS</span><span>📥</span></div>
-            
-            <div class="mt-auto nav-item" style="border-color:white; color:white" onclick="location.reload()"><span>PURGE [ESC]</span><span>🚫</span></div>
+            <div class="mt-auto p-4 border-2 border-orange-500 rounded bg-black/20">
+                <div class="flex justify-between items-center text-[10px] font-bold">
+                    <span>LIGHT MODE</span>
+                    <label class="switch">
+                        <input type="checkbox" onchange="toggleLight(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="mt-4 nav-item text-white border-white" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
 
-        <div class="main-view">
-            <div id="pane-home" class="pane active">
-                <div class="logo">🍊</div>
-                <h2 class="text-6xl font-black text-orange-600 italic">ORANGE_OS</h2>
-                <p class="ticker">CORE BYPASS STABLE</p>
-            </div>
-
-            <div id="pane-ai" class="pane p-10">
-                <div class="terminal flex flex-col">
-                    <div id="ai-history" class="mb-4">
-                        <div>[SYSTEM] Neural Orange Link Established...</div>
+        <div id="content-area">
+            <div id="launcher-view" class="mojang-window hidden">
+                <div class="mojang-nav">
+                    <div class="mojang-nav-link active">Play</div>
+                    <div class="mojang-nav-link">Installations</div>
+                </div>
+                <div class="mojang-body"></div>
+                <div class="mojang-play-bar">
+                    <select id="ver-select" class="bg-zinc-800 p-2 text-white border border-zinc-600 outline-none w-64">
+                        <option value="mc8">Eaglercraft 1.8.8 Build</option>
+                        <option value="mc12">Eaglercraft 1.12.2 Build</option>
+                    </select>
+                    <button onclick="playSelected()" class="play-btn">PLAY</button>
+                    <div class="ml-4">
+                        <div class="text-[10px] opacity-60">CLIENT CORE</div>
+                        <div class="flex items-center gap-2">
+                            <span id="dot8" class="status-dot dot-red"></span>
+                            <span id="dot12" class="status-dot dot-red"></span>
+                        </div>
                     </div>
-                    <input type="text" id="ai-input" class="bg-transparent border-t border-orange-900 p-3 outline-none text-white w-full" placeholder="Query AI..." onkeydown="if(event.key==='Enter') askAI()">
                 </div>
             </div>
 
-            <div id="pane-browser" class="pane">
-                <iframe src="https://duckduckgo.com"></iframe>
-            </div>
-
-            <div id="pane-download" class="pane p-10 text-left">
-                <div class="terminal">
-                    <h3 class="text-xl mb-4 underline">BYPASS REPOSITORY</h3>
-                    <p class="mb-2">Copy this code to a local .html file to run Rem's Corner offline:</p>
-                    <div class="code-box" id="code-content">
-&lt;!DOCTYPE html&gt;
-&lt;!-- Rem's Corner Citrus Edition --&gt;
-&lt;!-- Deployment: Save as index.html --&gt;
-[Full Code is within this script]
+            <div id="settings-view" class="hidden bg-black/40 backdrop-blur-xl p-10 rounded-2xl border border-orange-500 w-full max-w-lg">
+                <h2 class="text-3xl font-black text-orange-500 mb-8 uppercase">System Config</h2>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold">Orange Rain FX</span>
+                        <label class="switch"><input type="checkbox" onchange="toggleRain(this.checked)"><span class="slider"></span></label>
                     </div>
-                    <button class="mt-4 p-2 bg-orange-600 text-black font-bold" onclick="alert('Code copied to clipboard (Simulated)')">COPY SOURCE</button>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold">Open in Iframe</span>
+                        <label class="switch"><input type="checkbox" id="iframe-toggle" checked><span class="slider"></span></label>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="app-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:20000; flex-direction:column;">
+        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-6 py-1 font-bold">EXIT X</button></div>
+        <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
-        let input = "0", is2nd = false;
-        function ins(v) { input = (input === "0") ? v : input + v; document.getElementById('lcd').innerText = input; }
-        function op(k) {
-            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.color = is2nd ? 'white' : '#ea580c'; }
-            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display='none'; document.getElementById('orange-core').style.display='flex'; }
-            if(!is2nd && k === 'EXE') { try { input = eval(input.replace('X', '*')) + ""; } catch { input = "ERR"; } document.getElementById('lcd').innerText = input; }
-        }
-        function showPane(id) {
-            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-            document.getElementById('pane-' + id).classList.add('active');
-        }
-        function askAI() {
-            const box = document.getElementById('ai-input'), hist = document.getElementById('ai-history');
-            if(!box.value) return;
-            hist.innerHTML += `<div class="text-white mt-2">> ${box.value}</div><div class="text-orange-400 mt-1">[ORANGE]: Processing bypass request... Success.</div>`;
-            box.value = ""; hist.scrollTop = hist.scrollHeight;
+        let db;
+        const request = indexedDB.open("OrangeOS_Core", 1);
+        request.onupgradeneeded = (e) => { db = e.target.result; db.createObjectStore("games"); };
+        request.onsuccess = (e) => { db = e.target.result; updateStatusDots(); };
+
+        function saveToIndexedDB() {
+            const files = { mc8: document.getElementById('file8').files[0], mc12: document.getElementById('file12').files[0] };
+            Object.keys(files).forEach(key => {
+                if(!files[key]) return;
+                const r = new FileReader();
+                r.onload = (e) => {
+                    const tx = db.transaction(["games"], "readwrite");
+                    tx.objectStore("games").put(e.target.result, key);
+                    tx.oncomplete = () => { alert(key + " UPDATED"); updateStatusDots(); };
+                };
+                r.readAsText(files[key]);
+            });
         }
 
-        function spawnLauncher() {
-            const win = window.open('about:blank', '_blank', 'width=1100,height=750');
-            win.document.write(`
-                <style>
-                    body { background: #1c1917; color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
-                    .side { width: 250px; background: #0c0a09; border-right: 2px solid #ea580c; display: flex; flex-direction: column; }
-                    .n-btn { padding: 20px; cursor: pointer; color: #ea580c; border-bottom: 1px solid #444; }
-                    .n-btn:hover { background: #ea580c; color: #000; }
-                    .main { flex-grow: 1; display: flex; flex-direction: column; background: #0c0a09; padding: 40px; }
-                    .p-btn { background: #ea580c; color: #000; padding: 20px; font-size: 24px; font-weight: bold; border: none; cursor: pointer; margin-top: auto; }
-                </style>
-                <body>
-                    <div class="side">
-                        <div class="n-btn" onclick="alert('Launching 1.8.9...')">EAGLERCRAFT 1.8.9</div>
-                        <div class="n-btn" onclick="alert('Launching 1.12.2...')">EAGLERCRAFT 1.12.2</div>
-                    </div>
-                    <div class="main">
-                        <h1>ORANGE LAUNCHER v1.0</h1>
-                        <p>Select a version on the left to begin bypass.</p>
-                        <button class="p-btn">INITIALIZE CORE</button>
-                    </div>
-                </body>
-            `);
+        function playSelected() {
+            const key = document.getElementById('ver-select').value;
+            const tx = db.transaction(["games"], "readonly");
+            const req = tx.objectStore("games").get(key);
+            req.onsuccess = () => {
+                if(!req.result) return alert("NO FILE! Upload in Admin (2nd+DEL)");
+                const url = URL.createObjectURL(new Blob([req.result], {type: 'text/html'}));
+                if(document.getElementById('iframe-toggle').checked) {
+                    document.getElementById('app-frame').src = url;
+                    document.getElementById('app-overlay').style.display = 'flex';
+                } else { window.open(url, '_blank'); }
+            };
+        }
+
+        function updateStatusDots() {
+            if(!db) return;
+            const tx = db.transaction(["games"], "readonly");
+            const store = tx.objectStore("games");
+            store.get("mc8").onsuccess = (e) => document.getElementById('dot8').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
+            store.get("mc12").onsuccess = (e) => document.getElementById('dot12').className = e.target.result ? 'status-dot dot-green' : 'status-dot dot-red';
+        }
+
+        let inputStr = "0", is2nd = false;
+        function op(k) {
+            if(k === '2nd') { is2nd = !is2nd; document.getElementById('lcd').style.background = is2nd ? '#d1ffd1' : '#99ad99'; return; }
+            if(is2nd && k === 'DEL') {
+                let p = prompt("ADMIN PASS:"); if(p === "remmy21") document.getElementById('admin-panel').style.display = 'flex';
+                is2nd = false; return;
+            }
+            if(is2nd && k === 'EXE') { document.getElementById('cloak').style.display = 'none'; document.getElementById('orange-core').style.display = 'flex'; updateStatusDots(); return; }
+            if(k === 'DEL') inputStr = inputStr.length > 1 ? inputStr.slice(0, -1) : "0";
+            if(k === 'EXE') try { inputStr = String(eval(inputStr.replace(/X/g, '*'))); } catch { inputStr = "ERR"; }
+            document.getElementById('lcd').innerText = inputStr;
+        }
+        function ins(v) { inputStr = (inputStr === "0") ? v : inputStr + v; document.getElementById('lcd').innerText = inputStr; }
+        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
+        function showView(v) { ['launcher-view', 'settings-view'].forEach(i => document.getElementById(i).classList.add('hidden')); document.getElementById(v + '-view').classList.remove('hidden'); }
+        function toggleLight(on) { document.body.classList.toggle('light-mode', on); }
+        function closeApp() { document.getElementById('app-overlay').style.display = 'none'; document.getElementById('app-frame').src = ''; }
+        function launch(u) { document.getElementById('app-frame').src = u; document.getElementById('app-overlay').style.display = 'flex'; }
+        function toggleRain(on) {
+            document.getElementById('orange-rain').style.display = on ? 'block' : 'none';
+            if(on && document.getElementById('orange-rain').innerHTML === "") {
+                for(let i=0; i<30; i++) {
+                    let o = document.createElement('div'); o.className='falling-orange'; o.innerText='🍊';
+                    o.style.left=Math.random()*100+'vw'; o.style.animationDuration=(Math.random()*3+2)+'s';
+                    document.getElementById('orange-rain').appendChild(o);
+                }
+            }
         }
     </script>
 </body>
