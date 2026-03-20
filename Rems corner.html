@@ -2,13 +2,20 @@
 <html lang="en" id="master-html">
 <head>
     <meta charset="UTF-8">
-    <title>Orange OS | V100.0 FIXED</title>
+    <title>Orange OS | V101.0 FINAL BASE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --p: #fb923c; --bg: #0c0a09; --text: #fff; --pane: #1c1917; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; font-family: sans-serif; }
+        :root { --p: #fb923c; --bg: #0c0a09; --text: #fff; --pane: #1c1917; --nav-text: #a8a29e; }
+        .light { --bg: #d1d5db; --pane: #f3f4f6; --text: #111; --nav-text: #444; }
+        
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; font-family: sans-serif; transition: 0.3s; }
 
-        /* CALCULATOR CLOAK */
+        /* FRUIT RAIN */
+        #rain-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; display: none; }
+        .fruit { position: absolute; top: -50px; font-size: 24px; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* CALC CLOAK */
         #cloak { position: fixed; inset: 0; z-index: 10000; background: #000; display: flex; align-items: center; justify-content: center; }
         .ti-body { background: #fb923c; width: 420px; height: 720px; border-radius: 40px; padding: 30px; border: 5px solid #ea580c; position: relative; }
         .lcd { background: #94a392; height: 120px; border: 4px solid #000; border-radius: 10px; padding: 15px; color: #1a241a; font-family: monospace; font-size: 35px; text-align: right; display: flex; align-items: flex-end; justify-content: flex-end; }
@@ -17,45 +24,47 @@
         .btn-2nd-on { background: #3b82f6 !important; }
 
         /* INJECTOR GUI */
-        #disk-gui { position: absolute; inset: 20px; background: #111; border-radius: 25px; z-index: 10001; border: 3px solid #fb923c; display: none; flex-direction: column; padding: 20px; }
+        #disk-gui { position: absolute; inset: 20px; background: #111; border-radius: 25px; z-index: 10001; border: 3px solid #fb923c; display: none; flex-direction: column; padding: 20px; color: white; }
 
         /* OS LAYOUT */
         #orange-core { display: none; height: 100vh; width: 100vw; grid-template-columns: 240px 1fr; }
-        aside { background: #0c0a09; padding: 20px; border-right: 1px solid #292524; display: flex; flex-direction: column; }
-        .nav-item { padding: 12px; margin: 4px 0; border-radius: 8px; cursor: pointer; font-weight: bold; color: #a8a29e; }
-        .nav-item:hover { background: #292524; color: #fff; }
+        aside { background: rgba(0,0,0,0.2); padding: 20px; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; }
+        .nav-item { padding: 12px; margin: 4px 0; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--nav-text); }
         .nav-active { background: #fb923c !important; color: #000 !important; }
         
-        .view-pane { display: none; width: 100%; height: 100%; background: var(--pane); }
+        .view-pane { display: none; width: 100%; height: 100%; background: var(--pane); position: relative; }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
 
-        /* PLAY BAR */
-        .play-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-play { background: #22c55e; color: white; padding: 10px 40px; border-radius: 5px; font-weight: 900; }
-        .btn-disabled { background: #444; opacity: 0.5; cursor: not-allowed; }
-        
+        /* TOGGLE SWITCH */
+        .switch { position: relative; width: 40px; height: 20px; display: inline-block; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background: #444; border-radius: 20px; transition: 0.4s; }
+        input:checked + .slider { background: #fb923c; }
+
         #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 11000; flex-direction: column; }
     </style>
 </head>
 <body onkeydown="if(event.key==='Escape') panic()">
 
+    <div id="rain-container"></div>
+
     <div id="cloak">
         <div class="ti-body">
             <div id="disk-gui">
-                <h2 class="text-orange-500 font-black mb-4 uppercase">System Injector</h2>
+                <h2 class="text-orange-500 font-black mb-4 uppercase text-lg italic">System Injector</h2>
                 <div class="space-y-4 flex-grow">
-                    <div class="bg-stone-900 p-3 rounded-lg">
-                        <label class="text-[10px] text-stone-400 font-bold block mb-1">Eaglercraft 1.8.8</label>
-                        <input type="file" onchange="injectFile('mc8', this)" class="text-[10px] w-full text-white">
-                        <div id="status-mc8" class="text-[10px] font-bold text-red-500 mt-1">EMPTY</div>
+                    <div class="bg-stone-900 p-3 rounded-lg border border-white/5">
+                        <label class="text-[10px] text-orange-400 font-bold block mb-1 uppercase">Eagler 1.8.8</label>
+                        <input type="file" onchange="injectFile('mc8', this)" class="text-[10px] w-full text-white cursor-pointer">
+                        <div id="status-mc8" class="text-[9px] font-black text-red-500 mt-2 uppercase">Status: Vacant</div>
                     </div>
-                    <div class="bg-stone-900 p-3 rounded-lg">
-                        <label class="text-[10px] text-stone-400 font-bold block mb-1">Eaglercraft 1.12.2</label>
-                        <input type="file" onchange="injectFile('mc12', this)" class="text-[10px] w-full text-white">
-                        <div id="status-mc12" class="text-[10px] font-bold text-red-500 mt-1">EMPTY</div>
+                    <div class="bg-stone-900 p-3 rounded-lg border border-white/5">
+                        <label class="text-[10px] text-orange-400 font-bold block mb-1 uppercase">Eagler 1.12.2</label>
+                        <input type="file" onchange="injectFile('mc12', this)" class="text-[10px] w-full text-white cursor-pointer">
+                        <div id="status-mc12" class="text-[9px] font-black text-red-500 mt-2 uppercase">Status: Vacant</div>
                     </div>
                 </div>
-                <button onclick="toggleDisk(false)" class="bg-white text-black font-black p-3 rounded-lg text-xs mt-4">CLOSE & SAVE</button>
+                <button onclick="toggleDisk(false)" class="bg-orange-500 text-black font-black p-4 rounded-xl text-xs mt-4 uppercase shadow-lg">Save & Exit</button>
             </div>
 
             <div id="display" class="lcd">0</div>
@@ -63,23 +72,24 @@
                 <div id="btn-2nd" class="ti-btn bg-blue-600" onclick="op('2nd')">2nd</div>
                 <div class="ti-btn" onclick="op('DEL')">del</div>
                 <div class="ti-btn" onclick="add('(')">(</div><div class="ti-btn" onclick="add(')')">)</div><div class="ti-btn" onclick="add('/')">/</div>
-                <div class="ti-btn !bg-stone-200 !text-black" onclick="add('7')">7</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('8')">8</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('9')">9</div><div class="ti-btn" onclick="add('*')">x</div><div class="ti-btn" onclick="add('**')">^</div>
-                <div class="ti-btn !bg-stone-200 !text-black" onclick="add('4')">4</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('5')">5</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('6')">6</div><div class="ti-btn" onclick="add('-')">-</div><div class="ti-btn" onclick="add('.')">.</div>
-                <div class="ti-btn !bg-stone-200 !text-black" onclick="add('1')">1</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('2')">2</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('3')">3</div><div class="ti-btn" onclick="add('+')">+</div><div class="ti-btn !bg-stone-200 !text-black" onclick="add('0')">0</div>
-                <div class="ti-btn bg-black text-white col-span-5 !h-16" onclick="op('EXE')">ENTER</div>
+                <div class="ti-btn !bg-stone-100 !text-black" onclick="add('7')">7</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('8')">8</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('9')">9</div><div class="ti-btn" onclick="add('*')">x</div><div class="ti-btn" onclick="add('**')">^</div>
+                <div class="ti-btn !bg-stone-100 !text-black" onclick="add('4')">4</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('5')">5</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('6')">6</div><div class="ti-btn" onclick="add('-')">-</div><div class="ti-btn" onclick="add('.')">.</div>
+                <div class="ti-btn !bg-stone-100 !text-black" onclick="add('1')">1</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('2')">2</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('3')">3</div><div class="ti-btn" onclick="add('+')">+</div><div class="ti-btn !bg-stone-100 !text-black" onclick="add('0')">0</div>
+                <div class="ti-btn bg-black text-white col-span-5 !h-16 text-lg" onclick="op('EXE')">ENTER</div>
             </div>
         </div>
     </div>
 
     <div id="orange-core">
         <aside>
-            <div class="text-orange-500 font-black text-xl mb-8 italic">ORANGE OS</div>
+            <div class="text-orange-500 font-black text-2xl mb-8 italic tracking-tighter">ORANGE OS</div>
             <div class="flex-grow">
-                <div class="nav-item nav-active" id="n-launcher" onclick="nav('launcher')">Launcher</div>
-                <div class="nav-item" id="n-browser" onclick="nav('browser')">Browser</div>
-                <div class="nav-item" id="n-yt" onclick="nav('yt')">YouTube</div>
-                <div class="nav-item" id="n-brotato" onclick="nav('brotato')">Brotato</div>
-                <div class="nav-item" id="n-more" onclick="nav('more')">More</div>
+                <div class="nav-item nav-active" id="n-launcher" onclick="nav('launcher')">🍊 Launcher</div>
+                <div class="nav-item" id="n-browser" onclick="nav('browser')">🌐 Browser</div>
+                <div class="nav-item" id="n-yt" onclick="nav('yt')">📺 YouTube</div>
+                <div class="nav-item" id="n-brotato" onclick="nav('brotato')">🥔 Brotato</div>
+                <div class="nav-item" id="n-more" onclick="nav('more')">⭐ Find More</div>
+                <div class="nav-item" id="n-settings" onclick="nav('settings')">⚙️ Settings</div>
             </div>
             <button onclick="panic()" class="w-full py-4 bg-red-600 text-white font-black rounded-xl border-b-4 border-red-900 active:border-0 uppercase text-xs">Panic Button</button>
         </aside>
@@ -87,32 +97,58 @@
         <main class="relative">
             <div id="v-launcher" class="view-pane" style="display:block;">
                 <div class="p-10">
-                    <h1 class="text-4xl font-black mb-4">Minecraft Eagler</h1>
-                    <p class="text-stone-400 mb-8">Select your injected version and hit Play.</p>
-                    <div class="play-bar">
-                        <select id="ver-select" onchange="syncLauncher()" class="bg-stone-800 p-2 rounded outline-none">
-                            <option value="mc8">1.8.8 Offline</option>
-                            <option value="mc12">1.12.2 Offline</option>
-                        </select>
-                        <button id="p-btn" onclick="launchGame()" class="btn-play btn-disabled">PLAY</button>
+                    <h1 class="text-4xl font-black mb-2">Launcher</h1>
+                    <div class="flex gap-4 mb-10">
+                        <button onclick="window.open('https://github.com/GupGupMC/Tuff-Client-1.12.2-')" class="bg-white/5 p-4 rounded-lg border border-white/5 text-[10px] font-bold uppercase hover:bg-orange-500 hover:text-black">📦 Tuff Client</button>
+                        <button onclick="window.open('https://modrinth.com/resourcepack/low-fire-txf')" class="bg-white/5 p-4 rounded-lg border border-white/5 text-[10px] font-bold uppercase hover:bg-orange-500 hover:text-black">🔥 Low Fire</button>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-10 bg-black/20 flex justify-between items-center">
+                        <div>
+                            <select id="ver-select" onchange="syncLauncher()" class="bg-stone-800 text-white p-2 rounded outline-none border border-white/10">
+                                <option value="mc8">1.8.8 Build</option>
+                                <option value="mc12">1.12.2 Build</option>
+                            </select>
+                            <div id="launch-status" class="text-[10px] font-bold mt-2 uppercase">Scanning...</div>
+                        </div>
+                        <button id="p-btn" onclick="launchGame()" class="bg-green-600 text-white px-12 py-3 rounded font-black text-xl hover:scale-105 transition-transform">PLAY</button>
                     </div>
                 </div>
             </div>
 
             <div id="v-browser" class="view-pane"><iframe src="https://storage.googleapis.com/fernisbest/index.html"></iframe></div>
             <div id="v-yt" class="view-pane"><iframe src="https://www.youtube.com/embed/jfKfPfyJRdk"></iframe></div>
-            <div id="v-brotato" class="view-pane"><iframe src="https://brotato.io/"></iframe></div>
-            <div id="v-more" class="view-pane"><iframe src="https://github.com/givvgivv21/Rems-COIRNER/tree/main"></iframe></div>
+            <div id="v-brotato" class="view-pane flex items-center justify-center">
+                <button onclick="launchBrotato()" class="bg-orange-500 text-black px-10 py-4 rounded-full font-black uppercase">Launch Brotato</button>
+            </div>
+            <div id="v-more" class="view-pane flex flex-col items-center justify-center text-center">
+                <h2 class="text-3xl font-black text-orange-500 mb-4 uppercase italic">Find More</h2>
+                <button onclick="window.open('https://github.com/givvgivv21/Rems-COIRNER/tree/main')" class="bg-white text-black px-8 py-3 rounded-full font-bold uppercase">Open GitHub Repo</button>
+            </div>
+
+            <div id="v-settings" class="view-pane p-10">
+                <h2 class="text-2xl font-black mb-10 uppercase italic text-orange-500">Settings</h2>
+                <div class="max-w-md space-y-4">
+                    <div class="bg-black/20 p-6 rounded-xl border border-white/5 flex items-center justify-between">
+                        <span class="font-bold">Dark Mode</span>
+                        <label class="switch"><input type="checkbox" checked onchange="setTheme(this.checked)"><span class="slider"></span></label>
+                    </div>
+                    <div class="bg-black/20 p-6 rounded-xl border border-white/5 flex items-center justify-between">
+                        <span class="font-bold">Fruit Rain 🍓</span>
+                        <label class="switch"><input type="checkbox" onchange="setRain(this.checked)"><span class="slider"></span></label>
+                    </div>
+                    <button onclick="localStorage.clear(); location.reload();" class="w-full p-4 bg-red-600/20 text-red-500 rounded-xl font-bold border border-red-500/10 uppercase text-xs">Full System Wipe</button>
+                </div>
+            </div>
         </main>
     </div>
 
     <div id="app-overlay">
-        <div class="bg-orange-500 p-1 flex justify-end"><button onclick="closeGame()" class="bg-black text-white px-3 py-1 text-[10px] font-bold">CLOSE GAME</button></div>
+        <div class="bg-orange-500 p-1 flex justify-end"><button onclick="closeGame()" class="bg-black text-white px-4 py-1 text-[10px] font-black uppercase">Close App</button></div>
         <iframe id="game-frame"></iframe>
     </div>
 
     <script>
-        let input = "", is2nd = false;
+        let input = "", is2nd = false, rainInt = null;
 
         function add(v) { input += v; document.getElementById('display').innerText = input; }
         
@@ -129,7 +165,7 @@
             document.getElementById('disk-gui').style.display = show ? 'flex' : 'none'; 
             is2nd = false; 
             document.getElementById('btn-2nd').classList.remove('btn-2nd-on');
-            updateUI(); 
+            updateDiskGUI(); 
         }
 
         function injectFile(key, el) {
@@ -138,24 +174,35 @@
             const reader = new FileReader();
             reader.onload = e => {
                 localStorage.setItem(key, e.target.result);
-                updateUI();
+                updateDiskGUI(); // Update instantly
             };
             reader.readAsText(file);
         }
 
-        function updateUI() {
+        function updateDiskGUI() {
             ['mc8', 'mc12'].forEach(k => {
                 const s = document.getElementById('status-' + k);
-                if(localStorage.getItem(k)) { s.innerText = "INJECTED"; s.style.color = "#22c55e"; }
-                else { s.innerText = "EMPTY"; s.style.color = "#ef4444"; }
+                if(localStorage.getItem(k)) { 
+                    s.innerText = "Status: INJECTED"; 
+                    s.style.color = "#22c55e"; 
+                } else { 
+                    s.innerText = "Status: VACANT"; 
+                    s.style.color = "#ef4444"; 
+                }
             });
         }
 
         function syncLauncher() {
             const val = document.getElementById('ver-select').value;
             const btn = document.getElementById('p-btn');
-            if(localStorage.getItem(val)) btn.classList.remove('btn-disabled');
-            else btn.classList.add('btn-disabled');
+            const txt = document.getElementById('launch-status');
+            if(localStorage.getItem(val)) {
+                btn.style.opacity = "1"; btn.style.pointerEvents = "auto";
+                txt.innerText = "Kernel Ready"; txt.style.color = "#22c55e";
+            } else {
+                btn.style.opacity = "0.2"; btn.style.pointerEvents = "none";
+                txt.innerText = "Kernel Missing"; txt.style.color = "#ef4444";
+            }
         }
 
         function launchGame() {
@@ -166,8 +213,15 @@
             document.getElementById('game-frame').srcdoc = data;
         }
 
+        function launchBrotato() {
+            document.getElementById('app-overlay').style.display = 'flex';
+            document.getElementById('game-frame').srcdoc = '';
+            document.getElementById('game-frame').src = 'https://brotato.io/';
+        }
+
         function closeGame() {
             document.getElementById('app-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = '';
             document.getElementById('game-frame').srcdoc = '';
         }
 
@@ -185,8 +239,25 @@
             document.getElementById('cloak').style.display = 'flex';
         }
 
-        // Initial check
-        updateUI();
+        function setTheme(dark) {
+            if(dark) document.getElementById('master-html').classList.remove('light');
+            else document.getElementById('master-html').classList.add('light');
+        }
+
+        function setRain(on) {
+            const c = document.getElementById('rain-container');
+            if(on) {
+                c.style.display = 'block';
+                rainInt = setInterval(() => {
+                    const f = document.createElement('div'); f.className = 'fruit'; f.innerText = '🍊';
+                    f.style.left = Math.random() * 100 + 'vw'; f.style.animationDuration = (Math.random()*2+2)+'s';
+                    c.appendChild(f); setTimeout(() => f.remove(), 4000);
+                }, 200);
+            } else { c.style.display = 'none'; clearInterval(rainInt); }
+        }
+
+        // Initialize state
+        updateDiskGUI();
     </script>
 </body>
 </html>
