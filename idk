@@ -1,54 +1,42 @@
 function unproxyBoot() {
-    let targetUrl = document.getElementById('unproxy-url').value;
+    const rawUrl = document.getElementById('unproxy-url').value;
+    if (!rawUrl) return alert("Enter URL");
     
-    if (!targetUrl) return alert("Please enter a destination URL.");
-    if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+    // Format URL instantly
+    const targetUrl = rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl;
 
-    // Open the window FIRST via a direct user-initiated click event
-    const stealthWin = window.open('about:blank', '_blank');
-    
-    // If stealthWin is null or undefined, the browser blocked the pop-up
-    if (!stealthWin || stealthWin.closed || typeof stealthWin.closed === 'undefined') {
-        alert("⚠️ POP-UP BLOCKED!\n\nPlease look at the right side of your URL bar and click 'Allow Pop-ups' for this site, then try again.");
+    // STEP 1: Open the window IMMEDIATELY (This bypasses the pop-up blocker)
+    const stealthWin = window.open('', '_blank');
+
+    if (!stealthWin) {
+        alert("POP-UP BLOCKED: Click the icon in your URL bar to 'Always Allow' pop-ups!");
         return;
     }
 
-    // Define the stealth payload
-    const payload = `
-        <html>
-        <head>
-            <title>UNproxier Stealth Instance</title>
-            <style>
-                body { background: #0c0a09; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; color: #f97316; }
-                .loader { border: 3px solid #1c1917; border-top: 3px solid #f97316; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                .container { text-align: center; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="loader"></div>
-                <h2 style="letter-spacing:-1px;">UNPROXIER ACTIVE</h2>
-                <p style="font-size:10px; opacity:0.5; text-transform:uppercase; letter-spacing:2px;">Masking Hardware & Stripping Origin...</p>
-            </div>
-            <script>
-                // Anti-Detection Payload
-                Object.defineProperty(navigator, 'webdriver', {get: () => false});
-                Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
-                Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 4});
-                Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
-
-                // Delay to ensure the "about:blank" origin is established
-                setTimeout(() => {
-                    window.location.replace("${targetUrl}");
-                }, 800);
-            <\/script>
-        </body>
-        </html>
-    `;
-
-    // Write the payload into the newly opened tab
-    stealthWin.document.open();
-    stealthWin.document.write(payload);
-    stealthWin.document.close();
+    // STEP 2: Inject the Stealth Masking directly into the new window
+    try {
+        stealthWin.document.write(`
+            <title>Stealth Mode</title>
+            <body style="background:#000;color:#f97316;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;">
+                <div style="text-align:center;">
+                    <div style="border:3px solid #333;border-top:3px solid #f97316;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 20px auto;"></div>
+                    <h2 style="margin:0;letter-spacing:-1px;">UNPROXIER ACTIVE</h2>
+                    <p style="font-size:10px;opacity:0.5;margin-top:10px;">HARDWARE MASKED | ORIGIN STRIPPED</p>
+                </div>
+                <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+                <script>
+                    // Apply Stealth Headers
+                    Object.defineProperty(navigator, 'webdriver', {get: () => false});
+                    Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
+                    Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 4});
+                    
+                    // Kill the Referer by using location.replace
+                    setTimeout(() => { window.location.replace("${targetUrl}"); }, 300);
+                <\/script>
+            </body>
+        `);
+    } catch (e) {
+        // Fallback if document.write fails
+        stealthWin.location.href = targetUrl;
+    }
 }
