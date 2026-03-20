@@ -4,60 +4,124 @@
     <meta charset="UTF-8">
     <title>Calculator | TI-84 Plus CE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://mn.testnav.com/client/texasinstruments/js/ELG-min.js"></script>
-    
     <style>
         :root { 
             --orange-mid: #ea580c; --orange-bright: #fb923c; 
             --bg: #0c0a09; --sidebar: #1c1917; --text: #ffffff;
-        }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); overflow: hidden; color: var(--text); font-family: 'Segoe UI', sans-serif; }
-
-        /* CLOAKING LAYER */
-        #cloak { 
-            position: fixed; inset: 0; z-index: 100000; background: #ffffff; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease;
-        }
-        
-        #calculatorDiv { 
-            transform-origin: center; 
-            transition: transform 0.3s ease;
-            cursor: pointer;
+            --ti-grey: #2d2d2d; --ti-dark: #1a1a1a;
         }
 
-        /* ORANGE OS GUI */
-        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; opacity: 0; transition: 0.5s; }
-        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; }
-        
-        .nav-item { 
-            border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; 
-            cursor: pointer; font-weight: 900; color: var(--orange-bright); 
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
-            transition: 0.3s;
-        }
-        .nav-item:hover { transform: scale(1.02); background: var(--orange-mid); color: white; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); overflow: hidden; font-family: 'Segoe UI', sans-serif; color: var(--text); }
 
         /* ANIMATIONS */
-        .gui-appear { animation: fadeIn 0.5s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes gui-pop {
+            from { opacity: 0; transform: scale(0.8) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-gui { animation: gui-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        #app-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 150000; flex-direction: column; }
+        /* TI-84 PLUS CE BODY SHAPE */
+        #cloak { position: fixed; inset: 0; z-index: 100000; background: #000; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        
+        .ti-body {
+            width: 340px; background: var(--ti-grey); padding: 35px 20px;
+            border-radius: 15px 15px 50px 50px; border: 3px solid #444;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.1);
+            position: relative;
+        }
+        .ti-logo { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: #888; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
+
+        /* SCREEN */
+        .ti-screen-bezel { background: #111; padding: 8px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #555; }
+        .ti-screen { 
+            background: #99ad99; height: 160px; border-radius: 2px; padding: 10px;
+            font-family: monospace; color: #111; font-size: 1.2rem; text-align: right;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2); transition: 0.3s;
+        }
+
+        /* BUTTONS */
+        .button-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .ti-btn {
+            background: var(--ti-dark); height: 32px; border-radius: 4px;
+            color: white; font-size: 9px; font-weight: bold; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+            border-bottom: 3px solid #000; transition: 0.1s;
+        }
+        .ti-btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+        
+        .btn-blue { background: #2563eb; } /* 2nd Button */
+        .btn-green { background: #15803d; } /* Alpha Button */
+        .btn-func { background: #444; height: 24px; font-size: 8px; margin-bottom: 5px; } /* Top row buttons */
+        .btn-num { background: #333; height: 38px; font-size: 14px; }
+        .btn-exe { background: #ea580c; border-bottom: 3px solid #7c2d12; }
+
+        /* ORANGE OS */
+        #orange-core { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; z-index: 1000; }
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 2px solid var(--orange-mid); padding: 20px; display: flex; flex-direction: column; }
+        .nav-item { 
+            border: 2px solid var(--orange-mid); padding: 12px; margin-bottom: 10px; cursor: pointer; 
+            font-weight: 900; color: var(--orange-bright); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            transition: 0.2s;
+        }
+        .nav-item:hover { transform: scale(1.03); background: var(--orange-mid); color: white; }
     </style>
 </head>
-<body onkeydown="handleGlobalKeys(event)">
+<body onkeydown="handleKeys(event)">
 
     <div id="cloak">
-        <div id="calculatorDiv" class="gui-appear"></div>
-        <script id="h84statej" type="application/json" data-url="https://mn.testnav.com/client/texasinstruments/bin/No_AppsCE.h84statej"></script>
-        <script id="ti84faceplate" type="application/json" data-url="https://mn.testnav.com/client/texasinstruments/images/TI84CE_touch.svg"></script>
+        <div class="ti-body animate-gui">
+            <div class="ti-logo">TI-84 Plus CE</div>
+            <div class="ti-screen-bezel">
+                <div id="lcd" class="ti-screen">0</div>
+            </div>
+
+            <div class="button-grid mb-4">
+                <div class="ti-btn btn-func">y=</div>
+                <div class="ti-btn btn-func">window</div>
+                <div class="ti-btn btn-func">zoom</div>
+                <div class="ti-btn btn-func">trace</div>
+                <div class="ti-btn btn-func">graph</div>
+            </div>
+
+            <div class="button-grid">
+                <div class="ti-btn btn-blue" onclick="op('2nd')">2nd</div>
+                <div class="ti-btn">mode</div>
+                <div class="ti-btn">del</div>
+                <div class="ti-btn" onclick="ins('/')">/</div>
+                <div class="ti-btn" onclick="ins('*')">X</div>
+
+                <div class="ti-btn btn-green">alpha</div>
+                <div class="ti-btn" onclick="ins('7')">7</div>
+                <div class="ti-btn" onclick="ins('8')">8</div>
+                <div class="ti-btn" onclick="ins('9')">9</div>
+                <div class="ti-btn" onclick="ins('-')">-</div>
+
+                <div class="ti-btn">x²</div>
+                <div class="ti-btn" onclick="ins('4')">4</div>
+                <div class="ti-btn" onclick="ins('5')">5</div>
+                <div class="ti-btn" onclick="ins('6')">6</div>
+                <div class="ti-btn" onclick="ins('+')">+</div>
+
+                <div class="ti-btn">log</div>
+                <div class="ti-btn" onclick="ins('1')">1</div>
+                <div class="ti-btn" onclick="ins('2')">2</div>
+                <div class="ti-btn" onclick="ins('3')">3</div>
+                <div class="ti-btn btn-exe" onclick="op('EXE')">ENTER</div>
+
+                <div class="ti-btn">ln</div>
+                <div class="ti-btn" onclick="ins('0')">0</div>
+                <div class="ti-btn">.</div>
+                <div class="ti-btn">(-)</div>
+                <div class="ti-btn">ans</div>
+            </div>
+        </div>
     </div>
 
     <div id="orange-core" class="flex">
         <div class="sidebar">
             <h1 class="text-2xl font-black italic text-orange-500 mb-6 uppercase">Orange OS</h1>
-            <div class="nav-item" onclick="showView('launcher')"><span>LAUNCHER</span><span>⛏️</span></div>
-            <div class="nav-item" onclick="launch('https://youtube.com')"><span>YOUTUBE</span><span>📺</span></div>
+            <div class="nav-item"><span>LAUNCHER</span><span>⛏️</span></div>
+            <div class="nav-item"><span>BROWSER</span><span>🌐</span></div>
             
             <div class="nav-item flex flex-col items-start gap-2 h-auto cursor-default">
                 <span class="text-[10px] text-zinc-400 font-normal">Stay tuned for more bypasses</span>
@@ -69,78 +133,42 @@
 
             <div class="nav-item text-white border-white mt-auto" onclick="location.reload()"><span>PURGE [ESC]</span></div>
         </div>
-
-        <div id="content-area" class="flex-grow flex items-center justify-center p-10">
-            <div id="launcher-view" class="hidden w-full max-w-4xl bg-zinc-900 p-8 rounded-xl border border-orange-500 animate-gui">
-                <h2 class="text-2xl font-bold mb-4">Minecraft Launcher</h2>
-                <button onclick="playSelected()" class="bg-green-600 px-6 py-3 font-bold rounded">PLAY EAGLERCRAFT</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="app-overlay">
-        <div class="p-2 bg-zinc-900 flex justify-end"><button onclick="closeApp()" class="bg-red-600 px-4 py-1 font-bold text-xs">EXIT</button></div>
-        <iframe id="app-frame" class="w-full h-full bg-black"></iframe>
     </div>
 
     <script>
-        // 1. INITIALIZE TI-84 EMULATOR
-        function initEmulator() {
-            const h84 = document.getElementById("h84statej");
-            const face = document.getElementById("ti84faceplate");
-            
-            // Proxy logic from your provided code to handle URL cleaning
-            XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
-                apply: function (target, thisArg, args) {
-                    if (typeof args[1] === "string") args[1] = args[1].replace(/#.*$/, "");
-                    Reflect.apply(target, thisArg, args);
-                },
-            });
+        let inputStr = "0", is2nd = false;
 
-            new TI84PCE({
-                ROMLocation: h84.getAttribute("data-url") + "#.h84statej",
-                FaceplateLocation: face.getAttribute("data-url") + "#.svg"
-            });
-        }
-
-        // 2. SECRET BYPASS LOGIC
-        // Listening for Shift (2nd) then Enter (EXE)
-        let secondPressed = false;
-        window.addEventListener('keydown', (e) => {
-            if (e.key === "Shift") secondPressed = true;
-            if (secondPressed && e.key === "Enter") {
-                unlockOS();
+        function op(k) {
+            const lcd = document.getElementById('lcd');
+            if(k === '2nd') { 
+                is2nd = !is2nd; 
+                lcd.style.background = is2nd ? '#d1ffd1' : '#99ad99'; 
+                return; 
             }
-        });
-
-        function unlockOS() {
-            const cloak = document.getElementById('cloak');
-            const core = document.getElementById('orange-core');
-            
-            cloak.style.opacity = '0';
-            setTimeout(() => {
-                cloak.style.display = 'none';
-                core.style.display = 'flex';
-                setTimeout(() => core.style.opacity = '1', 50);
-            }, 600);
+            if(is2nd && k === 'EXE') {
+                document.getElementById('cloak').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('cloak').style.display = 'none';
+                    document.getElementById('orange-core').style.display = 'flex';
+                }, 500);
+                return;
+            }
+            if(k === 'EXE') {
+                try { inputStr = String(eval(inputStr.replace(/X/g, '*'))); } catch { inputStr = "ERR"; }
+            }
+            lcd.innerText = inputStr;
         }
 
-        // 3. CORE OS FUNCTIONS
-        function showView(v) {
-            document.getElementById('launcher-view').classList.remove('hidden');
+        function ins(v) {
+            inputStr = (inputStr === "0") ? v : inputStr + v;
+            document.getElementById('lcd').innerText = inputStr;
         }
-        function launch(u) {
-            document.getElementById('app-frame').src = u;
-            document.getElementById('app-overlay').style.display = 'flex';
-        }
-        function closeApp() {
-            document.getElementById('app-overlay').style.display = 'none';
-            document.getElementById('app-frame').src = '';
-        }
-        function handleGlobalKeys(e) { if(e.key === 'Escape') location.reload(); }
 
-        // Boot
-        initEmulator();
+        function handleKeys(e) {
+            if(e.key === 'Escape') location.reload();
+            // Shortcut for convenience: Shift + Enter
+            if(e.shiftKey && e.key === 'Enter') op('EXE');
+        }
     </script>
 </body>
 </html>
