@@ -1,28 +1,54 @@
-<div id="more-view" class="view-pane items-center justify-center text-center">
-    <div class="bg-white/5 p-10 rounded-[60px] border border-orange-500/20 max-w-md w-full shadow-2xl">
-        <div class="text-5xl mb-6">⚡</div>
-        <h2 class="text-2xl font-black text-orange-500 uppercase italic tracking-tighter">UNproxier V1.0</h2>
-        <p class="text-[10px] text-zinc-500 mb-8 font-bold tracking-widest uppercase">Bypassing VPN/Proxy Detection Flags</p>
-        
-        <div class="space-y-4">
-            <div class="relative">
-                <input type="text" id="unproxy-url" placeholder="https://offerwall-site.com" 
-                       class="w-full bg-black/40 p-5 rounded-3xl border border-white/10 text-white text-sm outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:opacity-30">
-            </div>
-            
-            <button onclick="unproxyBoot()" 
-                    class="w-full py-5 bg-orange-500 text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-95 active:scale-90 transition-all shadow-lg shadow-orange-500/20">
-                Launch Stealth Instance
-            </button>
-        </div>
+function unproxyBoot() {
+    let targetUrl = document.getElementById('unproxy-url').value;
+    
+    if (!targetUrl) return alert("Please enter a destination URL.");
+    if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
 
-        <div class="mt-10 pt-8 border-t border-white/5 space-y-4">
-            <p class="text-[9px] text-orange-500/50 font-bold uppercase italic">Stay Tuned for more bypasses!</p>
-            <button onclick="openApp('https://github.com/givvgivv21/Rems-COIRNER/tree/main')" 
-                    class="w-full py-3 bg-white/5 text-zinc-400 rounded-full font-black uppercase text-[9px] hover:text-white transition-colors">
-                Main Repository
-            </button>
-        </div>
-        <div class="mt-6 opacity-20 text-[8px] font-black uppercase tracking-[0.2em]">Hardware Masking Active</div>
-    </div>
-</div>
+    // Open the window FIRST via a direct user-initiated click event
+    const stealthWin = window.open('about:blank', '_blank');
+    
+    // If stealthWin is null or undefined, the browser blocked the pop-up
+    if (!stealthWin || stealthWin.closed || typeof stealthWin.closed === 'undefined') {
+        alert("⚠️ POP-UP BLOCKED!\n\nPlease look at the right side of your URL bar and click 'Allow Pop-ups' for this site, then try again.");
+        return;
+    }
+
+    // Define the stealth payload
+    const payload = `
+        <html>
+        <head>
+            <title>UNproxier Stealth Instance</title>
+            <style>
+                body { background: #0c0a09; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; color: #f97316; }
+                .loader { border: 3px solid #1c1917; border-top: 3px solid #f97316; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                .container { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="loader"></div>
+                <h2 style="letter-spacing:-1px;">UNPROXIER ACTIVE</h2>
+                <p style="font-size:10px; opacity:0.5; text-transform:uppercase; letter-spacing:2px;">Masking Hardware & Stripping Origin...</p>
+            </div>
+            <script>
+                // Anti-Detection Payload
+                Object.defineProperty(navigator, 'webdriver', {get: () => false});
+                Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
+                Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 4});
+                Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
+
+                // Delay to ensure the "about:blank" origin is established
+                setTimeout(() => {
+                    window.location.replace("${targetUrl}");
+                }, 800);
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    // Write the payload into the newly opened tab
+    stealthWin.document.open();
+    stealthWin.document.write(payload);
+    stealthWin.document.close();
+}
