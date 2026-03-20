@@ -1,0 +1,28 @@
+<div id="more-view" class="view-pane items-center justify-center text-center">
+    <div class="bg-white/5 p-10 rounded-[60px] border border-orange-500/20 max-w-md w-full shadow-2xl">
+        <div class="text-5xl mb-6">⚡</div>
+        <h2 class="text-2xl font-black text-orange-500 uppercase italic tracking-tighter">UNproxier V1.0</h2>
+        <p class="text-[10px] text-zinc-500 mb-8 font-bold tracking-widest uppercase">Bypassing VPN/Proxy Detection Flags</p>
+        
+        <div class="space-y-4">
+            <div class="relative">
+                <input type="text" id="unproxy-url" placeholder="https://offerwall-site.com" 
+                       class="w-full bg-black/40 p-5 rounded-3xl border border-white/10 text-white text-sm outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:opacity-30">
+            </div>
+            
+            <button onclick="unproxyBoot()" 
+                    class="w-full py-5 bg-orange-500 text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-95 active:scale-90 transition-all shadow-lg shadow-orange-500/20">
+                Launch Stealth Instance
+            </button>
+        </div>
+
+        <div class="mt-10 pt-8 border-t border-white/5 space-y-4">
+            <p class="text-[9px] text-orange-500/50 font-bold uppercase italic">Stay Tuned for more bypasses!</p>
+            <button onclick="openApp('https://github.com/givvgivv21/Rems-COIRNER/tree/main')" 
+                    class="w-full py-3 bg-white/5 text-zinc-400 rounded-full font-black uppercase text-[9px] hover:text-white transition-colors">
+                Main Repository
+            </button>
+        </div>
+        <div class="mt-6 opacity-20 text-[8px] font-black uppercase tracking-[0.2em]">Hardware Masking Active</div>
+    </div>
+</div>
