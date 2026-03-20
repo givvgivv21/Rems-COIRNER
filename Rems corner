@@ -3,93 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REMS CORNER | THE EMERALD HUB</title>
+    <title>REMS CORNER | TERMINAL OS v4.0</title>
     <style>
+        /* --- CORE SYSTEM THEME --- */
         :root {
-            --primary: #00ff66; /* Neon Lime */
-            --dark-green: #023020; /* Deep Emerald */
-            --bg: #011a12;
-            --card-bg: rgba(2, 48, 32, 0.8);
-            --text: #e0ffe0;
+            --primary: #00ff66;
+            --primary-glow: rgba(0, 255, 102, 0.4);
+            --bg-dark: #011a12;
+            --bg-nav: #05070a;
+            --panel: #000000;
+            --danger: #ff4444;
+            --text-dim: #4a8c6f;
         }
 
-        /* Flashy Animations */
-        @keyframes glow {
-            0% { text-shadow: 0 0 10px var(--primary); }
-            50% { text-shadow: 0 0 30px #ffffff, 0 0 40px var(--primary); }
-            100% { text-shadow: 0 0 10px var(--primary); }
+        @font-face {
+            font-family: 'Terminal';
+            src: local('Consolas'), local('Courier New'), monospace;
         }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            font-family: 'Black Ops One', 'Segoe UI', sans-serif; 
-            background: var(--bg); color: var(--text); 
-            overflow: hidden; 
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Terminal', monospace;
+            overflow: hidden;
+            display: flex;
         }
 
-        /* Fruit Rain Canvas */
+        /* --- BACKGROUND FX: FRUIT RAIN --- */
         #fruitCanvas {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
+            opacity: 0.15;
         }
 
-        /* Sidebar Navigation */
+        /* --- SIDEBAR NAVIGATION --- */
         .sidebar {
-            width: 240px; height: 100vh;
-            background: rgba(1, 26, 18, 0.9);
-            position: fixed; display: flex; flex-direction: column;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-nav);
             border-right: 2px solid var(--primary);
-            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
             z-index: 100;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
 
-        .logo { 
-            padding: 30px 20px; font-size: 1.8rem; font-weight: 900; 
-            color: var(--primary); text-align: center;
-            animation: glow 2s infinite; letter-spacing: 3px;
+        .logo-area {
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid #1a5c41;
+        }
+
+        .logo-main {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        .nav-links {
+            flex-grow: 1;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .tab-btn {
-            padding: 20px; cursor: pointer; border: none; background: none;
-            color: #4a8c6f; text-align: left; font-size: 1.1rem;
-            text-transform: uppercase; font-weight: bold; transition: 0.3s;
+            background: none;
+            border: none;
+            padding: 18px 25px;
+            color: var(--text-dim);
+            text-align: left;
+            cursor: pointer;
+            font-family: 'Terminal';
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .tab-btn:hover { color: #fff; background: rgba(0, 255, 102, 0.1); }
-        .tab-btn.active { color: var(--primary); background: rgba(0, 255, 102, 0.2); border-right: 5px solid var(--primary); }
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(0, 255, 102, 0.05);
+        }
 
-        /* Main Content */
-        .content { margin-left: 240px; height: 100vh; overflow-y: auto; position: relative; }
-        .tab-content { display: none; padding: 40px; animation: fadeIn 0.5s ease; }
+        .tab-btn.active {
+            color: var(--primary);
+            background: rgba(0, 255, 102, 0.15);
+            border-left: 4px solid var(--primary);
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        /* --- SYSTEM MONITOR (BOTTOM SIDEBAR) --- */
+        .sys-mon {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid #1a5c41;
+            font-size: 0.7rem;
+        }
+
+        .sys-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .sys-label { color: var(--text-dim); }
+        .sys-value { color: var(--primary); }
+
+        /* --- MAIN CONTENT WINDOW --- */
+        .content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(0, 255, 102, 0.03) 0%, transparent 70%);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            height: calc(100vh - 60px);
+            animation: bootUp 0.4s ease-out;
+        }
+
+        @keyframes bootUp {
+            from { opacity: 0; transform: scale(0.98); filter: brightness(2); }
+            to { opacity: 1; transform: scale(1); filter: brightness(1); }
+        }
+
         .tab-content.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Game Grid - Massive Collection */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .game-card { 
-            background: var(--card-bg); border-radius: 15px; overflow: hidden; 
-            border: 1px solid #1a5c41; transition: 0.4s; position: relative;
-        }
-        .game-card:hover { 
-            transform: scale(1.05) rotate(1deg); 
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.4);
-        }
-        .game-card img { width: 100%; height: 140px; object-fit: cover; filter: grayscale(30%); }
-        .game-card:hover img { filter: grayscale(0%); }
-        .game-info { padding: 15px; text-align: center; }
-        .play-btn { 
-            display: block; background: var(--primary); color: #000; 
-            text-decoration: none; padding: 10px; font-weight: bold; border-radius: 0 0 15px 15px;
+        /* --- REUSABLE COMPONENTS --- */
+        .frame-wrapper {
+            width: 100%;
+            height: 90%;
+            border: 1px solid var(--primary);
+            background: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,1);
+            position: relative;
         }
 
-        /* Iframe Containers */
-        .frame-container { width: 100%; height: 80vh; border: 3px solid var(--primary); border-radius: 20px; overflow: hidden; background: #000; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        h2 { font-size: 2.5rem; border-left: 10px solid var(--primary); padding-left: 15px; margin-bottom: 30px; }
+        .terminal-header {
+            background: var(--primary);
+            color: #000;
+            padding: 5px 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* --- GAME VAULT GRID --- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: var(--panel);
+            border: 1px solid #1a5c41;
+            padding: 15px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        .game-title { color: var(--primary); font-size: 1.1rem; margin-bottom: 5px; }
+        .game-desc { font-size: 0.75rem; color: #888; margin-bottom: 15px; }
+        .launch-btn {
+            background: var(--primary);
+            color: #000;
+            padding: 8px 15px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        /* --- PANIC BUTTON --- */
+        .panic-bar {
+            position: fixed; bottom: 20px; right: 20px;
+            z-index: 1000;
+        }
+
+        .panic-btn {
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Terminal';
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        /* --- CHAT OVERRIDE (NO AVATARS) --- */
+        #minchat-embed { filter: grayscale(1) contrast(1.2) brightness(0.8); }
+
     </style>
 </head>
 <body>
@@ -97,86 +222,143 @@
     <canvas id="fruitCanvas"></canvas>
 
     <div class="sidebar">
-        <div class="logo">REMS<br>CORNER</div>
-        <button class="tab-btn active" onclick="openTab(event, 'games')">🕹️ GAME VAULT</button>
-        <button class="tab-btn" onclick="openTab(event, 'gemini')">🧠 GEMINI AI</button>
-        <button class="tab-btn" onclick="openTab(event, 'browser')">🌍 UNBLOCKED WEB</button>
-        <button class="tab-btn" onclick="openTab(event, 'youtube')">🎥 REMS TV</button>
+        <div class="logo-area">
+            <div class="logo-main">REMS CORNER</div>
+            <div class="logo-sub">SECURE GAMING KERNEL v4.0.2</div>
+        </div>
+
+        <div class="nav-links">
+            <button class="tab-btn active" onclick="openTab(event, 'chat')">>> GLOBAL_CHAT</button>
+            <button class="tab-btn" onclick="openTab(event, 'games')">>> GAME_VAULT</button>
+            <button class="tab-btn" onclick="openTab(event, 'mc')">>> MINECRAFT_HUB</button>
+            <button class="tab-btn" onclick="openTab(event, 'srv')">>> SRV_OPERATOR</button>
+            <button class="tab-btn" onclick="openTab(event, 'web')">>> WEB_PORTAL</button>
+            <button class="tab-btn" onclick="openTab(event, 'gemini')">>> GEMINI_AI</button>
+        </div>
+
+        <div class="sys-mon">
+            <div class="sys-item"><span class="sys-label">UPTIME:</span> <span class="sys-value" id="uptime">0s</span></div>
+            <div class="sys-item"><span class="sys-label">CPU:</span> <span class="sys-value">02%</span></div>
+            <div class="sys-item"><span class="sys-label">LOC:</span> <span class="sys-value">2026.03.20</span></div>
+            <div class="sys-item"><span class="sys-label">USER:</span> <span class="sys-value">GUEST_REM</span></div>
+        </div>
     </div>
 
     <div class="content">
-        <div id="games" class="tab-content active">
-            <h2>POPULAR TITLES</h2>
+        
+        <div id="chat" class="tab-content active">
+            <h2 style="color:var(--primary)">> CHANNEL: #GLOBAL_COMM</h2>
+            <div class="frame-wrapper">
+                <div class="terminal-header"><span>SECURE_TEXT_ONLY_STREAM</span><span>ENCRYPTED</span></div>
+                <iframe src="https://minchat.io/chat/rems-corner"></iframe>
+            </div>
+        </div>
+
+        <div id="games" class="tab-content">
+            <h2 style="color:var(--primary)">> INDEX: /LOCAL/STORAGE/GAMES</h2>
             <div class="game-grid">
-                <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=300" alt="Slope">
-                    <div class="game-info"><h3>Slope</h3><p>Fast-paced 3D</p></div>
-                    <a href="https://retro-bowl-26.github.io/slope/" class="play-btn">LAUNCH</a>
+                <div class="game-card" onclick="window.open('https://brotato.io', '_blank')">
+                    <div class="game-title">BROTATO</div>
+                    <div class="game-desc">Arena survival shooter. 2026 Mirror.</div>
+                    <span class="launch-btn">EXTERNAL_BOOT</span>
+                </div>
+                <div class="game-card" onclick="location.hash='mc'">
+                    <div class="game-title">1v1.LOL</div>
+                    <div class="game-desc">High-speed builder shooter. Verified.</div>
+                    <span class="launch-btn" onclick="openTab(event, 'v1v1')">LOAD_IFRAME</span>
                 </div>
                 <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=300" alt="Retro Bowl">
-                    <div class="game-info"><h3>Retro Bowl</h3><p>8-Bit Football</p></div>
-                    <a href="https://retro-bowl-26.github.io/" class="play-btn">LAUNCH</a>
+                    <div class="game-title">ROBLOX</div>
+                    <div class="game-desc">Now.gg Cloud Player. Bypasses Firewall.</div>
+                    <a href="https://now.gg/apps/roblox-corporation/5349/roblox.html" target="_blank" class="launch-btn">CONNECT</a>
                 </div>
                 <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300" alt="1v1">
-                    <div class="game-info"><h3>1v1.LOL</h3><p>Build & Shoot</p></div>
-                    <a href="https://1v1.lol" class="play-btn">LAUNCH</a>
+                    <div class="game-title">BITLIFE</div>
+                    <div class="game-desc">Life sim. Text-based logic.</div>
+                    <a href="https://bitlifeonline.io" target="_blank" class="launch-btn">CONNECT</a>
                 </div>
-                <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=300" alt="Minecraft">
-                    <div class="game-info"><h3>Minecraft</h3><p>Classic Web</p></div>
-                    <a href="https://classic.minecraft.net" class="play-btn">LAUNCH</a>
-                </div>
-                <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300" alt="Bitlife">
-                    <div class="game-info"><h3>BitLife</h3><p>Life Simulator</p></div>
-                    <a href="https://www.bitlifeonline.com/" class="play-btn">LAUNCH</a>
-                </div>
-                <div class="game-card">
-                    <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300" alt="Snake">
-                    <div class="game-info"><h3>Google Snake</h3><p>Retro Fun</p></div>
-                    <a href="https://www.google.com/fbx?fbx=snake_arcade" class="play-btn">LAUNCH</a>
-                </div>
+            </div>
+        </div>
+
+        <div id="mc" class="tab-content">
+            <h2 style="color:var(--primary)">> MC_HUB: SELECT_VERSION</h2>
+            <div style="margin-bottom:10px;">
+                <button class="launch-btn" style="border:none; cursor:pointer;" onclick="loadMC('1.8')">BOOT 1.8.8</button>
+                <button class="launch-btn" style="border:none; cursor:pointer; background:#fff;" onclick="loadMC('1.12')">BOOT 1.12.2</button>
+            </div>
+            <div class="frame-wrapper">
+                <iframe id="mc-frame" src="https://svaaps.github.io/eaglercrafthtml/"></iframe>
+            </div>
+        </div>
+
+        <div id="srv" class="tab-content">
+            <h2 style="color:var(--primary)">> SRV_CTRL: INSTANCE_MANAGER</h2>
+            <div style="background:var(--panel); border:1px solid var(--primary); padding:30px;">
+                <p>INITIALIZE WEBRTC P2P SERVER TUNNEL</p>
+                <input type="text" id="srv-name" placeholder="SERVER_ID..." style="background:#000; border:1px solid var(--primary); color:var(--primary); padding:10px; width:300px;">
+                <button class="launch-btn" style="border:none; padding:12px 25px; margin-left:10px;" onclick="initSrv()">START_SEQUENCE</button>
+                <div id="srv-log" style="margin-top:20px; font-size:0.8rem; color:var(--text-dim);"></div>
+            </div>
+        </div>
+
+        <div id="web" class="tab-content">
+            <h2 style="color:var(--primary)">> WEB_PROXY: EDUCATIONAL_GATEWAY</h2>
+            <div class="frame-wrapper">
+                <iframe src="https://education.mathematicsontop.it.com/"></iframe>
             </div>
         </div>
 
         <div id="gemini" class="tab-content">
-            <h2>GEMINI CLONE</h2>
-            <div class="frame-container">
-                <iframe src="https://gemini.google.com/app"></iframe>
-            </div>
-        </div>
-
-        <div id="browser" class="tab-content">
-            <h2>SECURE BROWSER</h2>
-            <div class="frame-container">
-                <iframe src="https://www.bing.com"></iframe>
-            </div>
-        </div>
-
-        <div id="youtube" class="tab-content">
-            <h2>YOUTUBE STREAM</h2>
-            <div class="frame-container">
-                <iframe src="https://www.youtube.com/embed/videoseries?list=PLWwAypHuER7jgE5t_eOqf_f7z7_p5Yw0h"></iframe>
+            <h2 style="color:var(--primary)">> AI_LINK: GOOGLE_GEMINI</h2>
+            <div class="frame-wrapper">
+                <iframe src="https://gemini.google.com"></iframe>
             </div>
         </div>
     </div>
 
+    <div class="panic-bar">
+        <button class="panic-btn" onclick="panic()">EMERGENCY: ESC</button>
+    </div>
+
     <script>
-        // Tab System
+        // TAB CONTROLLER
         function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; tabcontent[i].classList.remove("active"); }
-            tablinks = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+            let i, content, btns;
+            content = document.getElementsByClassName("tab-content");
+            for (i = 0; i < content.length; i++) content[i].style.display = "none";
+            btns = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < btns.length; i++) btns[i].className = btns[i].className.replace(" active", "");
             document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+            evt.currentTarget.className += " active";
         }
 
-        // FRUIT RAIN ENGINE
+        // MC LOADER
+        function loadMC(ver) {
+            const frame = document.getElementById('mc-frame');
+            if(ver === '1.8') frame.src = "https://svaaps.github.io/eaglercrafthtml/";
+            else frame.src = "https://raw.githack.com/ZixiaChen/Eaglercraft-1.12.2/main/Web/index.html";
+        }
+
+        // PANIC LOGIC
+        function panic() { window.location.href = "https://classroom.google.com"; }
+        document.addEventListener('keydown', (e) => { if(e.key === "Escape") panic(); });
+
+        // UPTIME COUNTER
+        let seconds = 0;
+        setInterval(() => {
+            seconds++;
+            document.getElementById('uptime').innerText = seconds + "s";
+        }, 1000);
+
+        // SERVER SIMULATOR
+        function initSrv() {
+            const log = document.getElementById('srv-log');
+            log.innerHTML += "<p>> Requesting Handshake...</p>";
+            setTimeout(() => { log.innerHTML += "<p>> Tunnel Established via relay.lax1dude.net</p>"; }, 1000);
+            setTimeout(() => { log.innerHTML += "<p style='color:#fff'>> SUCCESS: Server Online. Join Code: " + Math.floor(10000 + Math.random() * 90000) + "</p>"; }, 2500);
+        }
+
+        // FRUIT RAIN ENGINE v2
         const canvas = document.getElementById('fruitCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -187,33 +369,27 @@
 
         class Fruit {
             constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height;
+            }
+            reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = -50;
-                this.size = Math.random() * 30 + 20;
-                this.speed = Math.random() * 3 + 2;
-                this.rot = Math.random() * 360;
-                this.rotSpeed = Math.random() * 5 - 2.5;
-                this.emoji = fruits[Math.floor(Math.random() * fruits.length)];
+                this.size = Math.random() * 20 + 15;
+                this.speed = Math.random() * 1.5 + 0.5;
+                this.char = fruits[Math.floor(Math.random() * fruits.length)];
             }
             update() {
                 this.y += this.speed;
-                this.rot += this.rotSpeed;
-                if (this.y > canvas.height) {
-                    this.y = -50;
-                    this.x = Math.random() * canvas.width;
-                }
+                if (this.y > canvas.height) this.reset();
             }
             draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rot * Math.PI / 180);
                 ctx.font = `${this.size}px Arial`;
-                ctx.fillText(this.emoji, 0, 0);
-                ctx.restore();
+                ctx.fillText(this.char, this.x, this.y);
             }
         }
 
-        for (let i = 0; i < 40; i++) { particles.push(new Fruit()); }
+        for (let i = 0; i < 40; i++) particles.push(new Fruit());
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -226,7 +402,7 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
-    </script>
 
+    </script>
 </body>
 </html>
